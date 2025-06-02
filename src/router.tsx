@@ -11,6 +11,7 @@ const router = createBrowserRouter([
 		element: <HomePage />,
 		errorElement: <NotFoundPage />,
 	},
+	}
 ]);
 
 export default router;
