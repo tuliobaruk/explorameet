@@ -7,10 +7,12 @@ export default function HomePage() {
 	return (
 		<div className="homepage-container flex min-h-screen flex-col items-center">
 			<header className="w-full h-20 fixed top-0 left-0 right-0 z-50 flex justify-between items-center max-w-full mx-auto py-6 px-4 md:px-10 bg-white/80 backdrop-blur-md shadow-sm">
-				<div className="header-logo text-3xl font-bold flex items-center gap-2">
-					<Mountain size={32} />
-					<span>ExploraMeet</span>
-				</div>
+				<a href="#">
+					<div className="header-logo text-3xl font-bold flex items-center gap-2">
+						<Mountain size={32} />
+						<span>ExploraMeet</span>
+					</div>
+				</a>
 
 				<nav className="hidden md:flex gap-6 text-lg items-center">
 					<a

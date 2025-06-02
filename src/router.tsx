@@ -1,8 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 
 // Páginas Públicas
-import HomePage from "@/pages/HomePage";
 import NotFoundPage from "@/pages/NotFoundPage";
+import HomePage from "@/pages/home/HomePage";
+import LoginPage from "@/pages/LoginPage";
 
 const router = createBrowserRouter([
 	// Rotas Públicas
@@ -11,6 +12,10 @@ const router = createBrowserRouter([
 		element: <HomePage />,
 		errorElement: <NotFoundPage />,
 	},
+	{
+		path: "/login",
+		element: <LoginPage />
+	}
 ]);
 
 export default router;
