@@ -1,0 +1,57 @@
+:root {
+    --verde-vibrante: #82b55b;
+    --verde-oliva: #898f29;
+    --marrom-dourado: #8c742d;
+    --background-claro: #f9f5f1;
+}
+
+.homepage-container {
+    background-color: var(--background-claro);
+}
+
+.header-logo {
+    color: var(--verde-oliva);
+}
+
+.nav-link:hover {
+    background-color: var(--verde-vibrante);
+    color: white;
+}
+
+.nav-button-acessar {
+    background-color: var(--marrom-dourado);
+}
+
+.hero-title {
+    color: var(--verde-oliva);
+}
+
+.hero-subtitle {
+    color: var(--marrom-dourado);
+}
+
+.hero-button-explorar {
+    background-color: var(--verde-vibrante);
+}
+
+.hero-button-guia {
+    color: var(--verde-oliva);
+    background-color: #ffffff;
+    border: 2px solid var(--verde-oliva);
+}
+
+.section-title {
+    color: var(--verde-oliva);
+}
+
+.section-title-destaque {
+    color: var(--marrom-dourado);
+}
+
+.feature-icon {
+    color: var(--verde-vibrante);
+}
+
+.footer {
+    background-color: var(--verde-oliva);
+}
