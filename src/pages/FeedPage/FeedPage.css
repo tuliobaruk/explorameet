@@ -1,0 +1,348 @@
+/* === FeedPage.css === */
+
+/* As variáveis --verde-vibrante, --verde-oliva, --marrom-dourado, --background-claro
+   são definidas no seu HomePage.css e são usadas aqui.
+   Este arquivo também pode se inspirar em classes do AuthPage.css para consistência. */
+
+body { /* Para garantir que o fundo base seja o claro, se necessário */
+    background-color: var(--background-claro);
+    margin: 0; /* Remover margens padrão do body */
+    /* Adicione a família de fontes principal do seu projeto aqui */
+    /* font-family: 'SuaFonte', sans-serif; */
+}
+
+.feed-page-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--background-claro);
+}
+
+/* --- Header Principal --- */
+.feed-header {
+    background-color: var(--verde-oliva);
+    color: white;
+    padding: 0.75rem 1rem; /* py-3 px-4 */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+@media (min-width: 768px) { /* md breakpoint */
+    .feed-header {
+        padding: 0.75rem 1.5rem; /* py-3 px-6 */
+    }
+}
+
+.feed-header-logo {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.5rem; /* text-2xl */
+    /* Se "EM" for uma imagem/SVG, ajuste aqui */
+}
+.feed-header-logo img {
+    height: 30px; /* Ajuste conforme o tamanho do seu logo EM */
+    margin-right: 0.5rem;
+}
+.feed-header-logo .logo-text-explorameet { /* Para o nome completo se houver */
+    display: none; /* Escondido em telas menores */
+}
+@media (min-width: 1024px) { /* lg breakpoint */
+    .feed-header-logo .logo-text-explorameet {
+        display: inline;
+        font-size: 1.25rem;
+    }
+}
+
+
+.feed-search-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    padding: 0 1rem;
+}
+
+.feed-search-bar {
+    background-color: rgba(255,255,255,0.9);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 20px; /* Bastante arredondado */
+    padding: 0.5rem 1rem; /* py-2 px-4 */
+    width: 100%;
+    max-width: 400px; /* Limitar largura da busca */
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+.feed-search-bar:focus-within {
+    background-color: #fff;
+    border-color: var(--verde-vibrante);
+}
+
+.feed-search-bar input {
+    background: none;
+    border: none;
+    outline: none;
+    width: 100%;
+    color: var(--verde-oliva); /* Texto dentro da busca */
+    font-size: 0.875rem;
+}
+.feed-search-bar input::placeholder {
+    color: var(--marrom-dourado);
+    opacity: 0.8;
+}
+.feed-search-bar .search-icon {
+    color: var(--marrom-dourado);
+    margin-right: 0.5rem;
+}
+
+
+.feed-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* gap-3 */
+    cursor: pointer; /* Se for um dropdown */
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem; /* rounded-md */
+    transition: background-color 0.2s;
+}
+.feed-user-profile:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.feed-user-profile img {
+    width: 32px; /* w-8 */
+    height: 32px; /* h-8 */
+    border-radius: 50%; /* rounded-full */
+    object-fit: cover;
+    border: 1px solid rgba(255,255,255,0.5);
+}
+
+.feed-user-profile .user-name {
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500; /* medium */
+    display: none; /* Esconder nome em telas muito pequenas */
+}
+@media (min-width: 768px) { /* md breakpoint */
+    .feed-user-profile .user-name {
+        display: inline;
+    }
+}
+
+
+/* --- Main Content Area (Sidebar + Feed) --- */
+.feed-main-wrapper {
+    display: flex;
+    flex-grow: 1;
+    position: relative; /* Para o posicionamento da sidebar */
+}
+
+/* --- Sidebar --- */
+.feed-sidebar {
+    background-color: #ffffff; /* Fundo branco para a sidebar */
+    width: 250px; /* Largura da sidebar aberta */
+    padding: 1.5rem 1rem;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+    transform: translateX(-100%); /* Começa fechada (escondida à esquerda) */
+    transition: transform 0.3s ease-in-out;
+    position: fixed; /* Ou absolute, dependendo do scroll */
+    top: 5rem; /* Altura do header */
+    left: 0;
+    height: calc(100vh - 5rem); /* Altura total menos o header */
+    z-index: 900;
+    overflow-y: auto;
+    border-right: 1px solid rgba(137, 143, 41, 0.2);
+}
+
+.feed-sidebar.open {
+    transform: translateX(0);
+}
+
+.sidebar-toggle-button {
+    background: none;
+    border: none;
+    color: var(--verde-oliva); /* Cor do ícone de menu */
+    cursor: pointer;
+    padding: 0.75rem;
+    position: fixed; /* Para ficar sempre visível */
+    top: 5rem; /* Abaixo do header */
+    left: 0.5rem;
+    z-index: 950; /* Acima da sidebar, abaixo do header */
+    transition: left 0.3s ease-in-out, color 0.3s;
+}
+.sidebar-toggle-button.sidebar-open {
+    /* Ajustar posição do botão quando a sidebar está aberta, se necessário */
+    left: calc(250px + 0.5rem); /* Largura da sidebar + um pequeno espaçamento */
+    color: var(--marrom-dourado);
+}
+
+
+.feed-sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.feed-sidebar nav li a {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: var(--verde-oliva);
+    text-decoration: none;
+    border-radius: 0.375rem; /* rounded-md */
+    margin-bottom: 0.5rem;
+    transition: background-color 0.2s, color 0.2s;
+    font-weight: 500;
+}
+.feed-sidebar nav li a:hover,
+.feed-sidebar nav li a.active { /* Classe para link ativo */
+    background-color: var(--verde-vibrante);
+    color: white;
+}
+.feed-sidebar nav li a .nav-icon {
+    margin-right: 0.75rem;
+}
+
+
+/* --- Feed Content Area --- */
+.feed-content-area {
+    flex-grow: 1;
+    padding: 1.5rem;
+    margin-left: 0; /* Padrão quando sidebar está fechada */
+    transition: margin-left 0.3s ease-in-out;
+    width: 100%; /* Para ocupar o espaço disponível */
+}
+
+.feed-content-area.sidebar-open {
+    margin-left: 250px; /* Largura da sidebar */
+    width: calc(100% - 250px);
+}
+
+@media (max-width: 767px) { /* Em telas menores, a sidebar sobrepõe */
+    .feed-content-area.sidebar-open {
+        margin-left: 0;
+        width: 100%;
+        /* Poderia adicionar um overlay escuro sobre o conteúdo quando a sidebar está aberta */
+    }
+    .feed-sidebar { /* Em mobile, a sidebar é fixed e sobrepõe */
+        position: fixed;
+        top: 0; /* Começa do topo da viewport */
+        height: 100vh;
+        padding-top: calc(5rem + 1rem); /* Espaço para o header + padding */
+    }
+    .sidebar-toggle-button {
+        top: 0.75rem; /* Alinhar com o header em mobile */
+        left: 0.75rem;
+        color: white; /* Para contraste com o header verde */
+        background-color: rgba(0,0,0,0.1);
+        border-radius: 0.25rem;
+    }
+     .sidebar-toggle-button.sidebar-open {
+        left: calc(250px - 40px); /* Posição do botão de fechar (X) */
+        top: 0.75rem;
+        color: var(--marrom-dourado);
+        background-color: transparent;
+    }
+}
+
+
+/* --- Feed Posts/Cards --- */
+.feed-post-card {
+    background-color: #ffffff;
+    border-radius: 0.5rem; /* rounded-lg (similar ao .auth-card) */
+    box-shadow: 0 4px 6px -1px rgba(137, 143, 41, 0.1), 0 2px 4px -1px rgba(137, 143, 41, 0.06);
+    margin-bottom: 1.5rem;
+    overflow: hidden; /* Para que as imagens não ultrapassem o border-radius */
+    border: 1px solid rgba(137, 143, 41, 0.2);
+}
+
+.feed-post-card .post-header {
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.feed-post-card .post-author-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.feed-post-card .post-title {
+    font-size: 1.125rem; /* text-lg */
+    font-weight: bold;
+    color: var(--verde-oliva);
+    margin: 0;
+}
+.feed-post-card .post-author-name {
+    font-size: 0.875rem; /* text-sm */
+    color: var(--marrom-dourado);
+}
+
+.feed-post-card .post-image-grid {
+    display: grid;
+    /* O grid de imagens pode variar. Exemplo para 3 imagens como na referência: */
+    grid-template-columns: 2fr 1fr; /* Coluna maior à esquerda, duas menores à direita */
+    grid-template-rows: auto auto; /* Duas linhas para as imagens da direita */
+    gap: 0.25rem; /* Pequeno espaço entre as imagens */
+    max-height: 400px; /* Limitar altura do container de imagens */
+}
+.feed-post-card .post-image-grid img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.feed-post-card .post-image-grid .img-large {
+    grid-row: 1 / 3; /* Ocupa as duas linhas */
+    grid-column: 1 / 2;
+}
+.feed-post-card .post-image-grid .img-small-1 {
+    grid-row: 1 / 2;
+    grid-column: 2 / 3;
+}
+.feed-post-card .post-image-grid .img-small-2 {
+    grid-row: 2 / 3;
+    grid-column: 2 / 3;
+}
+/* Se for uma única imagem */
+.feed-post-card .post-single-image img {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+}
+
+
+.feed-post-card .post-content-text { /* Para texto abaixo das imagens, se houver */
+    padding: 1rem 1.25rem;
+    font-size: 0.9rem;
+    color: var(--verde-oliva); /* Ou um cinza mais escuro */
+    line-height: 1.6;
+}
+
+.feed-post-card .post-actions {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid rgba(137, 143, 41, 0.15);
+    display: flex;
+    gap: 1rem;
+}
+.feed-post-card .post-actions button {
+    background: none;
+    border: none;
+    color: var(--marrom-dourado);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.875rem;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+}
+.feed-post-card .post-actions button:hover {
+    color: var(--verde-vibrante);
+    background-color: rgba(130, 181, 91, 0.1);
+}
