@@ -1,17 +1,19 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UserPlus, IdCard, Phone, Calendar } from "lucide-react";
+import { Calendar, IdCard, Phone, UserPlus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
-import AuthLayout from "@/components/auth/AuthLayout";
 import AuthCardHeader from "@/components/auth/AuthCardHeader";
 import AuthInput from "@/components/auth/AuthInput";
-import { maskPhone, maskCPF, maskCpfCnpj } from "@/utils/masks";
+import AuthLayout from "@/components/auth/AuthLayout";
+import { maskCPF, maskCpfCnpj, maskPhone } from "@/utils/masks";
 
 import "@/pages/AuthPage.css";
-import { registerStep2Schema, RegisterStep1Data, RegisterStep2Data } from "@/schemas/authSchemas";
+import { RegisterStep1Data, RegisterStep2Data, registerStep2Schema } from "@/schemas/authSchemas";
 import { z } from "zod";
+import AuthSelect from "../../components/auth/AuthSelect";
+import { Genero } from "@/types/Usuario";
 
 export default function RegisterDetailsPage() {
 	const navigate = useNavigate();
@@ -30,7 +32,7 @@ export default function RegisterDetailsPage() {
 	}, [registerState, navigate]);
 
 	const conditionalRegisterStep2Schema = registerStep2Schema.superRefine((data, ctx) => {
-		if (registerState?.userType === "normal") {
+		if (registerState?.userType === "CLIENTE") {
 			if (!data.cpf || data.cpf.length === 0) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
@@ -38,7 +40,7 @@ export default function RegisterDetailsPage() {
 					path: ["cpf"],
 				});
 			}
-		} else if (registerState?.userType === "guia") {
+		} else if (registerState?.userType === "GUIA") {
 			if (!data.cpfCnpj || data.cpfCnpj.length === 0) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
@@ -71,6 +73,7 @@ export default function RegisterDetailsPage() {
 	const handleSubmitFinal = async (data: RegisterStep2Data) => {
 		if (!registerState) {
 			alert("Erro: Dados da etapa anterior não encontrados. Redirecionando.");
+      console.log("Dados da etapa anterior não encontrados:", data, registerState);
 			navigate("/cadastro");
 			return;
 		}
@@ -88,7 +91,7 @@ export default function RegisterDetailsPage() {
 			password: registerState.password,
 		};
 
-		if (registerState.userType === "normal") {
+		if (registerState.userType === "CLIENTE") {
 			payload = {
 				cpf: data.cpf,
 				perfil: baseProfile,
@@ -107,7 +110,7 @@ export default function RegisterDetailsPage() {
 
 		try {
 			const apiEndpoint =
-				registerState.userType === "normal" ? "/api/cadastro/normal" : "/api/cadastro/guia";
+				registerState.userType === "CLIENTE" ? "/auth/register/cliente" : "/auth/register/guia";
 			const response = await fetch(apiEndpoint, {
 				method: "POST",
 				headers: {
@@ -146,7 +149,7 @@ export default function RegisterDetailsPage() {
 			<AuthCardHeader
 				icon={UserPlus}
 				title={
-					registerState.userType === "normal"
+					registerState.userType === "CLIENTE"
 						? "Complete seu Cadastro (Usuário)"
 						: "Complete seu Cadastro (Guia)"
 				}
@@ -170,30 +173,35 @@ export default function RegisterDetailsPage() {
 					}}
 					error={errors.celular?.message}
 				/>
-
-				<AuthInput
-					label="Gênero"
-					id="genero"
-					type="text"
-					icon={Calendar}
-					required
-					placeholder="Masculino, Feminino, ETC..."
-					{...register("genero")}
-					error={errors.genero?.message}
-				/>
+        
+        <AuthSelect
+          icon={UserPlus}
+          label="Gênero"
+          id="genero"
+          {...register("genero")}
+          error={errors.genero?.message}
+          required
+        >
+          <option value="" disabled>Selecione o gênero</option>
+          <option value={Genero.Masculino}>{Genero.Masculino}</option>
+          <option value={Genero.Feminino}>{Genero.Feminino}</option>
+          <option value={Genero.Outro}>{Genero.Outro}</option>
+          <option value={Genero.PrefiroNaoDizer}>{Genero.PrefiroNaoDizer}</option>
+        </AuthSelect>
 
 				<AuthInput
 					label="Idade"
 					id="idade"
-					type="number"
+					type="text"
 					required
 					icon={Calendar}
+          maxLength={3}
 					placeholder="Ex: 30"
 					{...register("idade")}
 					error={errors.idade?.message}
 				/>
 
-				{registerState.userType === "normal" && (
+				{registerState.userType === "CLIENTE" && (
 					<AuthInput
 						label="CPF"
 						id="cpf"
@@ -211,7 +219,7 @@ export default function RegisterDetailsPage() {
 					/>
 				)}
 
-				{registerState.userType === "guia" && (
+				{registerState.userType === "GUIA" && (
 					<>
 						<AuthInput
 							label="CPF ou CNPJ"

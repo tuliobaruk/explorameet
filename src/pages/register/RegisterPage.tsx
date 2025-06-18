@@ -26,7 +26,7 @@ export default function RegisterPage() {
 			email: "",
 			password: "",
 			confirmPassword: "",
-			userType: "normal",
+			userType: "CLIENTE",
 		},
 	});
 
@@ -104,21 +104,21 @@ export default function RegisterPage() {
 							<input
 								type="radio"
 								id="userTypeNormal"
-								value="normal"
-								checked={userType === "normal"}
+								value="CLIENTE"
+								checked={userType === "CLIENTE"}
 								className="auth-terms-checkbox"
 								{...register("userType")}
 							/>
 							<label htmlFor="userTypeNormal" className="auth-terms-label !ml-2 cursor-pointer">
-								Usuário Normal
+								Explorador
 							</label>
 						</div>
 						<div className="flex items-center">
 							<input
 								type="radio"
 								id="userTypeGuia"
-								value="guia"
-								checked={userType === "guia"}
+								value="GUIA"
+								checked={userType === "GUIA"}
 								className="auth-terms-checkbox"
 								{...register("userType")}
 							/>

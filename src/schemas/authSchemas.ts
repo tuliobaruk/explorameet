@@ -6,7 +6,7 @@ export const registerStep1Schema = z
 		email: z.string().email("Email inválido.").min(1, "Email é obrigatório."),
 		password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres."),
 		confirmPassword: z.string().min(8, "A confirmação da senha deve ter pelo menos 8 caracteres."),
-		userType: z.enum(["normal", "guia"], {
+		userType: z.enum(["CLIENTE", "GUIA"], {
 			errorMap: () => ({ message: "Selecione um tipo de usuário." }),
 		}),
 	})
