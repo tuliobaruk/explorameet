@@ -14,9 +14,8 @@ import {
 	Share2,
 	UserCircle,
 } from "lucide-react";
-import "./FeedPage.css"; // Importar o CSS
+import "./FeedPage.css";
 
-// Mock de dados do usuário logado
 const loggedInUser = {
 	name: "Ana Exploradora",
 	avatarUrl: "https://placehold.co/100x100/82b55b/FFFFFF?text=AE&font=roboto", // Usando placeholder com cor --verde-vibrante
@@ -89,7 +88,7 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, isActive, onCl
 
 export default function FeedPage() {
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-	const [activePage, setActivePage] = useState("inicio"); // Para destacar o link ativo
+	const [activePage, setActivePage] = useState("explorar");
 
 	const toggleSidebar = () => {
 		setIsSidebarOpen(!isSidebarOpen);
@@ -98,30 +97,24 @@ export default function FeedPage() {
 	const handleNavClick = (pageName: string) => {
 		setActivePage(pageName);
 		if (window.innerWidth < 768) {
-			// Fechar sidebar em mobile ao clicar
 			setIsSidebarOpen(false);
 		}
 	};
 
-	// Placeholder para logo "EM"
 	const LogoEM = () => (
-		// Substitua por seu SVG ou Imagem real
 		<div
 			style={{
-				width: "30px",
-				height: "30px",
-				backgroundColor: "#FFF", // Fundo branco para o logo
-				color: "var(--verde-oliva)", // Cor do texto "EM"
+				width: "32px",
+				height: "32px",
+				backgroundColor: "#FFF",
 				display: "flex",
 				alignItems: "center",
-				justifyContent: "center",
 				fontWeight: "bold",
-				fontSize: "1.1rem",
 				borderRadius: "4px",
 				marginRight: "0.5rem",
 			}}
 		>
-			EM
+			<img src="/EM_logo.svg" alt="ExploraMeet Logo" />
 		</div>
 	);
 
@@ -129,8 +122,15 @@ export default function FeedPage() {
 		<div className="feed-page-layout">
 			{/* --- Header --- */}
 			<header className="feed-header">
+				<button
+					className={`sidebar-toggle-button ${isSidebarOpen ? "sidebar-open" : ""}`}
+					onClick={toggleSidebar}
+					aria-label={isSidebarOpen ? "Fechar menu" : "Abrir menu"}
+					aria-expanded={isSidebarOpen ? true : false}
+				>
+					{isSidebarOpen ? <X size={28} /> : <Menu size={28} />}
+				</button>
 				<div className="feed-header-logo">
-					{/* <img src="/path-to-your-em-logo.svg" alt="ExploraMeet Logo" /> */}
 					<LogoEM />
 					<span className="logo-text-explorameet">ExploraMeet</span>
 				</div>
@@ -155,22 +155,12 @@ export default function FeedPage() {
 
 			{/* --- Main Wrapper (Sidebar + Content) --- */}
 			<div className="feed-main-wrapper">
-				{/* --- Botão de Toggle da Sidebar --- */}
-				<button
-					className={`sidebar-toggle-button ${isSidebarOpen ? "sidebar-open" : ""}`}
-					onClick={toggleSidebar}
-					aria-label={isSidebarOpen ? "Fechar menu" : "Abrir menu"}
-					aria-expanded={isSidebarOpen ? true : false}
-				>
-					{isSidebarOpen ? <X size={28} /> : <Menu size={28} />}
-				</button>
-
 				{/* --- Sidebar --- */}
 				<aside className={`feed-sidebar ${isSidebarOpen ? "open" : ""}`}>
 					<nav>
 						<ul>
 							<NavItem
-								to="/feed"
+								to="/"
 								icon={Home}
 								label="Início"
 								isActive={activePage === "inicio"}
