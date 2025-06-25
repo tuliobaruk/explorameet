@@ -1,28 +1,32 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Calendar, IdCard, Phone, UserPlus } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import AuthCardHeader from "@/components/auth/AuthCardHeader";
 import AuthInput from "@/components/auth/AuthInput";
 import AuthLayout from "@/components/auth/AuthLayout";
+import AuthSelect from "@/components/auth/AuthSelect";
+import { useRegister } from "@/hooks/useRegister";
+import {
+	RegisterStep1Data,
+	RegisterStep2FormData,
+	createRegisterStep2Schema,
+} from "@/schemas/authSchemas";
+import { Genero } from "@/types/Usuario";
 import { maskCPF, maskCpfCnpj, maskPhone } from "@/utils/masks";
 
 import "@/pages/AuthPage.css";
-import { RegisterStep1Data, RegisterStep2Data, registerStep2Schema } from "@/schemas/authSchemas";
-import { z } from "zod";
-import AuthSelect from "../../components/auth/AuthSelect";
-import { Genero } from "@/types/Usuario";
 
 export default function RegisterDetailsPage() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const registerState = location.state as RegisterStep1Data;
+	const { loading, error, success, registerCliente, registerGuia, clearError, clearSuccess } =
+		useRegister();
 
-	const [celular, setCelular] = useState("");
-	const [cpf, setCpf] = useState("");
-	const [cpfCnpj, setCpfCnpj] = useState("");
+	const userType = registerState?.userType || "CLIENTE";
 
 	useEffect(() => {
 		if (!registerState || !registerState.fullName || !registerState.userType) {
@@ -31,33 +35,31 @@ export default function RegisterDetailsPage() {
 		}
 	}, [registerState, navigate]);
 
-	const conditionalRegisterStep2Schema = registerStep2Schema.superRefine((data, ctx) => {
-		if (registerState?.userType === "CLIENTE") {
-			if (!data.cpf || data.cpf.length === 0) {
-				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
-					message: "CPF é obrigatório para usuários normais.",
-					path: ["cpf"],
-				});
-			}
-		} else if (registerState?.userType === "GUIA") {
-			if (!data.cpfCnpj || data.cpfCnpj.length === 0) {
-				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
-					message: "CPF/CNPJ é obrigatório para guias.",
-					path: ["cpfCnpj"],
-				});
-			}
+	useEffect(() => {
+		clearError();
+		clearSuccess();
+	}, [clearError, clearSuccess]);
+
+	useEffect(() => {
+		if (success) {
+			navigate("/confirmar-email", {
+				state: {
+					email: registerState?.email,
+					password: registerState?.password,
+					message: "Cadastro realizado com sucesso! Verifique seu email para confirmar a conta.",
+				},
+			});
 		}
-	});
+	}, [success, navigate, registerState?.email, registerState?.password]);
 
 	const {
 		register,
 		handleSubmit,
 		setValue,
+		watch,
 		formState: { errors },
-	} = useForm<RegisterStep2Data>({
-		resolver: zodResolver(conditionalRegisterStep2Schema),
+	} = useForm<RegisterStep2FormData>({
+		resolver: zodResolver(createRegisterStep2Schema(userType)),
 		defaultValues: {
 			celular: "",
 			genero: "",
@@ -70,65 +72,58 @@ export default function RegisterDetailsPage() {
 		},
 	});
 
-	const handleSubmitFinal = async (data: RegisterStep2Data) => {
+	const celularValue = watch("celular");
+	const cpfValue = watch("cpf");
+	const cpfCnpjValue = watch("cpfCnpj");
+
+	const handleSubmitFinal: SubmitHandler<RegisterStep2FormData> = async (data) => {
 		if (!registerState) {
 			alert("Erro: Dados da etapa anterior não encontrados. Redirecionando.");
-      console.log("Dados da etapa anterior não encontrados:", data, registerState);
 			navigate("/cadastro");
 			return;
 		}
 
-		let payload;
+		console.log("termsAccepted no formulário:", data.termsAccepted);
+
 		const baseProfile = {
 			nome: registerState.fullName,
 			celular: data.celular,
 			genero: data.genero,
 			idade: data.idade,
-			foto: data.foto,
+			foto: data.foto || "",
 		};
+
 		const baseUser = {
 			email: registerState.email,
 			password: registerState.password,
+			termsAccepted: data.termsAccepted,
 		};
 
-		if (registerState.userType === "CLIENTE") {
-			payload = {
-				cpf: data.cpf,
-				perfil: baseProfile,
-				usuario: baseUser,
-			};
-		} else {
-			payload = {
-				cpf_cnpj: data.cpfCnpj,
-				num_cadastro:
-					data.numCadastro && data.numCadastro.trim() !== "" ? data.numCadastro : "null",
-				verificado: false,
-				perfil: baseProfile,
-				usuario: baseUser,
-			};
-		}
-
 		try {
-			const apiEndpoint =
-				registerState.userType === "CLIENTE" ? "/auth/register/cliente" : "/auth/register/guia";
-			const response = await fetch(apiEndpoint, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(payload),
-			});
+			if (registerState.userType === "CLIENTE") {
+				const payload = {
+					cpf: data.cpf || "",
+					perfil: baseProfile,
+					usuario: baseUser,
+				};
 
-			if (response.ok) {
-				alert("Cadastro realizado com sucesso!");
-				navigate("/login");
+				console.log("Payload Cliente:", payload);
+				await registerCliente(payload);
 			} else {
-				const errorData = await response.json();
-				alert(`Erro no cadastro: ${errorData.message || response.statusText}`);
+				const payload = {
+					cpf_cnpj: data.cpfCnpj || "",
+					num_cadastro:
+						data.numCadastro && data.numCadastro.trim() !== "" ? data.numCadastro : undefined,
+					verificado: false,
+					perfil: baseProfile,
+					usuario: baseUser,
+				};
+
+				console.log("Payload Guia:", payload);
+				await registerGuia(payload);
 			}
-		} catch (error) {
-			console.error("Erro ao enviar dados de cadastro:", error);
-			alert("Ocorreu um erro ao tentar cadastrar. Tente novamente.");
+		} catch (err) {
+			console.error("Erro durante o cadastro:", err);
 		}
 	};
 
@@ -150,13 +145,19 @@ export default function RegisterDetailsPage() {
 				icon={UserPlus}
 				title={
 					registerState.userType === "CLIENTE"
-						? "Complete seu Cadastro (Usuário)"
+						? "Complete seu Cadastro (Explorador)"
 						: "Complete seu Cadastro (Guia)"
 				}
 				subtitle="Quase lá! Agora precisamos de alguns detalhes."
 			/>
 
 			<form className="auth-form" onSubmit={handleSubmit(handleSubmitFinal)}>
+				{error && (
+					<div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-4">
+						{error}
+					</div>
+				)}
+
 				<AuthInput
 					label="Celular"
 					id="celular"
@@ -165,39 +166,42 @@ export default function RegisterDetailsPage() {
 					required
 					icon={Phone}
 					placeholder="(XX) XXXXX-XXXX"
-					value={celular}
+					{...register("celular")}
+					value={celularValue || ""}
 					onChange={(e) => {
 						const masked = maskPhone(e.target.value);
-						setCelular(masked);
 						setValue("celular", masked);
 					}}
 					error={errors.celular?.message}
 				/>
-        
-        <AuthSelect
-          icon={UserPlus}
-          label="Gênero"
-          id="genero"
-          {...register("genero")}
-          error={errors.genero?.message}
-          required
-        >
-          <option value="" disabled>Selecione o gênero</option>
-          <option value={Genero.Masculino}>{Genero.Masculino}</option>
-          <option value={Genero.Feminino}>{Genero.Feminino}</option>
-          <option value={Genero.Outro}>{Genero.Outro}</option>
-          <option value={Genero.PrefiroNaoDizer}>{Genero.PrefiroNaoDizer}</option>
-        </AuthSelect>
+
+				<AuthSelect
+					icon={UserPlus}
+					label="Gênero"
+					id="genero"
+					{...register("genero")}
+					error={errors.genero?.message}
+					required
+				>
+					<option value="" disabled>
+						Selecione o gênero
+					</option>
+					<option value={Genero.Masculino}>{Genero.Masculino}</option>
+					<option value={Genero.Feminino}>{Genero.Feminino}</option>
+					<option value={Genero.Outro}>{Genero.Outro}</option>
+					<option value={Genero.PrefiroNaoDizer}>{Genero.PrefiroNaoDizer}</option>
+				</AuthSelect>
 
 				<AuthInput
 					label="Idade"
 					id="idade"
-					type="text"
+					type="number"
 					required
 					icon={Calendar}
-          maxLength={3}
+					min={16}
+					max={120}
 					placeholder="Ex: 30"
-					{...register("idade")}
+					{...register("idade", { valueAsNumber: true })}
 					error={errors.idade?.message}
 				/>
 
@@ -209,10 +213,10 @@ export default function RegisterDetailsPage() {
 						required
 						icon={IdCard}
 						placeholder="XXX.XXX.XXX-XX"
-						value={cpf}
+						{...register("cpf")}
+						value={cpfValue || ""}
 						onChange={(e) => {
 							const masked = maskCPF(e.target.value);
-							setCpf(masked);
 							setValue("cpf", masked);
 						}}
 						error={errors.cpf?.message}
@@ -228,10 +232,10 @@ export default function RegisterDetailsPage() {
 							required
 							icon={IdCard}
 							placeholder="XXX.XXX.XXX-XX ou XX.XXX.XXX/XXXX-XX"
-							value={cpfCnpj}
+							{...register("cpfCnpj")}
+							value={cpfCnpjValue || ""}
 							onChange={(e) => {
 								const masked = maskCpfCnpj(e.target.value);
-								setCpfCnpj(masked);
 								setValue("cpfCnpj", masked);
 							}}
 							error={errors.cpfCnpj?.message}
@@ -253,9 +257,8 @@ export default function RegisterDetailsPage() {
 					<input
 						id="terms"
 						type="checkbox"
-						required
 						className="auth-terms-checkbox"
-						{...register("termsAccepted")}
+						{...register("termsAccepted", { required: "Você deve aceitar os termos de serviço" })}
 					/>
 					<label htmlFor="terms" className="auth-terms-label">
 						Eu concordo com os{" "}
@@ -267,8 +270,15 @@ export default function RegisterDetailsPage() {
 				{errors.termsAccepted && <p className="error-message">{errors.termsAccepted.message}</p>}
 
 				<div className="pt-1">
-					<button type="submit" className="auth-button-primary">
-						Finalizar Cadastro
+					<button type="submit" className="auth-button-primary" disabled={loading}>
+						{loading ? (
+							<div className="flex items-center justify-center gap-2">
+								<div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+								Finalizando...
+							</div>
+						) : (
+							"Finalizar Cadastro"
+						)}
 					</button>
 				</div>
 			</form>
