@@ -1,4 +1,3 @@
-// src/components/PublicRoute.tsx
 import { Navigate } from "react-router-dom";
 import { useAuthContext } from "@/hooks/useAuth";
 
@@ -21,7 +20,7 @@ export function PublicRoute({ children }: PublicRouteProps) {
 	}
 
 	if (isAuthenticated) {
-		return <Navigate to="/feed" replace />;
+		return <Navigate to="/explorar" replace />;
 	}
 
 	return <>{children}</>;

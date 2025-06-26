@@ -8,364 +8,366 @@ import AuthCardHeader from "@/components/auth/AuthCardHeader";
 import AuthInput from "@/components/auth/AuthInput";
 import AuthLayout from "@/components/auth/AuthLayout";
 import AuthSelect from "@/components/auth/AuthSelect";
+import AuthService, { ApiError } from "@/services/authService";
 import { Genero } from "@/types/Usuario";
-import { maskCPF, maskCpfCnpj, maskPhone } from "@/utils/masks";
-import { ApiError } from "@/services/authService";
-import {
-	completeGoogleRegistrationSchema,
-	CompleteGoogleRegistrationData,
-} from "@/schemas/authSchemas";
+import { maskCadastur, maskCPF, maskCpfCnpj, maskPhone } from "@/utils/masks";
 
 import "@/pages/AuthPage.css";
+import {
+  CompleteGoogleRegistrationData,
+  completeGoogleRegistrationSchema,
+} from "@/schemas/authSchemas";
 
 export default function CompleteGoogleRegistrationPage() {
-	const navigate = useNavigate();
-	const [searchParams] = useSearchParams();
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-	const email = searchParams.get("email");
-	const googleId = searchParams.get("googleId");
-	const firstName = searchParams.get("firstName");
-	const lastName = searchParams.get("lastName");
-	const picture = searchParams.get("picture");
-	const needsRegistration = searchParams.get("needsRegistration");
+  const email = searchParams.get("email");
+  const googleId = searchParams.get("googleId");
+  const firstName = searchParams.get("firstName");
+  const lastName = searchParams.get("lastName");
+  const picture = searchParams.get("picture");
+  const needsRegistration = searchParams.get("needsRegistration");
 
-	const fullName = `${firstName || ""} ${lastName || ""}`.trim();
+  const fullName = `${firstName || ""} ${lastName || ""}`.trim();
 
-	const {
-		register,
-		handleSubmit,
-		setValue,
-		watch,
-		formState: { errors },
-	} = useForm<CompleteGoogleRegistrationData>({
-		resolver: zodResolver(completeGoogleRegistrationSchema),
-		defaultValues: {
-			userType: "CLIENTE",
-			celular: "",
-			genero: "",
-			idade: undefined,
-			cpf: "",
-			cpfCnpj: "",
-			numCadastro: "",
-			termsAccepted: false,
-		},
-	});
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<CompleteGoogleRegistrationData>({
+    resolver: zodResolver(completeGoogleRegistrationSchema),
+    defaultValues: {
+      userType: "CLIENTE",
+      celular: "",
+      genero: "",
+      idade: undefined,
+      cpf: "",
+      cpfCnpj: "",
+      numCadastro: "",
+      termsAccepted: false,
+    },
+  });
 
-	const userType = watch("userType");
-	const celularValue = watch("celular");
-	const cpfValue = watch("cpf");
-	const cpfCnpjValue = watch("cpfCnpj");
+  const userType = watch("userType");
+  const celularValue = watch("celular");
+  const cpfValue = watch("cpf");
+  const cpfCnpjValue = watch("cpfCnpj");
+  const numCadastroValue = watch("numCadastro");
 
-	useEffect(() => {
-		if (!email || !googleId || !needsRegistration) {
-			alert("Dados de registro do Google não encontrados. Redirecionando para login.");
-			navigate("/login");
-		}
-	}, [email, googleId, needsRegistration, navigate]);
+  useEffect(() => {
+    if (!email || !googleId || !needsRegistration) {
+      alert(
+        "Dados de registro do Google não encontrados. Redirecionando para login."
+      );
+      navigate("/login");
+    }
+  }, [email, googleId, needsRegistration, navigate]);
 
-	const handleCompleteRegistration = async (data: CompleteGoogleRegistrationData) => {
-		if (!email || !googleId || !firstName || !lastName) {
-			setError("Dados do Google não encontrados. Tente fazer login novamente.");
-			return;
-		}
+  const handleCompleteRegistration = async (
+    data: CompleteGoogleRegistrationData
+  ) => {
+    if (!email || !googleId || !firstName || !lastName) {
+      setError("Dados do Google não encontrados. Tente fazer login novamente.");
+      return;
+    }
 
-		setLoading(true);
-		setError(null);
+    setLoading(true);
+    setError(null);
 
-		try {
-			const baseProfile = {
-				nome: fullName,
-				celular: data.celular,
-				genero: data.genero,
-				idade: data.idade,
-				// Só enviar foto se não estiver vazia
-				...(picture && picture.trim() !== "" && { foto: picture }),
-			};
+    try {
+      const baseProfile = {
+        nome: fullName,
+        celular: data.celular,
+        genero: data.genero,
+        idade: data.idade,
+        ...(picture && picture.trim() !== "" && { foto: picture }),
+      };
 
-			const baseUser = {
-				email: email,
-				termsAccepted: data.termsAccepted, // termsAccepted dentro do objeto usuario
-			};
+      const baseUser = {
+        email: email,
+        termsAccepted: data.termsAccepted,
+      };
 
-			let response;
+      if (data.userType === "CLIENTE") {
+        const payload = {
+          cpf: data.cpf,
+          googleId: googleId,
+          perfil: baseProfile,
+          usuario: baseUser,
+        };
 
-			if (data.userType === "CLIENTE") {
-				const payload = {
-					cpf: data.cpf!,
-					googleId: googleId,
-					perfil: baseProfile,
-					usuario: baseUser,
-				};
+        await AuthService.registerClienteWithGoogle(payload);
+      } else {
+        const payload = {
+          cpf_cnpj: data.cpfCnpj,
+          num_cadastro: data.numCadastro,
+          googleId: googleId,
+          perfil: baseProfile,
+          usuario: baseUser,
+        };
+        await AuthService.registerGuiaWithGoogle(payload);
+      }
 
-				response = await fetch(
-					`${import.meta.env.VITE_API_URL || "http://localhost:3002"}/auth/google/register/cliente`,
-					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						credentials: "include",
-						body: JSON.stringify(payload),
-					},
-				);
-			} else {
-				const payload = {
-					cpf_cnpj: data.cpfCnpj!,
-					num_cadastro:
-						data.numCadastro && data.numCadastro.trim() !== "" ? data.numCadastro : undefined,
-					googleId: googleId,
-					perfil: baseProfile,
-					usuario: baseUser,
-				};
+      alert("Registro Google completado com sucesso!");
+      navigate("/explorar");
+    } catch (err) {
+      console.error("Ocorreu um erro ao processar o registro:", err);
+      if (err instanceof ApiError) {
+        setError(err.message || "Ocorreu um erro desconhecido vindo da API.");
+      } else {
+        setError(
+          "Erro de conexão ou de cliente. Verifique o console para mais detalhes."
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
-				response = await fetch(
-					`${import.meta.env.VITE_API_URL || "http://localhost:3002"}/auth/google/register/guia`,
-					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						credentials: "include",
-						body: JSON.stringify(payload),
-					},
-				);
-			}
+  if (!email || !googleId) {
+    return (
+      <AuthLayout
+        headerText="Problemas?"
+        headerLinkTo="/login"
+        headerButtonText="Voltar ao Login"
+      >
+        <div className="auth-card">
+          <p className="auth-subtitle text-center">
+            Carregando dados do Google ou informações não encontradas.
+            Redirecionando...
+          </p>
+        </div>
+      </AuthLayout>
+    );
+  }
 
-			if (response.ok) {
-				alert("Registro Google completado com sucesso!");
-				navigate("/explorar");
-			} else {
-				const errorData = await response.json();
-				throw new ApiError(
-					errorData.message || "Erro durante o registro",
-					response.status,
-					errorData,
-				);
-			}
-		} catch (err) {
-			console.error("Erro durante o registro Google:", err);
+  return (
+    <AuthLayout
+      headerText="Já tem uma conta?"
+      headerLinkTo="/login"
+      headerButtonText="Fazer Login"
+    >
+      <AuthCardHeader
+        icon={UserPlus}
+        title="Complete seu Registro"
+        subtitle={`Olá, ${firstName}! Complete seu cadastro para continuar.`}
+      />
 
-			if (err instanceof ApiError) {
-				switch (err.status) {
-					case 409:
-						setError("Este email, CPF/CNPJ ou dados já estão em uso");
-						break;
-					case 400:
-						setError(err.message || "Dados inválidos fornecidos");
-						break;
-					default:
-						setError(err.message || "Erro durante o registro");
-				}
-			} else {
-				setError("Erro de conexão. Tente novamente.");
-			}
-		} finally {
-			setLoading(false);
-		}
-	};
+      {picture && (
+        <div className="flex justify-center mb-4">
+          <img
+            src={picture}
+            alt="Foto do perfil"
+            className="w-16 h-16 rounded-full border-2 border-verde-oliva/20"
+          />
+        </div>
+      )}
 
-	if (!email || !googleId) {
-		return (
-			<AuthLayout headerText="Problemas?" headerLinkTo="/login" headerButtonText="Voltar ao Login">
-				<div className="auth-card">
-					<p className="auth-subtitle text-center">
-						Carregando dados do Google ou informações não encontradas. Redirecionando...
-					</p>
-				</div>
-			</AuthLayout>
-		);
-	}
+      <form
+        className="auth-form"
+        onSubmit={handleSubmit(handleCompleteRegistration, (formErrors) => {
+          console.error("Erros de validação do formulário:", formErrors);
+        })}
+      >
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-4">
+            {error}
+          </div>
+        )}
 
-	return (
-		<AuthLayout headerText="Já tem uma conta?" headerLinkTo="/login" headerButtonText="Fazer Login">
-			<AuthCardHeader
-				icon={UserPlus}
-				title="Complete seu Registro"
-				subtitle={`Olá, ${firstName}! Complete seu cadastro para continuar.`}
-			/>
+        {/* O restante do formulário JSX permanece o mesmo */}
+        <div className="mb-4">
+          <label className="block font-medium text-verde-oliva text-sm mb-2">
+            Tipo de Usuário
+          </label>
+          <div className="flex gap-4">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="userTypeCliente"
+                value="CLIENTE"
+                className="auth-terms-checkbox"
+                {...register("userType")}
+              />
+              <label
+                htmlFor="userTypeCliente"
+                className="auth-terms-label !ml-2 cursor-pointer"
+              >
+                Explorador
+              </label>
+            </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="userTypeGuia"
+                value="GUIA"
+                className="auth-terms-checkbox"
+                {...register("userType")}
+              />
+              <label
+                htmlFor="userTypeGuia"
+                className="auth-terms-label !ml-2 cursor-pointer"
+              >
+                Guia
+              </label>
+            </div>
+          </div>
+          {errors.userType && (
+            <p className="error-message">{errors.userType.message}</p>
+          )}
+        </div>
 
-			{picture && (
-				<div className="flex justify-center mb-4">
-					<img
-						src={picture}
-						alt="Foto do perfil"
-						className="w-16 h-16 rounded-full border-2 border-verde-oliva/20"
-					/>
-				</div>
-			)}
+        <AuthInput
+          label="Celular"
+          id="celular"
+          type="tel"
+          autoComplete="tel"
+          required
+          icon={Phone}
+          placeholder="(XX) XXXXX-XXXX"
+          {...register("celular")}
+          value={celularValue || ""}
+          onChange={(e) => {
+            const masked = maskPhone(e.target.value);
+            setValue("celular", masked);
+          }}
+          error={errors.celular?.message}
+        />
 
-			<form className="auth-form" onSubmit={handleSubmit(handleCompleteRegistration)}>
-				{error && (
-					<div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-4">
-						{error}
-					</div>
-				)}
+        <AuthSelect
+          icon={UserPlus}
+          label="Gênero"
+          id="genero"
+          {...register("genero")}
+          error={errors.genero?.message}
+          required
+        >
+          <option value="" disabled>
+            Selecione o gênero
+          </option>
+          <option value={Genero.Masculino}>{Genero.Masculino}</option>
+          <option value={Genero.Feminino}>{Genero.Feminino}</option>
+          <option value={Genero.Outro}>{Genero.Outro}</option>
+          <option value={Genero.PrefiroNaoDizer}>
+            {Genero.PrefiroNaoDizer}
+          </option>
+        </AuthSelect>
 
-				<div className="mb-4">
-					<label className="block font-medium text-verde-oliva text-sm mb-2">Tipo de Usuário</label>
-					<div className="flex gap-4">
-						<div className="flex items-center">
-							<input
-								type="radio"
-								id="userTypeCliente"
-								value="CLIENTE"
-								className="auth-terms-checkbox"
-								{...register("userType")}
-							/>
-							<label htmlFor="userTypeCliente" className="auth-terms-label !ml-2 cursor-pointer">
-								Explorador
-							</label>
-						</div>
-						<div className="flex items-center">
-							<input
-								type="radio"
-								id="userTypeGuia"
-								value="GUIA"
-								className="auth-terms-checkbox"
-								{...register("userType")}
-							/>
-							<label htmlFor="userTypeGuia" className="auth-terms-label !ml-2 cursor-pointer">
-								Guia
-							</label>
-						</div>
-					</div>
-					{errors.userType && <p className="error-message">{errors.userType.message}</p>}
-				</div>
+        <AuthInput
+          label="Idade"
+          id="idade"
+          type="number"
+          required
+          icon={Calendar}
+          min={16}
+          max={120}
+          placeholder="Ex: 30"
+          {...register("idade", { valueAsNumber: true })}
+          error={errors.idade?.message}
+        />
 
-				<AuthInput
-					label="Celular"
-					id="celular"
-					type="tel"
-					autoComplete="tel"
-					required
-					icon={Phone}
-					placeholder="(XX) XXXXX-XXXX"
-					{...register("celular")}
-					value={celularValue || ""}
-					onChange={(e) => {
-						const masked = maskPhone(e.target.value);
-						setValue("celular", masked);
-					}}
-					error={errors.celular?.message}
-				/>
+        {userType === "CLIENTE" && (
+          <AuthInput
+            label="CPF"
+            id="cpf"
+            type="text"
+            required
+            icon={IdCard}
+            placeholder="XXX.XXX.XXX-XX"
+            {...register("cpf")}
+            value={cpfValue || ""}
+            onChange={(e) => {
+              const masked = maskCPF(e.target.value);
+              setValue("cpf", masked);
+            }}
+            error={errors.cpf?.message}
+          />
+        )}
 
-				<AuthSelect
-					icon={UserPlus}
-					label="Gênero"
-					id="genero"
-					{...register("genero")}
-					error={errors.genero?.message}
-					required
-				>
-					<option value="" disabled>
-						Selecione o gênero
-					</option>
-					<option value={Genero.Masculino}>{Genero.Masculino}</option>
-					<option value={Genero.Feminino}>{Genero.Feminino}</option>
-					<option value={Genero.Outro}>{Genero.Outro}</option>
-					<option value={Genero.PrefiroNaoDizer}>{Genero.PrefiroNaoDizer}</option>
-				</AuthSelect>
+        {userType === "GUIA" && (
+          <>
+            <AuthInput
+              label="CPF ou CNPJ"
+              id="cpfCnpj"
+              type="text"
+              required
+              icon={IdCard}
+              placeholder="XXX.XXX.XXX-XX ou XX.XXX.XXX/XXXX-XX"
+              {...register("cpfCnpj")}
+              value={cpfCnpjValue || ""}
+              onChange={(e) => {
+                const masked = maskCpfCnpj(e.target.value);
+                setValue("cpfCnpj", masked);
+              }}
+              error={errors.cpfCnpj?.message}
+            />
 
-				<AuthInput
-					label="Idade"
-					id="idade"
-					type="number"
-					required
-					icon={Calendar}
-					min={16}
-					max={120}
-					placeholder="Ex: 30"
-					{...register("idade", { valueAsNumber: true })}
-					error={errors.idade?.message}
-				/>
+            <AuthInput
+              label="Número de Cadastro Cadastur"
+              id="numCadastro"
+              type="text"
+              required
+              icon={IdCard}
+              placeholder="XX.XXXXXX.XX-X"
+              {...register("numCadastro")}
+              value={numCadastroValue || ""}
+              onChange={(e) => {
+                const masked = maskCadastur(e.target.value);
+                setValue("numCadastro", masked);
+              }}
+              error={errors.numCadastro?.message}
+            />
+          </>
+        )}
 
-				{userType === "CLIENTE" && (
-					<AuthInput
-						label="CPF"
-						id="cpf"
-						type="text"
-						required
-						icon={IdCard}
-						placeholder="XXX.XXX.XXX-XX"
-						{...register("cpf")}
-						value={cpfValue || ""}
-						onChange={(e) => {
-							const masked = maskCPF(e.target.value);
-							setValue("cpf", masked);
-						}}
-						error={errors.cpf?.message}
-					/>
-				)}
+        <div className="auth-terms-container">
+          <input
+            id="terms"
+            type="checkbox"
+            required
+            className="auth-terms-checkbox"
+            {...register("termsAccepted")}
+          />
+          <label htmlFor="terms" className="auth-terms-label">
+            Eu concordo com os{" "}
+            <Link to="/termos" className="auth-link">
+              Termos de Serviço
+            </Link>
+          </label>
+        </div>
+        {errors.termsAccepted && (
+          <p className="error-message">{errors.termsAccepted.message}</p>
+        )}
 
-				{userType === "GUIA" && (
-					<>
-						<AuthInput
-							label="CPF ou CNPJ"
-							id="cpfCnpj"
-							type="text"
-							required
-							icon={IdCard}
-							placeholder="XXX.XXX.XXX-XX ou XX.XXX.XXX/XXXX-XX"
-							{...register("cpfCnpj")}
-							value={cpfCnpjValue || ""}
-							onChange={(e) => {
-								const masked = maskCpfCnpj(e.target.value);
-								setValue("cpfCnpj", masked);
-							}}
-							error={errors.cpfCnpj?.message}
-						/>
+        <div className="pt-1">
+          <button
+            type="submit"
+            className="auth-button-primary"
+            disabled={loading}
+          >
+            {loading ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Finalizando...
+              </div>
+            ) : (
+              "Finalizar Registro"
+            )}
+          </button>
+        </div>
+      </form>
 
-						<AuthInput
-							label="Número de Cadastro Cadastur (Opcional)"
-							id="numCadastro"
-							type="text"
-							icon={IdCard}
-							placeholder="Ex: G12345"
-							{...register("numCadastro")}
-							error={errors.numCadastro?.message}
-						/>
-					</>
-				)}
-
-				<div className="auth-terms-container">
-					<input
-						id="terms"
-						type="checkbox"
-						required
-						className="auth-terms-checkbox"
-						{...register("termsAccepted")}
-					/>
-					<label htmlFor="terms" className="auth-terms-label">
-						Eu concordo com os{" "}
-						<Link to="/termos" className="auth-link">
-							Termos de Serviço
-						</Link>
-					</label>
-				</div>
-				{errors.termsAccepted && <p className="error-message">{errors.termsAccepted.message}</p>}
-
-				<div className="pt-1">
-					<button type="submit" className="auth-button-primary" disabled={loading}>
-						{loading ? (
-							<div className="flex items-center justify-center gap-2">
-								<div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-								Finalizando...
-							</div>
-						) : (
-							"Finalizar Registro"
-						)}
-					</button>
-				</div>
-			</form>
-
-			<p className="auth-switch-link-text">
-				Problemas com o registro?{" "}
-				<Link to="/login" className="auth-link">
-					Voltar ao login
-				</Link>
-			</p>
-		</AuthLayout>
-	);
+      <p className="auth-switch-link-text">
+        Problemas com o registro?{" "}
+        <Link to="/login" className="auth-link">
+          Voltar ao login
+        </Link>
+      </p>
+    </AuthLayout>
+  );
 }

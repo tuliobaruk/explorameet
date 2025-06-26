@@ -31,3 +31,12 @@ export function maskCpfCnpj(value: string) {
 	}
 	return maskCNPJ(value);
 }
+
+export function maskCadastur(value: string) {
+	return value
+		.replace(/\D/g, "")
+		.replace(/(\d{2})(\d)/, "$1.$2")
+		.replace(/(\d{2})\.(\d{6})(\d)/, "$1.$2.$3")
+		.replace(/(\d{2})\.(\d{6})\.(\d{2})(\d)/, "$1.$2.$3-$4")
+		.replace(/(-\d{1})\d+?$/, "$1");
+}
