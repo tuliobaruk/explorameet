@@ -1,25 +1,19 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom"; // Se houver links de navegação
 import {
-	Menu,
-	X,
-	Search,
-	Home,
 	Compass,
-	Users,
-	Settings,
+	Home,
 	LogOut,
-	ThumbsUp,
 	MessageSquare,
+	Settings,
 	Share2,
+	ThumbsUp,
 	UserCircle,
+	Users,
 } from "lucide-react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Header } from "../../components/Header";
+import { useAuthContext, useUser } from "../../hooks/useAuth";
 import "./FeedPage.css";
-
-const loggedInUser = {
-	name: "Ana Exploradora",
-	avatarUrl: "https://placehold.co/100x100/82b55b/FFFFFF?text=AE&font=roboto", // Usando placeholder com cor --verde-vibrante
-};
 
 // Mock de posts do feed
 const mockFeedPosts = [
@@ -89,6 +83,7 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, isActive, onCl
 export default function FeedPage() {
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [activePage, setActivePage] = useState("explorar");
+	const { isAuthenticated } = useUser();
 
 	const toggleSidebar = () => {
 		setIsSidebarOpen(!isSidebarOpen);
@@ -101,57 +96,12 @@ export default function FeedPage() {
 		}
 	};
 
-	const LogoEM = () => (
-		<div
-			style={{
-				width: "32px",
-				height: "32px",
-				backgroundColor: "#FFF",
-				display: "flex",
-				alignItems: "center",
-				fontWeight: "bold",
-				borderRadius: "4px",
-				marginRight: "0.5rem",
-			}}
-		>
-			<img src="/EM_logo.svg" alt="ExploraMeet Logo" />
-		</div>
-	);
+	const { logout } = useAuthContext();
 
 	return (
 		<div className="feed-page-layout">
 			{/* --- Header --- */}
-			<header className="feed-header">
-				<button
-					className={`sidebar-toggle-button ${isSidebarOpen ? "sidebar-open" : ""}`}
-					onClick={toggleSidebar}
-					aria-label={isSidebarOpen ? "Fechar menu" : "Abrir menu"}
-					aria-expanded={isSidebarOpen ? true : false}
-				>
-					{isSidebarOpen ? <X size={28} /> : <Menu size={28} />}
-				</button>
-				<div className="feed-header-logo">
-					<LogoEM />
-					<span className="logo-text-explorameet">ExploraMeet</span>
-				</div>
-				<div className="feed-search-container">
-					<div className="feed-search-bar">
-						<Search size={18} className="search-icon" />
-						<input type="text" placeholder="Buscar trilhas, guias, exploradores..." />
-					</div>
-				</div>
-				<div className="feed-user-profile">
-					<img
-						src={loggedInUser.avatarUrl}
-						alt={loggedInUser.name}
-						onError={(e) =>
-							(e.currentTarget.src = "https://placehold.co/32x32/cccccc/333333?text=User")
-						}
-					/>
-					<span className="user-name">{loggedInUser.name}</span>
-					{/* Adicionar um dropdown aqui seria interessante */}
-				</div>
-			</header>
+			<Header isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
 			{/* --- Main Wrapper (Sidebar + Content) --- */}
 			<div className="feed-main-wrapper">
@@ -180,30 +130,29 @@ export default function FeedPage() {
 								isActive={activePage === "comunidade"}
 								onClick={() => handleNavClick("comunidade")}
 							/>
-							<NavItem
-								to="/perfil"
-								icon={UserCircle}
-								label="Meu Perfil"
-								isActive={activePage === "perfil"}
-								onClick={() => handleNavClick("perfil")}
-							/>
-							<hr className="my-4 border-t border-[var(--verde-oliva)] opacity-20" />
-							<NavItem
-								to="/configuracoes"
-								icon={Settings}
-								label="Configurações"
-								isActive={activePage === "configuracoes"}
-								onClick={() => handleNavClick("configuracoes")}
-							/>
-							<NavItem
-								to="/logout"
-								icon={LogOut}
-								label="Sair"
-								onClick={() => alert("Funcionalidade de Logout")}
-							/>
-						</ul>
-					</nav>
-				</aside>
+						{isAuthenticated && (
+							<>
+								<NavItem
+									to="/perfil"
+									icon={UserCircle}
+									label="Meu Perfil"
+									isActive={activePage === "perfil"}
+									onClick={() => handleNavClick("perfil")}
+								/>
+								<hr className="my-4 border-t border-[var(--verde-oliva)] opacity-20" />
+								<NavItem
+									to="/configuracoes"
+									icon={Settings}
+									label="Configurações"
+									isActive={activePage === "configuracoes"}
+									onClick={() => handleNavClick("configuracoes")}
+								/>
+								<NavItem to="" icon={LogOut} label="Sair" onClick={logout} />
+							</>
+						)}
+					</ul>
+				</nav>
+			</aside>
 
 				{/* --- Área de Conteúdo do Feed --- */}
 				<main className={`feed-content-area ${isSidebarOpen ? "sidebar-open" : ""}`}>

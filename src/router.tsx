@@ -16,7 +16,11 @@ import { PublicRoute } from "@/components/PublicRoute";
 const router = createBrowserRouter([
 	{
 		path: "/",
-		element: <HomePage />,
+		element: (
+			<PublicRoute>
+				<HomePage />
+			</PublicRoute>
+		),
 		errorElement: <NotFoundPage />,
 	},
 	{
@@ -85,11 +89,7 @@ const router = createBrowserRouter([
 	},
 	{
 		path: "/explorar",
-		element: (
-			<PublicRoute>
-				<FeedPage />
-			</PublicRoute>
-		),
+		element: <FeedPage />,
 	},
 	{
 		path: "*",

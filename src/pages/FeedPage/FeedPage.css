@@ -10,24 +10,6 @@ body {
 	background-color: var(--background-claro);
 }
 
-.feed-header {
-	background-color: var(--verde-oliva);
-	color: white;
-	padding: 0.75rem 1rem;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	position: sticky;
-	top: 0;
-	z-index: 1000;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-@media (min-width: 768px) {
-	.feed-header {
-		padding: 0.75rem 1.5rem;
-	}
-}
 
 .feed-header-logo {
 	display: flex;
@@ -36,10 +18,6 @@ body {
 	font-size: 1.5rem;
 }
 
-.feed-header-logo img {
-	height: 30px;
-	margin-right: 0.5rem;
-}
 .feed-header-logo .logo-text-explorameet {
 	display: none;
 }
@@ -152,7 +130,7 @@ body {
 .sidebar-toggle-button {
 	background: none;
 	border: none;
-	color: var(--card);
+	color: var(--marrom-dourado);
 	cursor: pointer;
 	padding: 0.75rem;
 	left: 0.5rem;
@@ -162,7 +140,7 @@ body {
 }
 
 .sidebar-toggle-button.sidebar-open {
-	color: var(--card);
+	color: var(--marrom-dourado);
 	border-radius: 0.25rem;
 }
 
