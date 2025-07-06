@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
-import { Mountain } from "lucide-react";
 import AuthFooter from "@/components/auth/AuthFooter";
+import { Link } from "react-router-dom";
+import { LogoEM } from "../Header";
 
 interface AuthLayoutProps {
 	children: React.ReactNode;
@@ -19,8 +19,7 @@ export default function AuthLayout({
 		<div className="auth-page-container">
 			<header className="auth-header">
 				<Link to="/" className="header-logo-link">
-					<Mountain size={32} />
-					<span>ExploraMeet</span>
+					<LogoEM />
 				</Link>
 				<nav className="auth-header-nav flex gap-3 sm:gap-4 items-center">
 					<span>{headerText}</span>
