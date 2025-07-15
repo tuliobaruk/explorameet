@@ -1,0 +1,56 @@
+:root {
+    --verde-vibrante: #82b55b;
+    --verde-oliva: #898f29;
+    --marrom-dourado: #8c742d;
+    --background-claro: #f9f5f1;
+}
+
+.profile-container {
+    background-color: var(--background-claro);
+}
+
+.profile-name {
+    color: var(--verde-oliva);
+}
+
+.premium-badge {
+    color: var(--marrom-dourado);
+    background-color: rgba(140, 116, 45, 0.1);
+    border-radius: 9999px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-edit-button {
+    color: var(--verde-oliva);
+    background-color: #ffffff;
+    border: 2px solid var(--verde-oliva);
+}
+
+.tab-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6b7280; /* text-gray-500 */
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+    color: var(--verde-oliva);
+}
+
+.tab-button.active {
+    color: var(--verde-oliva);
+    border-bottom-color: var(--verde-oliva);
+}
+
+.create-activity-button {
+    background-color: var(--verde-vibrante);
+}
+
+.footer {
+    background-color: var(--verde-oliva);
+}

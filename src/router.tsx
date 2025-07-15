@@ -12,6 +12,8 @@ import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
 import FeedPage from "@/pages/FeedPage/FeedPage";
 import { PublicRoute } from "@/components/PublicRoute";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import CreateActivityPage from "./pages/CreateActivityPage/CreateActivityPage";
 
 const router = createBrowserRouter([
 	{
@@ -95,6 +97,14 @@ const router = createBrowserRouter([
 		path: "*",
 		element: <NotFoundPage />,
 	},
+	{
+		path: "perfil",
+		element: <ProfilePage />,
+	},
+	{
+		path: "criar-atividade",
+		element: <CreateActivityPage />,
+	}
 ]);
 
 export default router;
