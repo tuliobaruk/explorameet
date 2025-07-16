@@ -113,8 +113,7 @@ export default function CompleteGoogleRegistrationPage() {
         await AuthService.registerGuiaWithGoogle(payload);
       }
 
-      alert("Registro Google completado com sucesso!");
-      navigate("/explorar");
+      navigate("/login-success")
     } catch (err) {
       console.error("Ocorreu um erro ao processar o registro:", err);
       if (err instanceof ApiError) {
