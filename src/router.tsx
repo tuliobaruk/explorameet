@@ -16,48 +16,30 @@ import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import CreateActivityPage from "./pages/CreateActivityPage/CreateActivityPage";
 import ActivityDetailPage from "./pages/ActivityDetailPage/ActivityDetailPage";
 import GuidePublicProfilePage from "./pages/GuidePublicProfilePage/GuidePublicProfilePage";
+import CreatePasseioPage from "./pages/passeio/PasseioCreatePage";
+import HorarioPasseioPage from "./pages/horarioPasseio/HorarioPasseioPage";
 
 const router = createBrowserRouter([
 	{
 		path: "/",
-		element: (
-			<PublicRoute>
-				<HomePage />
-			</PublicRoute>
-		),
+		element: <HomePage />,
 		errorElement: <NotFoundPage />,
 	},
 	{
 		path: "/login",
-		element: (
-			<PublicRoute>
-				<LoginPage />
-			</PublicRoute>
-		),
+		element: <LoginPage />,
 	},
 	{
 		path: "/cadastro",
-		element: (
-			<PublicRoute>
-				<RegisterPage />
-			</PublicRoute>
-		),
+		element: <RegisterPage />,
 	},
 	{
 		path: "/cadastro/detalhes",
-		element: (
-			<PublicRoute>
-				<RegisterDetailsPage />
-			</PublicRoute>
-		),
+		element: <RegisterDetailsPage />,
 	},
 	{
 		path: "/complete-registration",
-		element: (
-			<PublicRoute>
-				<CompleteGoogleRegistrationPage />
-			</PublicRoute>
-		),
+		element: <CompleteGoogleRegistrationPage />,
 	},
 	{
 		path: "/login-success",
@@ -114,7 +96,27 @@ const router = createBrowserRouter([
 	{
 		path: "guia-perfil",
 		element: <GuidePublicProfilePage />,
-	}
+	},
+	{
+		path: "/criar-passeio",
+		element: <CreatePasseioPage />,
+	},
+	{
+		path: "/gerenciar-horarios/:passeioId",
+		element: <HorarioPasseioPage />,
+	},
+	{
+		path: "/esqueci-senha",
+		element: <ForgotPasswordPage />,
+	},
+	{
+		path: "/redefinir-senha",
+		element: (
+			<PublicRoute>
+				<ResetPasswordPage />
+			</PublicRoute>
+		),
+	},
 ]);
 
 export default router;
