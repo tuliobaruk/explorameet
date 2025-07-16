@@ -1,0 +1,79 @@
+:root {
+    --verde-vibrante: #82b55b;
+    --verde-oliva: #898f29;
+    --marrom-dourado: #8c742d;
+    --background-claro: #f9f5f1;
+}
+
+.activity-detail-container {
+    background-color: var(--background-claro);
+}
+
+.back-link {
+    color: var(--marrom-dourado);
+}
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.activity-title {
+    color: var(--verde-oliva);
+}
+
+.detail-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #e5e7eb; /* gray-200 */
+    padding: 6px 12px;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.section-header {
+    font-size: 1.5rem; /* text-2xl */
+    font-weight: 700;
+    color: var(--verde-oliva);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e5e7eb; /* gray-200 */
+}
+
+.guide-info-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb; /* gray-200 */
+}
+
+.guide-name {
+    color: var(--verde-oliva);
+}
+
+.action-card {
+    /* A classe 'sticky' e 'top-24' no TSX cuidam do posicionamento */
+}
+
+.price-highlight {
+    color: var(--marrom-dourado);
+}
+
+.action-button-primary {
+    background-color: var(--verde-vibrante);
+}
+
+.action-button-secondary {
+    color: var(--verde-oliva);
+    background-color: #ffffff;
+    border: 2px solid var(--verde-oliva);
+    transition: all 0.2s ease-in-out;
+}
+
+.action-button-secondary:hover {
+    background-color: var(--verde-oliva);
+    color: #ffffff;
+}
+
+.footer {
+    background-color: var(--verde-oliva);
+}

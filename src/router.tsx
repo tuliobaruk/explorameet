@@ -14,6 +14,8 @@ import FeedPage from "@/pages/FeedPage/FeedPage";
 import { PublicRoute } from "@/components/PublicRoute";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import CreateActivityPage from "./pages/CreateActivityPage/CreateActivityPage";
+import ActivityDetailPage from "./pages/ActivityDetailPage/ActivityDetailPage";
+import GuidePublicProfilePage from "./pages/GuidePublicProfilePage/GuidePublicProfilePage";
 
 const router = createBrowserRouter([
 	{
@@ -104,6 +106,14 @@ const router = createBrowserRouter([
 	{
 		path: "criar-atividade",
 		element: <CreateActivityPage />,
+	},
+	{
+		path: "atividade-detalhes",
+		element: <ActivityDetailPage />,
+	},
+	{
+		path: "guia-perfil",
+		element: <GuidePublicProfilePage />,
 	}
 ]);
 

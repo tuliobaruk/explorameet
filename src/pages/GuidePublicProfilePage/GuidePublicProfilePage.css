@@ -1,0 +1,80 @@
+:root {
+    --verde-vibrante: #82b55b;
+    --verde-oliva: #898f29;
+    --marrom-dourado: #8c742d;
+    --background-claro: #f9f5f1;
+    --amarelo-estrela: #facc15; /* Tailwind yellow-400 */
+}
+
+.guide-profile-container {
+    background-color: var(--background-claro);
+}
+
+/* Reutilizando estilos do ProfilePage */
+.profile-card { /* Já definido antes, mas garantindo que está aqui */
+    /* ... */
+}
+.profile-name {
+    color: var(--verde-oliva);
+}
+.premium-badge {
+    color: var(--marrom-dourado);
+    background-color: rgba(140, 116, 45, 0.1);
+    border-radius: 9999px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Novos Estilos */
+.stats-container {
+    /* Estilos de grid já estão no TSX */
+}
+
+.stat-item {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--verde-oliva);
+}
+.stat-item p {
+    font-size: 0.875rem;
+    color: #4b5563; /* text-gray-600 */
+}
+
+.section-title {
+    font-size: 1.75rem; /* ~text-3xl */
+    font-weight: 700;
+    color: var(--verde-oliva);
+    border-bottom: 2px solid #e5e7eb; /* gray-200 */
+    padding-bottom: 0.5rem;
+}
+
+.activity-card-link {
+    text-decoration: none;
+}
+.activity-price {
+    color: var(--marrom-dourado);
+}
+
+.review-card {
+    border-left: 4px solid var(--verde-vibrante);
+}
+
+.star-rating .star-filled {
+    color: var(--amarelo-estrela);
+}
+
+.star-rating .star-empty {
+    color: #d1d5db; /* gray-300 */
+}
+
+
+.footer {
+    background-color: var(--verde-oliva);
+}
