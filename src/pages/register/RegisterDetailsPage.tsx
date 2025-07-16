@@ -15,7 +15,7 @@ import {
 	createRegisterStep2Schema,
 } from "@/schemas/authSchemas";
 import { Genero } from "@/types/Usuario";
-import { maskCPF, maskCpfCnpj, maskPhone } from "@/utils/masks";
+import { maskCadastur, maskCPF, maskCpfCnpj, maskPhone } from "@/utils/masks";
 
 import "@/pages/AuthPage.css";
 
@@ -75,6 +75,7 @@ export default function RegisterDetailsPage() {
 	const celularValue = watch("celular");
 	const cpfValue = watch("cpf");
 	const cpfCnpjValue = watch("cpfCnpj");
+	const numCadastroValue = watch("numCadastro");
 
 	const handleSubmitFinal: SubmitHandler<RegisterStep2FormData> = async (data) => {
 		if (!registerState) {
@@ -242,12 +243,17 @@ export default function RegisterDetailsPage() {
 						/>
 
 						<AuthInput
-							label="Número de Cadastro Cadastur (Opcional)"
+							label="Número de Cadastro Cadastur"
 							id="numCadastro"
 							type="text"
 							icon={IdCard}
-							placeholder="Ex: G12345"
+							placeholder="XX.XXXXXX.XX-X"
 							{...register("numCadastro")}
+              value={numCadastroValue || ""}
+              onChange={(e) => {
+                const masked = maskCadastur(e.target.value);
+                setValue("numCadastro", masked);
+              }}
 							error={errors.numCadastro?.message}
 						/>
 					</>
