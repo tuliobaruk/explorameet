@@ -21,7 +21,7 @@ export default function LoginPage() {
 
 	const { loading, error, login: loginLocal, clearError } = useAuthLocal();
 
-	const { user, checkAuthStatus } = useAuthContext();
+	const { user, isLoading, checkAuthStatus } = useAuthContext();
 
 	const {
 		register,
@@ -36,10 +36,11 @@ export default function LoginPage() {
 	});
 
 	useEffect(() => {
-		if (user) {
+		if (!isLoading && user && user.id) {
+			console.log(user);
 			navigate("/explorar");
 		}
-	}, [user, navigate]);
+	}, [user, isLoading, navigate]);
 
 	useEffect(() => {
 		clearError();
