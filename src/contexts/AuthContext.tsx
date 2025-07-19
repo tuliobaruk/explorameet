@@ -115,19 +115,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	const isAuthenticated = !!user;
 
 	const checkAuthStatus = useCallback(async () => {
-		if (!isLoading) setIsLoading(true);
-
+		setIsLoading(true);
 		try {
 			const authStatus = await AuthService.getMe();
-
 			if (authStatus) {
 				const perfilData = await PerfilService.getMeuPerfil();
-
 				const fullUser = {
 					...authStatus,
 					perfil: perfilData,
 				};
-
 				setUser(fullUser);
 			} else {
 				setUser(null);
@@ -138,7 +134,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [isLoading]);
+	}, []);
 
 	const login = async (credentials: LoginData) => {
 		setIsLoading(true);
