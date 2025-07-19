@@ -1,15 +1,15 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuthContext } from "@/contexts/AuthContext";
+import { useAuthContext } from "@/hooks/useAuth";
 
 interface ProtectedRouteProps {
 	children: React.ReactNode;
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-	const { isAuthenticated, loading } = useAuthContext();
+	const { isAuthenticated, isLoading } = useAuthContext();
 	const location = useLocation();
 
-	if (loading) {
+	if (isLoading) {
 		return (
 			<div className="min-h-screen flex items-center justify-center">
 				<div className="text-center">
