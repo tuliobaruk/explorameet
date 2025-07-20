@@ -50,10 +50,6 @@
     color: var(--verde-oliva);
 }
 
-.action-card {
-    /* A classe 'sticky' e 'top-24' no TSX cuidam do posicionamento */
-}
-
 .price-highlight {
     color: var(--marrom-dourado);
 }
@@ -76,4 +72,43 @@
 
 .footer {
     background-color: var(--verde-oliva);
+}
+
+.carousel-container {
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.carousel-item-padding-40-px {
+    padding: 0 10px;
+}
+
+.react-multi-carousel-dot-list {
+    margin-top: 1rem;
+}
+
+.react-multi-carousel-dot button {
+    border: 2px solid var(--verde-oliva);
+    background-color: transparent;
+}
+
+.react-multi-carousel-dot--active button {
+    background-color: var(--verde-oliva);
+}
+
+.react-multi-carousel-arrow {
+    background-color: var(--verde-oliva) !important;
+    border: none !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    border-radius: 50% !important;
+}
+
+.react-multi-carousel-arrow:hover {
+    background-color: var(--marrom-dourado) !important;
+}
+
+.react-multi-carousel-arrow::before {
+    color: white !important;
+    font-size: 14px !important;
 }
