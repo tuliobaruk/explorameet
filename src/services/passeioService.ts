@@ -48,7 +48,10 @@ export interface Passeio {
 		url_imagem: string;
 		descricao: string;
 	}>;
-	restricoes: Array<any>;
+	restricoes: Array<{
+		id: string;
+		descricao: string;
+	}>;
 	categorias: Array<{
 		id: string;
 		createdAt: string;
@@ -59,6 +62,13 @@ export interface Passeio {
 	}>;
 	mediaAvaliacoes: number;
 	quantidadeAvaliacoes: number;
+	avaliacoes?: Array<{
+		id: string;
+		nota: number;
+		comentario: string;
+		createdAt: string;
+		cliente: unknown;
+	}>;
 }
 
 export interface PasseiosResponse {
