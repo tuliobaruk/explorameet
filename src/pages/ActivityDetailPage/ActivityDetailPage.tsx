@@ -6,6 +6,7 @@ import {
   Users,
   Hourglass,
   Edit,
+  Star,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import PasseioService, { Passeio } from "@/services/passeioService";
@@ -14,6 +15,21 @@ import { useUser } from "@/hooks/useAuth";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import "./ActivityDetailPage.css";
+
+const StarRating = ({ rating }: { rating: number }) => {
+  const totalStars = 5;
+  return (
+    <div className="flex items-center">
+      {[...Array(totalStars)].map((_, index) => (
+        <Star
+          key={index}
+          size={18}
+          className={index < Math.round(rating) ? "star-filled" : "star-empty"}
+        />
+      ))}
+    </div>
+  );
+};
 
 export default function ActivityDetailPage() {
   const { passeioId } = useParams<{ passeioId: string }>();
@@ -85,8 +101,8 @@ export default function ActivityDetailPage() {
 		  Voltar
 		</Link>
 
-		<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-		  <div className="lg:col-span-2">
+		<div className="flex flex-col lg:flex-row gap-8">
+		  <div className="flex-1 lg:w-2/3">
 			<div className="mb-6">
 			  <Carousel
 				responsive={responsive}
@@ -167,7 +183,7 @@ export default function ActivityDetailPage() {
 			</div>
 		  </div>
 
-		  <div className="lg:col-span-1">
+		  <div className="lg:w-1/3">
 			<div className="action-card sticky top-24 bg-white p-6 rounded-lg shadow-xl">
 			  <h2 className="text-2xl font-bold mb-4 price-highlight">
 				{formattedPrice} <span className="text-base font-normal text-gray-600">/ pessoa</span>
@@ -206,6 +222,37 @@ export default function ActivityDetailPage() {
 			  </div>
 			</div>
 		  </div>
+		</div>
+
+		{/* Seção de Avaliações */}
+		<div className="mt-12">
+		  <h2 className="text-2xl font-bold text-gray-800 mb-6">Avaliações dos Turistas</h2>
+		  {passeio.avaliacoes && passeio.avaliacoes.length > 0 ? (
+			<div className="space-y-6">
+			  {passeio.avaliacoes.map((avaliacao) => (
+				<div key={avaliacao.id} className="review-card bg-white p-6 rounded-lg shadow-md border border-gray-200">
+				  <div className="flex justify-between items-start mb-4">
+					<div>
+					  <h4 className="font-bold text-gray-800">Turista</h4>
+					  <p className="text-sm text-gray-500">
+						{new Date(avaliacao.createdAt).toLocaleDateString('pt-BR', {
+						  day: '2-digit',
+						  month: 'long',
+						  year: 'numeric'
+						})}
+					  </p>
+					</div>
+					<StarRating rating={avaliacao.nota} />
+				  </div>
+				  <p className="text-gray-700">{avaliacao.comentario}</p>
+				</div>
+			  ))}
+			</div>
+		  ) : (
+			<div className="bg-white p-8 rounded-lg shadow-md border border-gray-200 text-center">
+			  <p className="text-gray-600">Nenhuma avaliação ainda. Seja o primeiro a avaliar esta atividade!</p>
+			</div>
+		  )}
 		</div>
 	  </main>
 
