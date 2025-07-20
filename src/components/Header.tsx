@@ -3,15 +3,16 @@ import { Menu, UserRound, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface HeaderProps {
-	isSidebarOpen: boolean;
-	toggleSidebar: () => void;
+	isSidebarOpen?: boolean;
+	toggleSidebar?: () => void;
+	variant?: "default" | "homepage";
 }
 
 export const LogoEM = () => (
 	<div className="w-12 h-12 flex items-center font-bold rounded mr-2">
 		<img src="/EM_logo.svg" alt="ExploraMeet Logo" className="w-12 h-12" />
 		<span
-			className="text-2xl lg:text-3xl ml-2 hidden sm:inline"
+			className="text-2xl ml-1 hidden sm:inline"
 			style={{ color: "var(--verde-oliva)" }}
 		>
 			ExploraMeet
@@ -19,10 +20,10 @@ export const LogoEM = () => (
 	</div>
 );
 
-export function Header({ isSidebarOpen, toggleSidebar }: HeaderProps) {
+export function Header({ isSidebarOpen = false, toggleSidebar, variant = "default" }: HeaderProps) {
 	const { name, avatarUrl, isLoading, isAuthenticated } = useUser();
 
-	if (isLoading) {
+	if (isLoading && variant === "default") {
 		return (
 			<header
 				className="bg-white shadow-sm relative z-50 h-16"
@@ -39,6 +40,58 @@ export function Header({ isSidebarOpen, toggleSidebar }: HeaderProps) {
 		);
 	}
 
+	if (variant === "homepage") {
+		return (
+			<header className="auth-header w-full h-20 fixed top-0 left-0 right-0 z-50 flex justify-between items-center mx-auto py-4 px-4 md:px-10 shadow-sm">
+				<a href="#">
+					<div className="header-logo text-3xl font-bold flex items-center gap-2">
+						<LogoEM />
+					</div>
+				</a>
+
+				<nav className="hidden md:flex justify-around gap-3 text-lg items-center ">
+					<a
+						href="#"
+						className="nav-link text-gray-700 px-2 py-2 rounded-md transition duration-300"
+					>
+						Início
+					</a>
+					<a
+						href="#para-turistas"
+						className="nav-link text-gray-700 px-2 py-2 rounded-md transition duration-300"
+					>
+						Para Turistas
+					</a>
+					<a
+						href="#para-guias"
+						className="nav-link text-gray-700 px-2 py-2 rounded-md transition duration-300"
+					>
+						Para Guias
+					</a>
+					<Link to="/login">
+						<button
+							className="text-white font-bold px-6 py-1 m-4 rounded-lg shadow-md transition-transform duration-300 hover:scale-105"
+							style={{ backgroundColor: "var(--marrom-dourado)" }}
+						>
+							Acessar
+						</button>
+					</Link>
+				</nav>
+
+				<div className="md:hidden">
+					<Link to="/login">
+						<button
+							className="text-white font-bold px-4 py-2 m-4 rounded-lg shadow-md transition-transform duration-300 hover:scale-105"
+							style={{ backgroundColor: "var(--marrom-dourado)" }}
+						>
+							Acessar
+						</button>
+					</Link>
+				</div>
+			</header>
+		);
+	}
+
 	return (
 		<header
 			className="shadow-sm z-50 fixed top-0 left-0 w-full h-20 flex items-center bg-white"
@@ -47,28 +100,32 @@ export function Header({ isSidebarOpen, toggleSidebar }: HeaderProps) {
 				backgroundColor: "var(--background-claro)",
 			}}
 		>
-			<div className="max-w-7xl mx-auto w-full h-full">
+			<div className="max-w-8xl mx-auto w-full h-full md:px-6">
 				<div className="flex items-center justify-between h-full">
 					<div className="flex items-center gap-2">
-						<button
-							className="p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 lg:hidden"
-							style={{ color: "var(--marrom-dourado)" }}
-							onClick={toggleSidebar}
-							aria-label={isSidebarOpen ? "Fechar menu" : "Abrir menu"}
-							aria-expanded={isSidebarOpen}
-						>
-							{isSidebarOpen ? <X size={28} /> : <Menu size={28} />}
-						</button>
+						{toggleSidebar && (
+							<>
+								<button
+									className="p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 lg:hidden"
+									style={{ color: "var(--marrom-dourado)" }}
+									onClick={toggleSidebar}
+									aria-label={isSidebarOpen ? "Fechar menu" : "Abrir menu"}
+									aria-expanded={isSidebarOpen}
+								>
+									{isSidebarOpen ? <X size={28} /> : <Menu size={28} />}
+								</button>
 
-						<button
-							className="p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 hidden lg:block"
-							style={{ color: "var(--marrom-dourado)" }}
-							onClick={toggleSidebar}
-							aria-label={isSidebarOpen ? "Fechar menu" : "Abrir menu"}
-							aria-expanded={isSidebarOpen}
-						>
-							{isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
-						</button>
+								<button
+									className="p-2 rounded-md hover:bg-gray-100 transition-colors duration-200 hidden lg:block"
+									style={{ color: "var(--marrom-dourado)" }}
+									onClick={toggleSidebar}
+									aria-label={isSidebarOpen ? "Fechar menu" : "Abrir menu"}
+									aria-expanded={isSidebarOpen}
+								>
+									{isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+								</button>
+							</>
+						)}
 						<Link to={"/"} className="flex items-center">
 							<div className="header-logo text-3xl font-bold flex items-center gap-2">
 								<LogoEM />
@@ -109,13 +166,13 @@ export function Header({ isSidebarOpen, toggleSidebar }: HeaderProps) {
 							</div>
 						) : (
 							<Link to="/login">
-								<button
-									className="text-white font-bold px-6 py-2 rounded-lg shadow-md transition-transform duration-300 hover:scale-105"
-									style={{ backgroundColor: "var(--verde-vibrante)" }}
-								>
-									Acessar
-								</button>
-							</Link>
+						<button
+							className="text-white font-bold px-6 py-1 m-4 rounded-lg shadow-md transition-transform duration-300 hover:scale-105"
+							style={{ backgroundColor: "var(--marrom-dourado)" }}
+						>
+							Acessar
+						</button>
+					</Link>
 						)}
 					</div>
 				</div>

@@ -2,62 +2,13 @@ import { Link } from "react-router-dom";
 import { Mountain, Users, Leaf, ShieldCheck } from "lucide-react";
 import explorationPicture from "@/assets/exploration.png";
 import "./HomePage.css";
-import { LogoEM } from "../../components/Header";
+import "../AuthPage.css";
+import { Header } from "../../components/Header";
 
 export default function HomePage() {
 	return (
 		<div className="homepage-container flex min-h-screen flex-col items-center">
-			<header className="auth-header w-full h-20 fixed top-0 left-0 right-0 z-50 flex justify-between items-center max-w-full mx-auto py-6 px-4 md:px-10 backdrop-blur-md shadow-sm">
-				<a href="#">
-					<div className="header-logo text-3xl font-bold flex items-center gap-2">
-            <LogoEM />
-					</div>
-				</a>
-
-				<nav className="hidden md:flex gap-6 text-lg items-center">
-					<a
-						href="#"
-						className="nav-link text-gray-700 px-3 py-2 rounded-md transition duration-300"
-					>
-						Início
-					</a>
-					<a
-						href="#para-turistas"
-						className="nav-link text-gray-700 px-3 py-2 rounded-md transition duration-300"
-					>
-						Para Turistas
-					</a>
-					<a
-						href="#para-guias"
-						className="nav-link text-gray-700 px-3 py-2 rounded-md transition duration-300"
-					>
-						Para Guias
-					</a>
-					<Link to="/login">
-						<button className="nav-button-acessar text-white font-bold px-6 py-2 rounded-lg shadow-md transition-transform duration-300 hover:scale-105">
-							Acessar
-						</button>
-					</Link>
-				</nav>
-				<button className="md:hidden">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						strokeWidth="2"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						className="lucide lucide-menu"
-					>
-						<line x1="4" x2="20" y1="12" y2="12" />
-						<line x1="4" x2="20" y1="6" y2="6" />
-						<line x1="4" x2="20" y1="18" y2="18" />
-					</svg>
-				</button>
-			</header>
+			<Header variant="homepage" />
 
 			<main className="w-full flex flex-col items-center max-w-6xl mx-auto mt-32 px-4 ">
 				<section className="flex flex-col md:flex-row items-center justify-between gap-12 text-center md:text-left">
@@ -87,7 +38,7 @@ export default function HomePage() {
 						<img
 							src={explorationPicture}
 							alt="Ilustração de uma pessoa explorando a natureza"
-							className="rounded-lg shadow-2xl w-full max-w-md"
+							className="rounded-lg shadow-2xl w-full max-w-xs sm:max-w-sm md:max-w-xs lg:max-w-md object-cover"
 						/>
 					</div>
 				</section>
