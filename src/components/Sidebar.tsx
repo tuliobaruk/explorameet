@@ -54,28 +54,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
 		}
 	};
 
-	   return (
-			   <>
-					   {isSidebarOpen && (
-							   <div
-									   className="fixed inset-0 bg-opacity-50 z-40 lg:hidden"
-									   style={{ top: "64px" }}
-									   onClick={() => setIsSidebarOpen(false)}
-							   />
-					   )}
+	return (
+		<>
+			{isSidebarOpen && (
+				<div
+					className="fixed inset-0 bg-opacity-50 z-40 lg:hidden"
+					style={{ top: "64px" }}
+					onClick={() => setIsSidebarOpen(false)}
+				/>
+			)}
 
-					   <aside
-							   className={`
+			<aside
+				className={`
 		  fixed top-20 left-0 w-64 h-[calc(100vh-64px)] bg-white shadow-lg z-40 transition-transform duration-300 ease-in-out
 		  ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
 		  overflow-y-auto
 		  ${isSidebarOpen ? "lg:block" : "lg:hidden"}
 		`}
-							   style={{
-									   borderRight: "1px solid rgba(137, 143, 41, 0.2)"
-							   }}
-					   >
-							   <div className="px-4">
+				style={{
+					borderRight: "1px solid rgba(137, 143, 41, 0.2)",
+				}}
+			>
+				<div className="px-4">
 					<nav>
 						<ul className="space-y-1">
 							<NavItem

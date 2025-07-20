@@ -296,9 +296,9 @@
     margin-right: 0.5rem;
 }
 .auth-button-social:hover {
-    background-color: var(--verde-vibrante);
+    background-color: var(--marrom-dourado);
     color: white;
-    border-color: var(--verde-vibrante);
+    border-color: var(--marrom-dourado);
     transform: translateY(-1px);
 }
 

@@ -36,7 +36,7 @@ export default function LoginPage() {
 	});
 
 	useEffect(() => {
-		if (!isLoading && user && user.id) {
+		if (!isLoading && user) {
 			console.log(user);
 			navigate("/explorar");
 		}

@@ -11,10 +11,7 @@ interface HeaderProps {
 export const LogoEM = () => (
 	<div className="w-12 h-12 flex items-center font-bold rounded mr-2">
 		<img src="/EM_logo.svg" alt="ExploraMeet Logo" className="w-12 h-12" />
-		<span
-			className="text-2xl ml-1 hidden sm:inline"
-			style={{ color: "var(--verde-oliva)" }}
-		>
+		<span className="text-2xl ml-1 hidden sm:inline" style={{ color: "var(--verde-oliva)" }}>
 			ExploraMeet
 		</span>
 	</div>
@@ -166,13 +163,13 @@ export function Header({ isSidebarOpen = false, toggleSidebar, variant = "defaul
 							</div>
 						) : (
 							<Link to="/login">
-						<button
-							className="text-white font-bold px-6 py-1 m-4 rounded-lg shadow-md transition-transform duration-300 hover:scale-105"
-							style={{ backgroundColor: "var(--marrom-dourado)" }}
-						>
-							Acessar
-						</button>
-					</Link>
+								<button
+									className="text-white font-bold px-6 py-1 m-4 rounded-lg shadow-md transition-transform duration-300 hover:scale-105"
+									style={{ backgroundColor: "var(--marrom-dourado)" }}
+								>
+									Acessar
+								</button>
+							</Link>
 						)}
 					</div>
 				</div>

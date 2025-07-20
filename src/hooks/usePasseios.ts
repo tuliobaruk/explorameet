@@ -86,7 +86,6 @@ export const usePasseios = (options: UsePasseiosOptions = {}): UsePasseiosReturn
 				setLoading(true);
 				setError(null);
 
-
 				const requestParams = {
 					page: 1,
 					limit: initialLimit,

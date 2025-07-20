@@ -61,7 +61,10 @@ class HorarioDisponivelService {
 		return response.data;
 	}
 
-	async updateHorario(id: string, data: Partial<CreateHorarioDisponivelData>): Promise<HorarioDisponivel> {
+	async updateHorario(
+		id: string,
+		data: Partial<CreateHorarioDisponivelData>,
+	): Promise<HorarioDisponivel> {
 		const response = await apiClient.patch<HorarioDisponivel>(`/horarios-disponiveis/${id}`, data);
 		return response.data;
 	}

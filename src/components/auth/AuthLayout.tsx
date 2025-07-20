@@ -1,4 +1,3 @@
-import AuthFooter from "@/components/auth/AuthFooter";
 import { Link } from "react-router-dom";
 import { LogoEM } from "../Header";
 
@@ -32,8 +31,6 @@ export default function AuthLayout({
 			<main className="auth-main-content">
 				<div className="auth-card">{children}</div>
 			</main>
-
-			<AuthFooter />
 		</div>
 	);
 }

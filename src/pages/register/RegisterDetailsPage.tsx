@@ -249,11 +249,11 @@ export default function RegisterDetailsPage() {
 							icon={IdCard}
 							placeholder="XX.XXXXXX.XX-X"
 							{...register("numCadastro")}
-              value={numCadastroValue || ""}
-              onChange={(e) => {
-                const masked = maskCadastur(e.target.value);
-                setValue("numCadastro", masked);
-              }}
+							value={numCadastroValue || ""}
+							onChange={(e) => {
+								const masked = maskCadastur(e.target.value);
+								setValue("numCadastro", masked);
+							}}
 							error={errors.numCadastro?.message}
 						/>
 					</>

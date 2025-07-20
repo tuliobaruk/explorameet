@@ -16,7 +16,7 @@ class CategoriaService {
 			return response.data;
 		} catch (error) {
 			console.error("Erro ao buscar categorias:", error);
-      throw new Error("Não foi possível buscar as categorias.");
+			throw new Error("Não foi possível buscar as categorias.");
 		}
 	}
 
