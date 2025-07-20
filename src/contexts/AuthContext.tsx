@@ -176,7 +176,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 	useEffect(() => {
 		checkAuthStatus();
-	}, [checkAuthStatus]);
+	}, []);
 
 	const value: AuthContextType = {
 		user,
