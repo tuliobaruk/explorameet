@@ -91,6 +91,10 @@ export interface CreatePasseioData {
 	descricoes_imagens?: string[];
 }
 
+export interface UpdatePasseioData extends CreatePasseioData {
+	imagens_remover?: string;
+}
+
 export interface PaginationParams {
 	page?: number;
 	limit?: number;
@@ -167,6 +171,62 @@ class PasseioService {
 			},
 		});
 		return response.data;
+	}
+
+	async updatePasseio(id: string, data: UpdatePasseioData, imagens?: File[]): Promise<Passeio> {
+		try {
+			const formData = new FormData();
+
+			// Adicionar dados básicos do passeio
+			formData.append("titulo", data.titulo);
+			formData.append("descricao", data.descricao);
+			formData.append("duracao_passeio", data.duracao_passeio.toString());
+
+			if (data.valor !== undefined) {
+				formData.append("valor", data.valor.toString());
+			}
+			if (data.qtd_pessoas !== undefined) {
+				formData.append("qtd_pessoas", data.qtd_pessoas.toString());
+			}
+			if (data.nivel_dificuldade !== undefined) {
+				formData.append("nivel_dificuldade", data.nivel_dificuldade.toString());
+			}
+			if (data.categorias) {
+				formData.append("categorias", data.categorias);
+			}
+			if (data.restricoes) {
+				formData.append("restricoes", data.restricoes);
+			}
+
+			// Adicionar IDs das imagens a serem removidas
+			if (data.imagens_remover) {
+				formData.append("imagens_remover", data.imagens_remover);
+			}
+
+			// Adicionar descrições das novas imagens
+			if (data.descricoes_imagens && data.descricoes_imagens.length > 0) {
+				data.descricoes_imagens.forEach((descricao, index) => {
+					formData.append(`descricoes_imagens[${index}]`, descricao);
+				});
+			}
+
+			// Adicionar arquivos de novas imagens
+			if (imagens && imagens.length > 0) {
+				imagens.forEach((imagem) => {
+					formData.append("imagens", imagem);
+				});
+			}
+
+			const response = await apiClient.put<Passeio>(`/passeios/${id}`, formData, {
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			});
+			return response.data;
+		} catch (error) {
+			console.error("Erro ao atualizar passeio:", error);
+			throw new Error("Não foi possível atualizar o passeio.");
+		}
 	}
 
 	async deletePasseio(id: string): Promise<void> {
