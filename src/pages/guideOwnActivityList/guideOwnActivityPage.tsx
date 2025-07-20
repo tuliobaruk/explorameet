@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { useUser } from "@/hooks/useAuth";
-import { Compass, Clock, Users, Image as ImageIcon } from "lucide-react";
-import { apiClient } from "@/api/axiosConfig"
+import { Compass, Clock, Users, Image as ImageIcon, Edit, Trash2, Calendar } from "lucide-react";
+import { apiClient } from "@/api/axiosConfig";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 interface HorarioDisponivel {
   id: string;
@@ -32,14 +34,32 @@ export default function GuideOwnActivityList() {
   const { isAuthenticated, isLoading } = useUser();
   const [loading, setLoading] = useState(true);
   const [passeios, setPasseios] = useState<PasseioGuia[]>([]);
+  const navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchPasseios = () => {
     if (!isAuthenticated) return;
     setLoading(true);
     apiClient.get("/passeios/guia", { withCredentials: true })
       .then((res) => setPasseios(res.data.data || []))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchPasseios();
   },[isAuthenticated]);
+
+  const handleDelete = async (passeioId: string) => {
+    if (window.confirm("Tem certeza que deseja excluir este passeio? Esta ação não pode ser desfeita.")) {
+      try {
+        await apiClient.delete(`/passeios/${passeioId}`);
+        toast.success("Passeio excluído com sucesso!");
+        fetchPasseios(); // Re-fetch the list
+      } catch (error) {
+        console.error("Erro ao excluir passeio:", error);
+        toast.error("Erro ao excluir passeio. Tente novamente.");
+      }
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen" style={{ backgroundColor: "var(--background-claro)" }}>
@@ -58,7 +78,7 @@ export default function GuideOwnActivityList() {
             <div className="space-y-6">
               {passeios.map((passeio) => (
                 <div key={passeio.id} className="bg-white rounded-lg shadow-md border p-6">
-                  <div className="flex gap-4 items-center mb-4">
+                  <div className="flex gap-4 items-start mb-4">
                     {passeio.imagens && passeio.imagens.length > 0 ? (
                       <img src={passeio.imagens[0].url_imagem} alt={passeio.imagens[0].descricao} className="w-20 h-20 object-cover rounded-md border" />
                     ) : (
@@ -90,6 +110,17 @@ export default function GuideOwnActivityList() {
                         ))}
                       </ul>
                     )}
+                  </div>
+                  <div className="border-t mt-4 pt-4 flex justify-end gap-3">
+                    <button onClick={() => navigate(`/editar-passeio/${passeio.id}`)} className="inline-flex items-center gap-2 px-3 py-1.5 text-sm border rounded-lg hover:bg-blue-50 text-blue-600 border-blue-600 hover:border-blue-700">
+                      <Edit size={14} /> Editar
+                    </button>
+                    <button onClick={() => navigate(`/gerenciar-horarios/${passeio.id}`)} className="inline-flex items-center gap-2 px-3 py-1.5 text-sm border rounded-lg hover:bg-green-50 text-green-600 border-green-600 hover:border-green-700">
+                      <Calendar size={14} /> Horários
+                    </button>
+                    <button onClick={() => handleDelete(passeio.id)} className="inline-flex items-center gap-2 px-3 py-1.5 text-sm border rounded-lg hover:bg-red-50 text-red-600 border-red-600 hover:border-red-700">
+                      <Trash2 size={14} /> Deletar
+                    </button>
                   </div>
                 </div>
               ))}
