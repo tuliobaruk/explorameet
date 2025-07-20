@@ -20,6 +20,7 @@ import CreatePasseioPage from "./pages/passeio/PasseioCreatePage";
 import HorarioPasseioPage from "./pages/horarioPasseio/HorarioPasseioPage";
 import TermsAndPrivacyPage from "./pages/TermsAndPrivacyPage/TermsAndPrivacyPage";
 import MeusPasseiosPage from "./pages/MeusPasseiosPage/MeusPasseiosPage";
+import EditPasseioPage from "./pages/passeio/PasseioEditPage";
 
 const router = createBrowserRouter([
 	{
@@ -79,10 +80,10 @@ const router = createBrowserRouter([
 		path: "/explorar",
 		element: <FeedPage />,
 	},
-  {
-    path: "/passeio/:passeioId",
-    element: <ActivityDetailPage />,  
-  },
+	{
+		path: "/passeio/:passeioId",
+		element: <ActivityDetailPage />,
+	},
 	{
 		path: "*",
 		element: <NotFoundPage />,
@@ -123,18 +124,22 @@ const router = createBrowserRouter([
 			</PublicRoute>
 		),
 	},
-	 {
-    path: "/termos",
-    element: <TermsAndPrivacyPage />,
-  },
-  {
-    path: "/privacidade",
-    element: <TermsAndPrivacyPage />,
-  },
 	{
-    path: "/meus-passeios",
-    element: <MeusPasseiosPage />,
-  },
+		path: "/termos",
+		element: <TermsAndPrivacyPage />,
+	},
+	{
+		path: "/privacidade",
+		element: <TermsAndPrivacyPage />,
+	},
+	{
+		path: "/meus-passeios",
+		element: <MeusPasseiosPage />,
+	},
+	{
+		path: "/editar-passeio/:passeioId",
+		element: <EditPasseioPage />,
+	},
 ]);
 
 export default router;
