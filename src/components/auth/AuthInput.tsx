@@ -1,5 +1,5 @@
 import { LucideIcon } from "lucide-react";
-import { useRef } from "react";
+import React from "react";
 
 interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	label: string;
@@ -15,27 +15,23 @@ export default function AuthInput({
 	id,
 	error,
 	maskFunction,
-	onChange,
 	...props
 }: AuthInputProps) {
-	const inputRef = useRef<HTMLInputElement>(null);
-
-	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-		let value = e.target.value;
-		if (maskFunction) {
-			value = maskFunction(value);
-			if (inputRef.current) inputRef.current.value = value;
-		}
-		if (onChange) {
-			onChange({
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (maskFunction && props.onChange) {
+			const maskedValue = maskFunction(e.target.value);
+			const event = {
 				...e,
 				target: {
 					...e.target,
-					value,
+					value: maskedValue,
 				},
-			});
+			};
+			props.onChange(event as React.ChangeEvent<HTMLInputElement>);
+		} else if (props.onChange) {
+			props.onChange(e);
 		}
-	}
+	};
 
 	return (
 		<div>
@@ -49,9 +45,8 @@ export default function AuthInput({
 				/>
 				<input
 					id={id}
-					ref={inputRef}
 					{...props}
-					onChange={handleChange}
+					{...(maskFunction ? { onChange: handleChange } : {})}
 					className={`block w-full pl-10 pr-3 py-2 text-sm border ${error ? "border-red-500" : "border-verde-oliva/40"} rounded-md shadow-sm bg-white text-verde-oliva placeholder:text-stone-400 focus:outline-none focus:border-verde-vibrante focus:ring-3 focus:ring-verde-vibrante/25 transition-all`}
 				/>
 			</div>
