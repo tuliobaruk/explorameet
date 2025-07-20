@@ -77,6 +77,10 @@ const router = createBrowserRouter([
 		path: "/explorar",
 		element: <FeedPage />,
 	},
+  {
+    path: "/passeio/:passeioId",
+    element: <ActivityDetailPage />,  
+  },
 	{
 		path: "*",
 		element: <NotFoundPage />,
@@ -94,7 +98,7 @@ const router = createBrowserRouter([
 		element: <ActivityDetailPage />,
 	},
 	{
-		path: "guia-perfil",
+		path: "/guia/:guideId",
 		element: <GuidePublicProfilePage />,
 	},
 	{
