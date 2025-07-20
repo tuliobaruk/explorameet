@@ -1,6 +1,4 @@
 import { Header } from "@/components/Header";
-import { Sidebar } from "@/components/Sidebar";
-import { useAuthContext, useUser } from "@/hooks/useAuth";
 import { usePasseios } from "@/hooks/usePasseios";
 import { Passeio } from "@/services/passeioService";
 import {
@@ -78,12 +76,7 @@ const preparePasseioImages = (imagens: any[], passeioTitulo: string) => {
 };
 
 export default function FeedPage() {
-	const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-	const [activePage, setActivePage] = useState("explorar");
 	const [searchTerm, setSearchTerm] = useState("");
-
-	const { isAuthenticated, user } = useUser();
-	const { logout } = useAuthContext();
 
 	const {
 		passeios,
@@ -100,8 +93,6 @@ export default function FeedPage() {
 		disponiveis: false,
 		autoLoad: true,
 	});
-
-	const canCreatePasseio = user?.role === "GUIA" || user?.role === "ADMIN";
 
 	const handleSearch = useCallback(
 		async (e: React.FormEvent) => {
@@ -130,10 +121,6 @@ export default function FeedPage() {
 		},
 		[goToPage],
 	);
-
-	const toggleSidebar = () => {
-		setIsSidebarOpen(!isSidebarOpen);
-	};
 
 	const formatDuration = (minutes: number) => {
 		const hours = Math.floor(minutes / 60);
@@ -167,53 +154,31 @@ export default function FeedPage() {
 			className="flex flex-col min-h-screen"
 			style={{ backgroundColor: "var(--background-claro)" }}
 		>
-			<Header isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+			<Header />
 
-			<div className="flex flex-1 relative">
-				<Sidebar
-					isSidebarOpen={isSidebarOpen}
-					setIsSidebarOpen={setIsSidebarOpen}
-					activePage={activePage}
-					setActivePage={setActivePage}
-					isAuthenticated={isAuthenticated}
-					canCreatePasseio={canCreatePasseio}
-					logout={logout}
-				/>
-				<main
-					className={`
-					flex-1 p-4 lg:p-6 
-					transition-all duration-300 ease-in-out
-					${isSidebarOpen ? "lg:pl-64" : "lg:pl-0"}
-				`}
-				>
-					<div className="flex justify-center mb-6">
-						<form onSubmit={handleSearch} className="w-full max-w-2xl">
-							<div
-								className="relative bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 focus-within:shadow-lg"
-								style={{
-									border: "1px solid rgba(137, 143, 41, 0.3)",
-									backgroundColor: "rgba(255, 255, 255, 0.95)",
-								}}
-							>
-								<Search
-									size={18}
-									className="absolute left-4 top-1/2 transform -translate-y-1/2 opacity-70"
-									style={{ color: "var(--verde-oliva)" }}
-								/>
-								<input
-									type="text"
-									placeholder="Buscar passeios, guias ou destinos..."
-									value={searchTerm}
-									onChange={handleSearchInputChange}
-									className="w-full pl-12 pr-4 py-3 bg-transparent border-none outline-none rounded-full placeholder-opacity-60"
-									style={{
-										color: "var(--verde-oliva)",
-									}}
-								/>
-							</div>
-						</form>
-					</div>
+			<main className="flex-1 flex flex-col items-center px-2 py-8 md:px-0">
+				<div className="w-full max-w-2xl mb-8">
+					<form onSubmit={handleSearch} className="w-full">
+						<div
+							className="relative bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 focus-within:shadow-lg border border-[rgba(137,143,41,0.15)]"
+						>
+							<Search
+								size={18}
+								className="absolute left-4 top-1/2 transform -translate-y-1/2 opacity-70"
+								style={{ color: "var(--verde-oliva)" }}
+							/>
+							<input
+								type="text"
+								placeholder="Buscar passeios, guias ou destinos..."
+								value={searchTerm}
+								onChange={handleSearchInputChange}
+								className="w-full pl-12 pr-4 py-3 bg-transparent border-none outline-none rounded-full placeholder-opacity-60 text-verde-oliva"
+							/>
+						</div>
+					</form>
+				</div>
 
+				<div className="w-full max-w-4xl">
 					{loading ? (
 						<div className="flex justify-center items-center py-12">
 							<div className="text-lg text-gray-600">Carregando passeios...</div>
@@ -232,15 +197,14 @@ export default function FeedPage() {
 						</div>
 					) : (
 						<>
-							<div className="max-w-4xl mx-auto space-y-6">
+							<div className="space-y-6">
 								{passeios.map((passeio) => {
 									const imagesToShow = preparePasseioImages(passeio.imagens, passeio.titulo);
 
 									return (
 										<article
 											key={passeio.id}
-											className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden border"
-											style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}
+											className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden border border-[rgba(137,143,41,0.1)]"
 										>
 											<div className="p-4 lg:p-5">
 												<div className="flex items-start gap-3">
@@ -384,13 +348,13 @@ export default function FeedPage() {
 										style={
 											hasPrev
 												? {
-														borderColor: "var(--verde-vibrante)",
-														color: "var(--verde-vibrante)",
-													}
-												: {
-														borderColor: "#d1d5db",
-														color: "#9ca3af",
-													}
+													borderColor: "var(--verde-vibrante)",
+													color: "var(--verde-vibrante)",
+												}
+											: {
+													borderColor: "#d1d5db",
+													color: "#9ca3af",
+												}
 										}
 									>
 										Anterior
@@ -409,13 +373,13 @@ export default function FeedPage() {
 										style={
 											hasNext
 												? {
-														borderColor: "var(--verde-vibrante)",
-														color: "var(--verde-vibrante)",
-													}
-												: {
-														borderColor: "#d1d5db",
-														color: "#9ca3af",
-													}
+													borderColor: "var(--verde-vibrante)",
+													color: "var(--verde-vibrante)",
+												}
+											: {
+													borderColor: "#d1d5db",
+													color: "#9ca3af",
+												}
 										}
 									>
 										Próxima
@@ -424,8 +388,8 @@ export default function FeedPage() {
 							)}
 						</>
 					)}
-				</main>
-			</div>
+				</div>
+			</main>
 		</div>
 	);
 }
