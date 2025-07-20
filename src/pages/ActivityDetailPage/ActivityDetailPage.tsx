@@ -1,14 +1,13 @@
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, MapPin, Zap, Users, Hourglass, Edit, Star } from "lucide-react";
+import { ArrowLeft, MapPin, Zap, Users, Hourglass, Edit, Star, AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
 import PasseioService, { Passeio } from "@/services/passeioService";
 import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer"; // Importando o novo Footer
+import { Footer } from "@/components/Footer";
 import { useUser } from "@/hooks/useAuth";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 
-// Componente auxiliar de estrelas com o novo padrão de estilo
 const StarRating = ({ rating }: { rating: number }) => {
   const totalStars = 5;
   return (
@@ -42,7 +41,6 @@ export default function ActivityDetailPage() {
       .finally(() => setLoading(false));
   }, [passeioId]);
 
-  // Layout dos estados de 'loading' e 'error' atualizado
   if (loading) {
     return (
       <div className="flex flex-col min-h-screen" style={{ backgroundColor: "var(--background-claro)" }}>
@@ -68,10 +66,9 @@ export default function ActivityDetailPage() {
 
   const isOwner = user && user.role === "GUIA" && user.id === passeio.guia.id;
   const isTurista = user && user.role === "CLIENTE";
-  const formattedPrice = `R$ ${parseFloat(passeio.valor).toFixed(2).replace('.', ',')}`;
   const defaultImage = "/default-image.png";
   const imagens = passeio.imagens && passeio.imagens.length > 0 ? passeio.imagens : [{ url_imagem: defaultImage, descricao: passeio.titulo }];
-  const duracaoDias = Math.round((passeio.duracao_passeio || 0) / (60*24)); // duração em minutos para dias
+  const duracaoDias = Math.round((passeio.duracao_passeio || 0) / (60*24));
   
   const carouselResponsive = {
     desktop: { breakpoint: { max: 3000, min: 1024 }, items: 1 },
@@ -82,13 +79,12 @@ export default function ActivityDetailPage() {
   return (
     <div className="flex flex-col min-h-screen" style={{ backgroundColor: "var(--background-claro)" }}>
       <Header />
-      <main className="flex-1 w-full max-w-6xl mx-auto px-4 pt-20 pb-12">
+      <main className="flex-1 w-full max-w-6xl mx-auto px-4 pt-24 pb-12">
         <Link to="/explorar" className="flex items-center gap-2 font-semibold mb-6 transition-colors hover:underline" style={{ color: 'var(--marrom-dourado)' }}>
           <ArrowLeft size={20} />
           Voltar para Exploração
         </Link>
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Coluna Principal (Esquerda) */}
           <div className="lg:w-2/3">
             <div className="mb-6 rounded-lg overflow-hidden shadow-lg border border-[rgba(137,143,41,0.1)]">
               <Carousel responsive={carouselResponsive} infinite={imagens.length > 1} showDots={imagens.length > 1} arrows={imagens.length > 1}>
@@ -97,14 +93,14 @@ export default function ActivityDetailPage() {
                     key={index}
                     src={img.url_imagem}
                     alt={img.descricao}
-                    className="w-full h-[30rem] object-cover"
+                    className="w-full h-64 md:h-80 lg:h-[30rem] object-cover"
                     onError={(e) => { e.currentTarget.src = defaultImage; }}
                   />
                 ))}
               </Carousel>
             </div>
 
-            <h1 className="text-4xl font-bold mb-4" style={{ color: 'var(--verde-oliva)' }}>{passeio.titulo}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: 'var(--verde-oliva)' }}>{passeio.titulo}</h1>
             <div className="flex flex-wrap gap-3 mb-6">
               <div className="flex items-center gap-2 bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium"><MapPin size={16} />Passeio</div>
               <div className="flex items-center gap-2 bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium"><Zap size={16} />Dificuldade: {passeio.nivel_dificuldade || 'N/A'}</div>
@@ -113,6 +109,20 @@ export default function ActivityDetailPage() {
 
             <h2 className="text-2xl font-bold border-b pb-2 mt-8 mb-4" style={{ color: 'var(--verde-oliva)', borderColor: 'rgba(137,143,41,0.15)' }}>Sobre a atividade</h2>
             <p className="text-gray-700 leading-relaxed whitespace-pre-line">{passeio.descricao}</p>
+
+            {passeio.restricoes && passeio.restricoes.length > 0 && (
+              <div className="mt-8">
+                <h2 className="text-2xl font-bold border-b pb-2 mb-4" style={{ color: 'var(--verde-oliva)', borderColor: 'rgba(137,143,41,0.15)' }}>Restrições e Recomendações</h2>
+                <ul className="space-y-3">
+                  {passeio.restricoes.map(restricao => (
+                    <li key={restricao.id} className="flex items-start gap-3 p-3 bg-yellow-50/50 border-l-4 border-yellow-400 rounded-r-lg">
+                      <AlertTriangle size={20} className="text-yellow-600 flex-shrink-0 mt-0.5" />
+                      <span className="text-gray-800">{restricao.descricao}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div className="bg-white p-5 rounded-lg shadow-sm mt-8 border border-[rgba(137,143,41,0.1)] flex items-center gap-4">
               <img src={passeio.guia.perfil.foto || defaultImage} alt={passeio.guia.perfil.nome} className="w-16 h-16 rounded-full object-cover"/>
@@ -124,25 +134,31 @@ export default function ActivityDetailPage() {
             </div>
           </div>
 
-          {/* Coluna de Ação (Direita) */}
           <div className="lg:w-1/3">
             <div className="sticky top-24 bg-white p-6 rounded-lg shadow-xl border border-[rgba(137,143,41,0.1)]">
-              <h2 className="text-3xl font-bold mb-4" style={{ color: 'var(--marrom-dourado)' }}>
-                {formattedPrice} <span className="text-base font-normal text-gray-600">/ pessoa</span>
-              </h2>
+              {passeio.valor && parseFloat(passeio.valor) > 0 ? (
+                <h2 className="text-2xl md:text-3xl font-bold mb-4" style={{ color: 'var(--marrom-dourado)' }}>
+                  {`R$ ${parseFloat(passeio.valor).toFixed(2).replace('.', ',')}`}
+                  <span className="text-base font-normal text-gray-600"> / pessoa</span>
+                </h2>
+              ) : (
+                <h2 className="text-xl md:text-2xl font-bold mb-4 flex items-baseline gap-2" style={{ color: 'var(--marrom-dourado)' }}>
+                  <span className="text-lg text-gray-700 font-medium">Preço:</span>
+                  <span>Entrar em contato</span>
+                </h2>
+              )}
               <ul className="space-y-3 text-gray-800 border-t pt-4">
                 <li className="flex items-center gap-3"><Hourglass size={20} className="text-gray-500" /><div><strong>Duração:</strong> {duracaoDias} dia(s)</div></li>
                 <li className="flex items-center gap-3"><Users size={20} className="text-gray-500" /><div><strong>Vagas restantes:</strong> {passeio.qtd_pessoas || 0}</div></li>
               </ul>
               <div className="mt-6">
-                {isTurista && (<button className="w-full text-white font-bold py-3 rounded-lg shadow-md transition-transform duration-300 hover:scale-105" style={{ backgroundColor: 'var(--verde-vibrante)' }}>Reservar Vaga</button>)}
-                {isOwner && (<Link to={`/atividade/editar/${passeio.id}`} className="w-full text-center font-bold py-3 rounded-lg flex items-center justify-center gap-2 border-2 transition-colors hover:bg-gray-100" style={{ color: 'var(--verde-oliva)', borderColor: 'var(--verde-oliva)' }}><Edit size={18} />Editar Atividade</Link>)}
+                {isTurista && (<button className="w-full text-white font-bold py-3 rounded-lg shadow-md transition-transform duration-300 hover:scale-105" style={{ backgroundColor: 'var(--verde-vibrante)' }}>Reservar Vaga</button>)} 
+                {isOwner && (<Link to={`/editar-passeio/${passeio.id}`} className="w-full text-center font-bold py-3 rounded-lg flex items-center justify-center gap-2 border-2 transition-colors hover:bg-gray-100" style={{ color: 'var(--verde-oliva)', borderColor: 'var(--verde-oliva)' }}><Edit size={18} />Editar Atividade</Link>)} 
               </div>
             </div>
           </div>
         </div>
 
-        {/* Seção de Avaliações */}
         <div className="mt-12">
           <h2 className="text-2xl font-bold border-b pb-2 mb-6" style={{ color: 'var(--verde-oliva)', borderColor: 'rgba(137,143,41,0.15)' }}>Avaliações</h2>
           {passeio.avaliacoes && passeio.avaliacoes.length > 0 ? (
