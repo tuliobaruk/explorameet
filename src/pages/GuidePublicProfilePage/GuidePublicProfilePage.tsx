@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { Star, MapPin, ShieldCheck, Award, ThumbsUp } from "lucide-react";
+import { MapPin, ShieldCheck, Award, ThumbsUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { GuiaService } from "../../services/guiaService";
 import "./GuidePublicProfilePage.css";
@@ -40,22 +40,6 @@ interface GuideData {
 	}>;
 }
 
-// Componente para renderizar as estrelas de avaliação
-const StarRating = ({ rating }: { rating: number }) => {
-	const totalStars = 5;
-	return (
-		<div className="flex items-center">
-			{[...Array(totalStars)].map((_, index) => (
-				<Star
-					key={index}
-					size={18}
-					className={index < Math.round(rating) ? "star-filled" : "star-empty"}
-				/>
-			))}
-		</div>
-	);
-};
-
 export default function GuidePublicProfilePage() {
 	const { guideId } = useParams<{ guideId: string }>();
 	const [guideData, setGuideData] = useState<GuideData | null>(null);
@@ -79,30 +63,13 @@ export default function GuidePublicProfilePage() {
 		fetchGuideData();
 	}, [guideId]);
 
-	// Funções auxiliares
 	const calculateStats = (passeios: GuideData['passeios']) => {
 		if (!passeios || passeios.length === 0) {
-			return { averageRating: 0, totalActivities: 0, totalReviews: 0 };
+			return { totalActivities: 0 };
 		}
 
-		let totalRating = 0;
-		let totalReviews = 0;
-
-		passeios.forEach(passeio => {
-			if (passeio.avaliacoes && passeio.avaliacoes.length > 0) {
-				passeio.avaliacoes.forEach(avaliacao => {
-					totalRating += avaliacao.nota;
-					totalReviews++;
-				});
-			}
-		});
-
-		const averageRating = totalReviews > 0 ? totalRating / totalReviews : 0;
-		
 		return {
-			averageRating,
-			totalActivities: passeios.length,
-			totalReviews
+			totalActivities: passeios.length
 		};
 	};
 
@@ -110,15 +77,6 @@ export default function GuidePublicProfilePage() {
 		if (!value) return 'Sob consulta';
 		const numPrice = parseFloat(value);
 		return `R$ ${numPrice.toFixed(2).replace('.', ',')}`;
-	};
-
-	const formatDate = (dateString: string) => {
-		const date = new Date(dateString);
-		return date.toLocaleDateString('pt-BR', {
-			day: '2-digit',
-			month: 'long',
-			year: 'numeric'
-		});
 	};
 
 	const getDefaultAvatar = (name: string) => {
@@ -129,30 +87,6 @@ export default function GuidePublicProfilePage() {
 			.toUpperCase()
 			.slice(0, 2);
 		return `https://placehold.co/150x150/898f29/FFFFFF?text=${initials}&font=roboto`;
-	};
-
-	const getAllReviews = (passeios: GuideData['passeios']) => {
-		const reviews: Array<{
-			id: string;
-			nota: number;
-			comentario: string;
-			createdAt: string;
-			passeioTitulo: string;
-		}> = [];
-
-		passeios.forEach(passeio => {
-			if (passeio.avaliacoes && passeio.avaliacoes.length > 0) {
-				passeio.avaliacoes.forEach(avaliacao => {
-					reviews.push({
-						...avaliacao,
-						passeioTitulo: passeio.titulo
-					});
-				});
-			}
-		});
-
-		// Ordenar por data mais recente
-		return reviews.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 	};
 
 	if (loading) {
@@ -172,14 +106,11 @@ export default function GuidePublicProfilePage() {
 	}
 
 	const stats = calculateStats(guideData.passeios);
-	const allReviews = getAllReviews(guideData.passeios);
 
 	return (
 		<div className="guide-profile-container flex min-h-screen flex-col items-center">
-			{/* <HeaderLogado /> */}
 
 			<main className="w-full max-w-5xl mx-auto mt-10 md:mt-20 px-4">
-				{/* --- Card de Apresentação --- */}
 				<section className="profile-card w-full bg-white p-6 rounded-lg shadow-xl flex flex-col md:flex-row items-center gap-6 mb-8">
 					<img
 						src={guideData.perfil.foto || getDefaultAvatar(guideData.perfil.nome)}
@@ -206,14 +137,7 @@ export default function GuidePublicProfilePage() {
 				</section>
 
 				{/* --- Destaques Rápidos --- */}
-				<section className="stats-container grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
-					<div className="stat-item">
-						<Star size={24} />
-						<div>
-							<strong>{stats.averageRating.toFixed(1)}</strong>
-							<p>Avaliação Média</p>
-						</div>
-					</div>
+				<section className="stats-container grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
 					<div className="stat-item">
 						<ThumbsUp size={24} />
 						<div>
@@ -224,8 +148,8 @@ export default function GuidePublicProfilePage() {
 					<div className="stat-item">
 						<Award size={24} />
 						<div>
-							<strong>{stats.totalReviews}</strong>
-							<p>Avaliações Recebidas</p>
+							<strong>{guideData.cadasturStatus ? 'Verificado' : 'Pendente'}</strong>
+							<p>Status Cadastur</p>
 						</div>
 					</div>
 				</section>
@@ -266,30 +190,6 @@ export default function GuidePublicProfilePage() {
 						</div>
 					) : (
 						<p className="text-gray-600 mt-6">Nenhum passeio cadastrado ainda.</p>
-					)}
-				</section>
-
-				{/* --- Avaliações --- */}
-				<section>
-					<h2 className="section-title">O que os turistas dizem</h2>
-					{allReviews.length > 0 ? (
-						<div className="space-y-6 mt-6">
-							{allReviews.slice(0, 10).map((review) => (
-								<div key={review.id} className="review-card bg-white p-5 rounded-lg shadow-sm">
-									<div className="flex justify-between items-start">
-										<div>
-											<h4 className="font-bold text-gray-800">Turista</h4>
-											<p className="text-sm text-gray-500">{formatDate(review.createdAt)}</p>
-											<p className="text-xs text-blue-600 mt-1">Passeio: {review.passeioTitulo}</p>
-										</div>
-										<StarRating rating={review.nota} />
-									</div>
-									<p className="text-gray-700 mt-3">{review.comentario}</p>
-								</div>
-							))}
-						</div>
-					) : (
-						<p className="text-gray-600 mt-6">Nenhuma avaliação ainda.</p>
 					)}
 				</section>
 			</main>
