@@ -19,8 +19,10 @@ import GuidePublicProfilePage from "./pages/GuidePublicProfilePage/GuidePublicPr
 import CreatePasseioPage from "./pages/passeio/PasseioCreatePage";
 import HorarioPasseioPage from "./pages/horarioPasseio/HorarioPasseioPage";
 import TermsAndPrivacyPage from "./pages/TermsAndPrivacyPage/TermsAndPrivacyPage";
-import MeusPasseiosPage from "./pages/MeusPasseiosPage/MeusPasseiosPage";
+// import MeusPasseiosPage from "./pages/MeusPasseiosPage/MeusPasseiosPage";
 import EditPasseioPage from "./pages/passeio/PasseioEditPage";
+import GuideOwnActivityListPage from "@/pages/guideOwnActivityList/guideOwnActivityPage";
+
 
 const router = createBrowserRouter([
 	{
@@ -134,7 +136,7 @@ const router = createBrowserRouter([
 	},
 	{
 		path: "/meus-passeios",
-		element: <MeusPasseiosPage />,
+		element: <GuideOwnActivityListPage />,
 	},
 	{
 		path: "/editar-passeio/:passeioId",
