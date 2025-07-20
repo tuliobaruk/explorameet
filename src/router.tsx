@@ -22,6 +22,7 @@ import TermsAndPrivacyPage from "./pages/TermsAndPrivacyPage/TermsAndPrivacyPage
 // import MeusPasseiosPage from "./pages/MeusPasseiosPage/MeusPasseiosPage";
 import EditPasseioPage from "./pages/passeio/PasseioEditPage";
 import GuideOwnActivityListPage from "@/pages/guideOwnActivityList/guideOwnActivityPage";
+import ProfileEditPage from "./pages/ProfilePage/ProfileEditPage";
 
 
 const router = createBrowserRouter([
@@ -93,6 +94,10 @@ const router = createBrowserRouter([
 	{
 		path: "perfil",
 		element: <ProfilePage />,
+	},
+	{
+		path: "perfil/editar",
+		element: <ProfileEditPage />,
 	},
 	{
 		path: "criar-atividade",
