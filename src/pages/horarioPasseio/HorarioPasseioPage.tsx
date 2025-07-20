@@ -1,6 +1,5 @@
 import { Header } from "@/components/Header";
-import { Sidebar } from "@/components/Sidebar";
-import { useAuthContext, useUser } from "@/hooks/useAuth";
+import { useUser } from "@/hooks/useAuth";
 import HorarioDisponivelService, {
 	CreateHorarioDisponivelData,
 	HorarioDisponivel,
@@ -17,8 +16,6 @@ interface HorarioFormData {
 }
 
 export default function HorarioPasseioPage() {
-	const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-	const [activePage, setActivePage] = useState("gerenciar-horarios");
 	const [loading, setLoading] = useState(false);
 	const [loadingHorarios, setLoadingHorarios] = useState(true);
 	const [horarios, setHorarios] = useState<HorarioDisponivel[]>([]);
@@ -29,7 +26,6 @@ export default function HorarioPasseioPage() {
 	const { passeioId } = useParams<{ passeioId: string }>();
 
 	const { isAuthenticated, user, isLoading } = useUser();
-	const { logout } = useAuthContext();
 
 	const [formData, setFormData] = useState<HorarioFormData>({
 		data_hora: "",
@@ -201,9 +197,6 @@ export default function HorarioPasseioPage() {
 		});
 	};
 
-	const toggleSidebar = () => {
-		setIsSidebarOpen(!isSidebarOpen);
-	};
 
 	if (isLoading || loadingHorarios) {
 		return (
@@ -211,10 +204,10 @@ export default function HorarioPasseioPage() {
 				className="flex flex-col min-h-screen"
 				style={{ backgroundColor: "var(--background-claro)" }}
 			>
-				<Header isSidebarOpen={false} toggleSidebar={() => {}} />
-				<div className="flex flex-1">
-					<main className="flex-1 p-4 lg:p-6">
-						<div className="max-w-4xl mx-auto">
+				<Header />
+				<div className="flex flex-1 relative">
+					<main className="flex-1 p-4 lg:p-6 pt-24">
+						<div className="max-w-4xl mx-auto p-24">
 							<div
 								className="bg-white rounded-lg shadow-md overflow-hidden border"
 								style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}
@@ -250,26 +243,18 @@ export default function HorarioPasseioPage() {
 			className="flex flex-col min-h-screen"
 			style={{ backgroundColor: "var(--background-claro)" }}
 		>
-			<Header isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+			<Header />
 
 			<div className="flex flex-1 relative">
-				<Sidebar
-					isSidebarOpen={isSidebarOpen}
-					setIsSidebarOpen={setIsSidebarOpen}
-					activePage={activePage}
-					setActivePage={setActivePage}
-					isAuthenticated={isAuthenticated}
-					canCreatePasseio={canCreatePasseio}
-					logout={logout}
-				/>
+
 				<main
 					className={`
-					flex-1 p-4 lg:p-6 
+					flex-1 p-4 lg:p-6
 					transition-all duration-300 ease-in-out
-					${isSidebarOpen ? "lg:ml-64" : "lg:ml-0"}
+					"lg:ml-0"}
 				`}
 				>
-					<div className="max-w-4xl mx-auto">
+					<div className="max-w-4xl mx-auto p-24">
 						<div
 							className="bg-white rounded-lg shadow-md overflow-hidden border mb-6"
 							style={{
