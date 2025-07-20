@@ -1,204 +1,204 @@
-import { Link, useParams } from "react-router-dom";
-import { MapPin, ShieldCheck, Award, ThumbsUp } from "lucide-react";
-import { useEffect, useState } from "react";
-import { GuiaService } from "../../services/guiaService";
-import "./GuidePublicProfilePage.css";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Star, MapPin, ShieldCheck, Award, ThumbsUp } from "lucide-react";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer"; // Importando o novo Footer
 
-interface GuideData {
-	id: string;
-	cpf_cnpj: string;
-	num_cadastro: string;
-	cadasturStatus: boolean;
-	perfil: {
-		id: string;
-		nome: string;
-		celular: string;
-		genero: string;
-		idade: number;
-		foto: string | null;
-		usuario: {
-			id: string;
-			email: string;
-			emailVerificado: boolean;
-			role: string;
-		};
-	};
-	passeios: Array<{
-		id: string;
-		titulo: string;
-		descricao: string;
-		duracao_passeio: number;
-		valor: string | null;
-		qtd_pessoas: number | null;
-		nivel_dificuldade: number | null;
-		avaliacoes: Array<{
-			id: string;
-			nota: number;
-			comentario: string;
-			createdAt: string;
-		}>;
-	}>;
-}
+// ... (O restante do seu código, como a tipagem 'Guide' e o mock 'mockGuideData', permanece o mesmo) ...
+type Guide = {
+  id: string;
+  name: string;
+  profilePicture: string;
+  isPaid: boolean;
+  location: string;
+  bio: string;
+  stats: {
+    averageRating: number;
+    totalActivities: number;
+    yearsOfExperience: number;
+  };
+  activities: {
+    id: number;
+    title: string;
+    image: string;
+    price: number;
+  }[];
+  reviews: {
+    id: number;
+    touristName: string;
+    rating: number;
+    comment: string;
+    date: string;
+  }[];
+};
+
+const mockGuideData: Guide = {
+  id: "carlos-andrade",
+  name: "Carlos Andrade",
+  profilePicture: "https://via.placeholder.com/150",
+  isPaid: true,
+  location: "Chapada Diamantina, BA",
+  bio: "Guia experiente com 10 anos de trilhas na Chapada. Foco em geologia e botânica. Minha missão é proporcionar aventuras seguras, conscientes e inesquecíveis, respeitando a natureza e a cultura local.",
+  stats: {
+    averageRating: 4.9,
+    totalActivities: 38,
+    yearsOfExperience: 10,
+  },
+  activities: [
+    { id: 1, title: "Travessia do Vale do Pati - 3 Dias", image: "https://via.placeholder.com/300x200?text=Vale+do+Pati", price: 1250.00 },
+    { id: 2, title: "Cachoeira da Fumaça por Cima", image: "https://via.placeholder.com/300x200?text=Cachoeira+Fumaça", price: 150.00 },
+  ],
+  reviews: [
+    { id: 1, touristName: "Mariana Silva", rating: 5, comment: "Carlos é um guia incrível! Super atencioso, conhece tudo sobre o local e nos passou muita segurança.", date: "10 de Julho, 2025" },
+    { id: 2, touristName: "João V.", rating: 5, comment: "Experiência única! A organização foi impecável e o conhecimento do Carlos sobre a fauna e flora enriqueceu demais o passeio.", date: "28 de Junho, 2025" },
+  ]
+};
+
+const StarRating = ({ rating }: { rating: number }) => {
+    const totalStars = 5;
+    return (
+        <div className="flex items-center">
+            {[...Array(totalStars)].map((_, index) => (
+                <Star 
+                  key={index} 
+                  size={18}
+                  style={{ 
+                    color: index < Math.round(rating) ? 'var(--amarelo-estrela, #facc15)' : '#d1d5db' 
+                  }}
+                />
+            ))}
+        </div>
+    );
+};
+
 
 export default function GuidePublicProfilePage() {
-	const { guideId } = useParams<{ guideId: string }>();
-	const [guideData, setGuideData] = useState<GuideData | null>(null);
-	const [loading, setLoading] = useState(true);
+  const [guia, setGuia] = useState<Guide | null>(null);
+  const [loading, setLoading] = useState(true);
 
-	useEffect(() => {
-		const fetchGuideData = async () => {
-			if (!guideId) return;
-			
-			try {
-				setLoading(true);
-				const data = await GuiaService.getGuiaById(guideId);
-				setGuideData(data);
-			} catch (error) {
-				console.error('Erro ao buscar dados do guia:', error);
-			} finally {
-				setLoading(false);
-			}
-		};
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setGuia(mockGuideData);
+      setLoading(false);
+    }, 1000);
 
-		fetchGuideData();
-	}, [guideId]);
+    return () => clearTimeout(timer);
+  }, []);
 
-	const calculateStats = (passeios: GuideData['passeios']) => {
-		if (!passeios || passeios.length === 0) {
-			return { totalActivities: 0 };
-		}
+  // O layout dos estados de 'loading' e 'not found' também precisa do espaçamento
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "var(--background-claro)" }}>
+        <Header />
+        <main className="flex-1 flex justify-center items-center pt-20">
+          <p className="text-lg" style={{ color: 'var(--verde-oliva)' }}>Carregando perfil do guia...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
-		return {
-			totalActivities: passeios.length
-		};
-	};
+  if (!guia) {
+    return (
+      <div className="flex flex-col min-h-screen" style={{ backgroundColor: "var(--background-claro)" }}>
+        <Header />
+        <main className="flex-1 flex justify-center items-center pt-20">
+          <p className="text-lg text-red-600">Guia não encontrado.</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
-	const formatPrice = (value: string | null) => {
-		if (!value) return 'Sob consulta';
-		const numPrice = parseFloat(value);
-		return `R$ ${numPrice.toFixed(2).replace('.', ',')}`;
-	};
 
-	const getDefaultAvatar = (name: string) => {
-		const initials = name
-			.split(" ")
-			.map((n) => n[0])
-			.join("")
-			.toUpperCase()
-			.slice(0, 2);
-		return `https://placehold.co/150x150/898f29/FFFFFF?text=${initials}&font=roboto`;
-	};
+  return (
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: "var(--background-claro)" }}>
+      <Header />
+      
+      {/* AQUI ESTÁ A CORREÇÃO PRINCIPAL */}
+      <main className="flex-1 w-full max-w-5xl mx-auto px-4 pt-20 pb-12">
+        {/* O 'pt-20' cria o espaço para o header fixo. O 'pb-12' cria um respiro antes do footer. */}
+        
+        {/* Card de Apresentação */}
+        <section className="bg-white p-6 rounded-lg shadow-md border border-[rgba(137,143,41,0.1)] flex flex-col md:flex-row items-center gap-6 mb-8">
+            {/* ... o resto do conteúdo do card ... */}
+            <img
+            src={guia.profilePicture}
+            alt={`Foto de ${guia.name}`}
+            className="w-32 h-32 rounded-full object-cover border-4"
+            style={{ borderColor: "rgba(130, 181, 91, 0.2)" }}
+          />
+          <div className="flex-1 text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start gap-3">
+              <h1 className="text-3xl font-bold" style={{ color: 'var(--verde-oliva)' }}>{guia.name}</h1>
+              {guia.isPaid && (
+                <div className="p-2 rounded-full" title="Guia Verificado" style={{ color: 'var(--marrom-dourado)', backgroundColor: 'rgba(140, 116, 45, 0.1)' }}>
+                  <ShieldCheck size={22} />
+                </div>
+              )}
+            </div>
+            <div className="flex items-center justify-center md:justify-start gap-2 mt-2 text-gray-600">
+              <MapPin size={16} />
+              <span>{guia.location}</span>
+            </div>
+            <p className="text-gray-700 mt-3">{guia.bio}</p>
+          </div>
+        </section>
 
-	if (loading) {
-		return (
-			<div className="guide-profile-container flex min-h-screen flex-col items-center justify-center">
-				<div className="text-lg text-gray-600">Carregando perfil do guia...</div>
-			</div>
-		);
-	}
+        {/* ... todo o restante do conteúdo da página (stats, activities, reviews) ... */}
+        {/* Destaques Rápidos */}
+        <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
+          <div className="bg-white p-4 rounded-lg shadow-sm border border-[rgba(137,143,41,0.1)] flex items-center gap-4" style={{ color: 'var(--verde-oliva)' }}>
+            <Star size={24} />
+            <div><strong>{guia.stats.averageRating.toFixed(1)}</strong><p className="text-sm text-gray-500">Avaliação Média</p></div>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow-sm border border-[rgba(137,143,41,0.1)] flex items-center gap-4" style={{ color: 'var(--verde-oliva)' }}>
+            <ThumbsUp size={24} />
+            <div><strong>{guia.stats.totalActivities}</strong><p className="text-sm text-gray-500">Passeios Realizados</p></div>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow-sm border border-[rgba(137,143,41,0.1)] flex items-center gap-4" style={{ color: 'var(--verde-oliva)' }}>
+            <Award size={24} />
+            <div><strong>{guia.stats.yearsOfExperience}</strong><p className="text-sm text-gray-500">Anos de Experiência</p></div>
+          </div>
+        </section>
 
-	if (!guideData) {
-		return (
-			<div className="guide-profile-container flex min-h-screen flex-col items-center justify-center">
-				<div className="text-lg text-gray-600">Guia não encontrado</div>
-			</div>
-		);
-	}
+        {/* Catálogo de Atividades */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold border-b pb-2 mb-6" style={{ color: 'var(--verde-oliva)', borderColor: 'rgba(137, 143, 41, 0.15)' }}>Atividades oferecidas por {guia.name.split(' ')[0]}</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            {guia.activities.map((activity) => (
+              <Link to={`/passeio/${activity.id}`} key={activity.id} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:-translate-y-1 border border-[rgba(137,143,41,0.1)] hover:shadow-lg">
+                <img src={activity.image} alt={activity.title} className="w-full h-40 object-cover" />
+                <div className="p-4">
+                  <h3 className="font-bold text-lg text-gray-800">{activity.title}</h3>
+                  <p className="text-md font-semibold mt-2" style={{ color: 'var(--marrom-dourado)' }}>R$ {activity.price.toFixed(2)}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
 
-	const stats = calculateStats(guideData.passeios);
+        {/* Avaliações */}
+        <section>
+          <h2 className="text-2xl font-bold border-b pb-2 mb-6" style={{ color: 'var(--verde-oliva)', borderColor: 'rgba(137, 143, 41, 0.15)' }}>O que os turistas dizem</h2>
+          <div className="space-y-6 mt-6">
+            {guia.reviews.map((review) => (
+              <div key={review.id} className="bg-white p-5 rounded-lg shadow-sm" style={{ borderLeft: '4px solid var(--verde-vibrante)' }}>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-bold text-gray-800">{review.touristName}</h4>
+                    <p className="text-sm text-gray-500">{review.date}</p>
+                  </div>
+                  <StarRating rating={review.rating} />
+                </div>
+                <p className="text-gray-700 mt-3">{review.comment}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
 
-	return (
-		<div className="guide-profile-container flex min-h-screen flex-col items-center">
-
-			<main className="w-full max-w-5xl mx-auto mt-10 md:mt-20 px-4">
-				<section className="profile-card w-full bg-white p-6 rounded-lg shadow-xl flex flex-col md:flex-row items-center gap-6 mb-8">
-					<img
-						src={guideData.perfil.foto || getDefaultAvatar(guideData.perfil.nome)}
-						alt={`Foto de ${guideData.perfil.nome}`}
-						className="w-32 h-32 rounded-full border-4 border-white shadow-md object-cover"
-					/>
-					<div className="flex-1 text-center md:text-left">
-						<div className="flex items-center justify-center md:justify-start gap-3">
-							<h1 className="profile-name text-3xl font-bold">{guideData.perfil.nome}</h1>
-							{guideData.cadasturStatus && (
-								<div className="premium-badge" title="Guia Verificado">
-									<ShieldCheck size={22} />
-								</div>
-							)}
-						</div>
-						<div className="flex items-center justify-center md:justify-start gap-2 mt-2 text-gray-600">
-							<MapPin size={16} />
-							<span>Cadastur: {guideData.num_cadastro}</span>
-						</div>
-						<p className="text-gray-700 mt-3">
-							{guideData.perfil.genero}, {guideData.perfil.idade} anos
-						</p>
-					</div>
-				</section>
-
-				{/* --- Destaques Rápidos --- */}
-				<section className="stats-container grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
-					<div className="stat-item">
-						<ThumbsUp size={24} />
-						<div>
-							<strong>{stats.totalActivities}</strong>
-							<p>Passeios Cadastrados</p>
-						</div>
-					</div>
-					<div className="stat-item">
-						<Award size={24} />
-						<div>
-							<strong>{guideData.cadasturStatus ? 'Verificado' : 'Pendente'}</strong>
-							<p>Status Cadastur</p>
-						</div>
-					</div>
-				</section>
-
-				{/* --- Catálogo de Atividades --- */}
-				<section className="mb-12">
-					<h2 className="section-title">
-						Passeios oferecidos por {guideData.perfil.nome.split(" ")[0]}
-					</h2>
-					{guideData.passeios && guideData.passeios.length > 0 ? (
-						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-							{guideData.passeios.map((passeio) => (
-								<Link
-									to={`/passeio/${passeio.id}`}
-									key={passeio.id}
-									className="activity-card-link bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:-translate-y-1"
-								>
-									<img
-										src="/default-image.png"
-										alt={passeio.titulo}
-										className="w-full h-40 object-cover"
-									/>
-									<div className="p-4">
-										<h3 className="font-bold text-lg text-gray-800 line-clamp-2">{passeio.titulo}</h3>
-										<p className="text-sm text-gray-600 mt-1 line-clamp-2">{passeio.descricao}</p>
-										<div className="mt-2">
-											<p className="text-xs text-gray-500">Duração: {passeio.duracao_passeio} min</p>
-											{passeio.qtd_pessoas && (
-												<p className="text-xs text-gray-500">Máx. {passeio.qtd_pessoas} pessoas</p>
-											)}
-										</div>
-										<p className="text-md font-semibold activity-price mt-2">
-											{formatPrice(passeio.valor)}
-										</p>
-									</div>
-								</Link>
-							))}
-						</div>
-					) : (
-						<p className="text-gray-600 mt-6">Nenhum passeio cadastrado ainda.</p>
-					)}
-				</section>
-			</main>
-
-			<footer className="footer w-full py-6 mt-24">
-				<div className="flex flex-col items-center max-w-full mx-auto px-4 md:px-10 text-white">
-					<span>Copyright ©2025 ExploraMeet. Todos os direitos reservados.</span>
-				</div>
-			</footer>
-		</div>
-	);
+      <Footer />
+    </div>
+  );
 }

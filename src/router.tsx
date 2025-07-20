@@ -18,6 +18,8 @@ import ActivityDetailPage from "./pages/ActivityDetailPage/ActivityDetailPage";
 import GuidePublicProfilePage from "./pages/GuidePublicProfilePage/GuidePublicProfilePage";
 import CreatePasseioPage from "./pages/passeio/PasseioCreatePage";
 import HorarioPasseioPage from "./pages/horarioPasseio/HorarioPasseioPage";
+import TermsAndPrivacyPage from "./pages/TermsAndPrivacyPage/TermsAndPrivacyPage";
+import MeusPasseiosPage from "./pages/MeusPasseiosPage/MeusPasseiosPage";
 
 const router = createBrowserRouter([
 	{
@@ -121,6 +123,18 @@ const router = createBrowserRouter([
 			</PublicRoute>
 		),
 	},
+	 {
+    path: "/termos",
+    element: <TermsAndPrivacyPage />,
+  },
+  {
+    path: "/privacidade",
+    element: <TermsAndPrivacyPage />,
+  },
+	{
+    path: "/meus-passeios",
+    element: <MeusPasseiosPage />,
+  },
 ]);
 
 export default router;
