@@ -767,7 +767,7 @@ export default function EditPasseioPage() {
 								<div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
 									<button
 										type="button"
-										onClick={() => navigate(`/passeio/${passeioId}`)}
+										onClick={() => navigate(`/meus-passeios`)}
 										className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
 									>
 										Cancelar
