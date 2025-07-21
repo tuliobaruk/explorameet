@@ -118,7 +118,6 @@ export default function ActivityDetailPage() {
 		passeio.imagens && passeio.imagens.length > 0
 			? passeio.imagens
 			: [{ url_imagem: defaultImage, descricao: passeio.titulo }];
-	const duracaoDias = Math.round((passeio.duracao_passeio || 0) / (60 * 24));
 
 	const carouselResponsive = {
 		desktop: { breakpoint: { max: 3000, min: 1024 }, items: 1 },
@@ -260,7 +259,7 @@ export default function ActivityDetailPage() {
 								<li className="flex items-center gap-3">
 									<Hourglass size={20} className="text-gray-500" />
 									<div>
-										<strong>Duração:</strong> {duracaoDias} dia(s)
+										<strong>Duração:</strong> {passeio.duracao_passeio} minutos
 									</div>
 								</li>
 								<li className="flex items-center gap-3">
