@@ -23,6 +23,11 @@ import TermsAndPrivacyPage from "./pages/TermsAndPrivacyPage/TermsAndPrivacyPage
 import EditPasseioPage from "./pages/passeio/PasseioEditPage";
 import GuideOwnActivityListPage from "@/pages/guideOwnActivityList/guideOwnActivityPage";
 import ProfileEditPage from "./pages/ProfilePage/ProfileEditPage";
+import { AdminRoute } from "./components/AdminRoute";
+import AdminPlansPage from "./pages/admin/AdminPlansPage";
+import SubscriptionPage from "./pages/subscription/SubscriptionPage";
+import SubscriptionSuccessPage from "./pages/subscription/SubscriptionSuccessPage";
+import SubscriptionCancelPage from "./pages/subscription/SubscriptionCancelPage";
 
 const router = createBrowserRouter([
 	{
@@ -145,6 +150,26 @@ const router = createBrowserRouter([
 	{
 		path: "/editar-passeio/:passeioId",
 		element: <EditPasseioPage />,
+	},
+	{
+		path: "/admin/planos",
+		element: (
+			<AdminRoute>
+				<AdminPlansPage />
+			</AdminRoute>
+		),
+	},
+	{
+		path: "/assinatura",
+		element: <SubscriptionPage />,
+	},
+	{
+		path: "/assinatura/sucesso",
+		element: <SubscriptionSuccessPage />,
+	},
+	{
+		path: "/assinatura/cancelado",
+		element: <SubscriptionCancelPage />,
 	},
 ]);
 

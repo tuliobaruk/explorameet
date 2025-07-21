@@ -1,0 +1,65 @@
+.modal-confirm-btn {
+    background-color: var(--verde-vibrante);
+    transition: background 0.2s;
+    
+}
+.modal-confirm-btn:hover {
+    background-color: var(--verde-oliva);
+}
+
+.modal-overlay {
+    background: rgba(0,0,0,0.5);
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    max-width: 28rem;
+    width: 100%;
+    margin: 1rem;
+    z-index: 100;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.12);
+}
+
+:root {
+    --verde-vibrante: #82b55b;
+    --verde-oliva: #898f29;
+    --marrom-dourado: #8c742d;
+    --background-claro: #f9f5f1;
+}
+
+.subscription-container {
+    background-color: var(--background-claro);
+}
+
+.plan-card {
+    background-color: white;
+    border: 1px solid rgba(137, 143, 41, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(137, 143, 41, 0.1);
+}
+
+.plan-card.popular {
+    border-color: var(--marrom-dourado);
+    border-width: 2px;
+}
+
+.popular-badge {
+    background-color: var(--marrom-dourado);
+    color: white;
+}
+
+.subscribe-button {
+    background-color: var(--verde-vibrante);
+}

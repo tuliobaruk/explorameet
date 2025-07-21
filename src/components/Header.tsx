@@ -7,6 +7,7 @@ import {
 	Settings,
 	LogOut,
 	MapPinCheckIcon,
+  Crown,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
@@ -209,6 +210,13 @@ export function Header({ variant = "default" }: HeaderProps) {
 										onClick={() => setDropdownOpen(false)}
 									>
 										<UserCircle size={16} /> Meu Perfil
+									</Link>
+									<Link
+										to="/assinatura"
+										className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
+										onClick={() => setDropdownOpen(false)}
+									>
+										<Crown size={16} /> Assinatura
 									</Link>
 									<Link
 										to="/configuracoes"
