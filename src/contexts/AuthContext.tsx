@@ -20,7 +20,7 @@ interface AuthProviderProps {
 }
 
 export interface AuthenticatedUser {
-	id: string;
+  sub: string;
 	email: string;
 	role: string;
 	perfil?: {
@@ -119,12 +119,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
 		try {
 			const authStatus = await AuthService.getMe();
 			if (authStatus) {
-				const perfilData = await PerfilService.getMeuPerfil();
-				const fullUser = {
-					...authStatus,
-					perfil: perfilData,
-				};
-				setUser(fullUser);
+				if (authStatus.role === "ADMIN") {
+					setUser(authStatus);
+				} else {
+					const perfilData = await PerfilService.getMeuPerfil();
+					const fullUser = {
+						...authStatus,
+						perfil: perfilData,
+					};
+					setUser(fullUser);
+				}
 			} else {
 				setUser(null);
 			}

@@ -33,6 +33,12 @@ interface UseAuthLocalReturn {
 
 export function useUser() {
 	const { user, isLoading, isAuthenticated } = useAuthContext();
+
+	const hasRole = useCallback((role: string) => user?.role === role, [user]);
+	const isClient = useCallback(() => user?.role === "CLIENTE", [user]);
+	const isGuide = useCallback(() => user?.role === "GUIA", [user]);
+	const isAdmin = useCallback(() => user?.role === "ADMIN", [user]);
+
 	return {
 		user,
 		isLoading,
@@ -41,10 +47,10 @@ export function useUser() {
 		name: user?.perfil?.nome,
 		avatarUrl: user?.perfil?.foto,
 		role: user?.role,
-		hasRole: (role: string) => user?.role === role,
-		isClient: () => user?.role === "CLIENTE",
-		isGuide: () => user?.role === "GUIA",
-		isAdmin: () => user?.role === "ADMIN",
+		hasRole,
+		isClient,
+		isGuide,
+		isAdmin,
 
 		clienteInfo: user?.perfil?.cliente,
 		guiaInfo: user?.perfil?.guia,
