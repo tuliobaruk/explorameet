@@ -1,10 +1,11 @@
-import { Link, useParams } from "react-router-dom";
-import { MapPin, ShieldCheck, Award, ThumbsUp, ArrowLeft, Crown, Star } from "lucide-react";
-import { useEffect, useState } from "react";
-import { GuiaService } from "@/services/guiaService";
-import "./GuidePublicProfilePage.css";
 import EditPasseioButton from "@/components/EditPasseioButton";
-import { Header } from "../../components/Header";
+import { Header } from "@/components/Header";
+import { PlanBadge } from "@/components/PlanBadge";
+import { GuiaService } from "@/services/guiaService";
+import { ArrowLeft, Award, Crown, MapPin, ShieldCheck, Star, ThumbsUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import "./GuidePublicProfilePage.css";
 
 interface GuideData {
 	id: string;
@@ -112,38 +113,11 @@ export default function GuidePublicProfilePage() {
 			return null;
 		}
 
-		// Busca por inscrição ativa
-		const activeInscricao = inscricoes.find(inscricao => 
-			inscricao.status === 'ativa' && 
-			new Date(inscricao.data_fim) > new Date()
+		const activeInscricao = inscricoes.find(
+			(inscricao) => inscricao.status === "ativa" && new Date(inscricao.data_fim) > new Date(),
 		);
 
 		return activeInscricao ? activeInscricao.planoAssinatura : null;
-	};
-
-	const getPlanBadge = (planName: string) => {
-		const planStyles = {
-			'Plano Basic': {
-				color: '#6b7280',
-				bg: '#f3f4f6',
-				icon: ThumbsUp,
-				label: 'Basic'
-			},
-			'Plano Pro': {
-				color: '#2563eb',
-				bg: '#dbeafe',
-				icon: Star,
-				label: 'Pro'
-			},
-			'Plano Premium': {
-				color: '#ca8a04',
-				bg: '#fef3c7',
-				icon: Crown,
-				label: 'Premium'
-			}
-		};
-
-		return planStyles[planName as keyof typeof planStyles] || planStyles['Plano Basic'];
 	};
 
 	if (loading) {
@@ -196,41 +170,16 @@ export default function GuidePublicProfilePage() {
 								</div>
 							)}
 						</div>
-						
-						{activePlan && (
-							<div className="flex items-center justify-center md:justify-start gap-2 mb-3">
-								{(() => {
-									const planBadge = getPlanBadge(activePlan.nome);
-									const IconComponent = planBadge.icon;
-									return (
-										<div 
-											className="flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold"
-											style={{ 
-												backgroundColor: planBadge.bg, 
-												color: planBadge.color 
-											}}
-										>
-											<IconComponent size={16} />
-											<span>{planBadge.label}</span>
-										</div>
-									);
-								})()}
-							</div>
-						)}
 
 						<div className="flex items-center justify-center md:justify-start gap-2 mt-2 text-gray-600">
 							<MapPin size={16} />
 							<span>Cadastur: {guideData.num_cadastro}</span>
 						</div>
-						<p className="text-gray-700 mt-3">
+						<p className="text-gray-700 mt-3 mb-3">
 							{guideData.perfil.genero}, {guideData.perfil.idade} anos
 						</p>
-						
-						{activePlan && (
-							<p className="text-sm text-gray-600 mt-2">
-								{activePlan.descricao}
-							</p>
-						)}
+
+						<PlanBadge usuario={guideData.perfil.usuario} size="lg" width="fit-content" />
 					</div>
 				</section>
 
@@ -252,12 +201,22 @@ export default function GuidePublicProfilePage() {
 					{activePlan && (
 						<div className="stat-item">
 							{(() => {
-								const planBadge = getPlanBadge(activePlan.nome);
-								const IconComponent = planBadge.icon;
-								return <IconComponent size={24} style={{ color: planBadge.color }} />;
+								const iconMap = {
+									"Plano Basic": ThumbsUp,
+									"Plano Pro": Star,
+									"Plano Premium": Crown,
+								};
+								const colorMap = {
+									"Plano Basic": "#6b7280",
+									"Plano Pro": "#2563eb",
+									"Plano Premium": "#ca8a04",
+								};
+								const IconComponent = iconMap[activePlan.nome as keyof typeof iconMap] || ThumbsUp;
+								const iconColor = colorMap[activePlan.nome as keyof typeof colorMap] || "#6b7280";
+								return <IconComponent size={24} style={{ color: iconColor }} />;
 							})()}
 							<div>
-								<strong>{activePlan.nome.replace('Plano ', '')}</strong>
+								<strong>{activePlan.nome.replace("Plano ", "")}</strong>
 								<p>Plano Ativo</p>
 							</div>
 						</div>

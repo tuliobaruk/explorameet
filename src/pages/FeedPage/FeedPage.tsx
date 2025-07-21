@@ -1,18 +1,8 @@
 import { Header } from "@/components/Header";
+import { PlanBadge } from "@/components/PlanBadge";
 import { usePasseios } from "@/hooks/usePasseios";
 import { Passeio } from "@/services/passeioService";
-import {
-	Banknote,
-	Clock,
-	Compass,
-	MessageSquare,
-	Mountain,
-	Search,
-	Share2,
-	Star,
-	ThumbsUp,
-	Users,
-} from "lucide-react";
+import { Banknote, Clock, Compass, Mountain, Search, Star, Users } from "lucide-react";
 import React, { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -235,12 +225,17 @@ export default function FeedPage() {
 													>
 														{passeio.titulo}
 													</h2>
-													<p
-														className="text-sm font-medium mb-2"
-														style={{ color: "var(--marrom-dourado)" }}
-													>
-														Por: {passeio.guia.perfil.nome}
-													</p>
+													<div className="flex items-center gap-2 mb-2">
+														<p
+															className="text-sm font-medium"
+															style={{ color: "var(--marrom-dourado)" }}
+														>
+															Por: {passeio.guia.perfil.nome}
+														</p>
+														{passeio.guia.perfil.usuario && (
+															<PlanBadge usuario={passeio.guia.perfil.usuario} size="sm" width="fit-content" />
+														)}
+													</div>
 
 													<div className="flex flex-wrap items-center gap-3 text-xs lg:text-sm text-gray-600 mb-2">
 														<StarRating
