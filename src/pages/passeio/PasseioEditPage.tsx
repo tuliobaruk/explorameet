@@ -83,15 +83,15 @@ export default function EditPasseioPage() {
 					valor: passeioData.valor ? parseFloat(passeioData.valor) : undefined,
 					qtd_pessoas: passeioData.qtd_pessoas || undefined,
 					nivel_dificuldade: passeioData.nivel_dificuldade || 1,
-					categorias: passeioData.categorias?.map(cat => cat.id).join(",") || "",
+					categorias: passeioData.categorias?.map((cat) => cat.id).join(",") || "",
 				});
 
 				if (passeioData.categorias) {
-					setSelectedCategorias(passeioData.categorias.map(cat => cat.id));
+					setSelectedCategorias(passeioData.categorias.map((cat) => cat.id));
 				}
 
 				if (passeioData.restricoes) {
-					setSelectedRestricoes(passeioData.restricoes.map(rest => rest.id));
+					setSelectedRestricoes(passeioData.restricoes.map((rest) => rest.id));
 				}
 
 				if (passeioData.imagens) {
@@ -240,7 +240,7 @@ export default function EditPasseioPage() {
 	};
 
 	const restoreExistingImage = (imageId: string) => {
-		setImagesToRemove((prev) => prev.filter(id => id !== imageId));
+		setImagesToRemove((prev) => prev.filter((id) => id !== imageId));
 	};
 
 	const validateForm = () => {
@@ -298,7 +298,8 @@ export default function EditPasseioPage() {
 		} catch (error: unknown) {
 			console.error("Erro ao atualizar passeio:", error);
 			toast.error(
-				"Erro ao atualizar passeio: " + (error instanceof Error ? error.message : "Erro desconhecido"),
+				"Erro ao atualizar passeio: " +
+					(error instanceof Error ? error.message : "Erro desconhecido"),
 			);
 		} finally {
 			setLoading(false);
@@ -311,7 +312,7 @@ export default function EditPasseioPage() {
 				className="flex flex-col min-h-screen"
 				style={{ backgroundColor: "var(--background-claro)" }}
 			>
-				<Header/>
+				<Header />
 				<main className="flex-1 flex flex-col items-center px-2 py-8 md:px-0">
 					<div className="w-full max-w-4xl">
 						<div
@@ -371,9 +372,7 @@ export default function EditPasseioPage() {
 									<h1 className="text-2xl font-bold" style={{ color: "var(--verde-oliva)" }}>
 										Editar Passeio
 									</h1>
-									<p className="text-gray-600">
-										Atualize as informações do seu passeio
-									</p>
+									<p className="text-gray-600">Atualize as informações do seu passeio</p>
 								</div>
 							</div>
 						</div>
@@ -381,10 +380,7 @@ export default function EditPasseioPage() {
 						<div className="p-6">
 							<form onSubmit={handleSubmit} className="space-y-8">
 								<div className="space-y-6">
-									<div
-										className="pb-4 border-b"
-										style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}
-									>
+									<div className="pb-4 border-b" style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}>
 										<h3 className="text-lg font-semibold" style={{ color: "var(--verde-oliva)" }}>
 											Informações Básicas
 										</h3>
@@ -539,10 +535,7 @@ export default function EditPasseioPage() {
 
 								{/* Categorias */}
 								<div className="space-y-6">
-									<div
-										className="pb-4 border-b"
-										style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}
-									>
+									<div className="pb-4 border-b" style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}>
 										<h3 className="text-lg font-semibold" style={{ color: "var(--verde-oliva)" }}>
 											Categorias
 										</h3>
@@ -584,10 +577,7 @@ export default function EditPasseioPage() {
 
 								{/* Restrições */}
 								<div className="space-y-6">
-									<div
-										className="pb-4 border-b"
-										style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}
-									>
+									<div className="pb-4 border-b" style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}>
 										<h3 className="text-lg font-semibold" style={{ color: "var(--verde-oliva)" }}>
 											Restrições
 										</h3>
@@ -627,10 +617,7 @@ export default function EditPasseioPage() {
 
 								{/* Imagens */}
 								<div className="space-y-6">
-									<div
-										className="pb-4 border-b"
-										style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}
-									>
+									<div className="pb-4 border-b" style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}>
 										<h3 className="text-lg font-semibold" style={{ color: "var(--verde-oliva)" }}>
 											Imagens do Passeio
 										</h3>
@@ -647,7 +634,7 @@ export default function EditPasseioPage() {
 														<div
 															key={image.id}
 															className={`relative border rounded-lg overflow-hidden bg-white shadow-sm transition-all duration-200 ${
-																isMarkedForRemoval ? 'opacity-50 border-red-300' : 'border-gray-200'
+																isMarkedForRemoval ? "opacity-50 border-red-300" : "border-gray-200"
 															}`}
 														>
 															<img
@@ -675,9 +662,7 @@ export default function EditPasseioPage() {
 																</button>
 															)}
 															<div className="p-3">
-																<p className="text-sm text-gray-600">
-																	{image.descricao}
-																</p>
+																<p className="text-sm text-gray-600">{image.descricao}</p>
 																{isMarkedForRemoval && (
 																	<p className="text-red-500 text-xs mt-1">
 																		Será removida ao salvar

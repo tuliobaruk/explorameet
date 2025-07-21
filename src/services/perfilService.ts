@@ -14,9 +14,9 @@ export interface PerfilResponse {
 }
 
 export interface UpdatePerfilData {
-    nome: string;
-    celular: string;
-    idade: number;
+	nome: string;
+	celular: string;
+	idade: number;
 }
 
 export class PerfilService {

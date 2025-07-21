@@ -24,7 +24,6 @@ import EditPasseioPage from "./pages/passeio/PasseioEditPage";
 import GuideOwnActivityListPage from "@/pages/guideOwnActivityList/guideOwnActivityPage";
 import ProfileEditPage from "./pages/ProfilePage/ProfileEditPage";
 
-
 const router = createBrowserRouter([
 	{
 		path: "/",

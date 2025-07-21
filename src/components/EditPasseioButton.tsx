@@ -14,12 +14,12 @@ interface EditPasseioButtonProps {
 	size?: "sm" | "md" | "lg";
 }
 
-export default function EditPasseioButton({ 
-	passeioId, 
-	passeio, 
+export default function EditPasseioButton({
+	passeioId,
+	passeio,
 	className = "",
 	variant = "primary",
-	size = "md"
+	size = "md",
 }: EditPasseioButtonProps) {
 	const navigate = useNavigate();
 	const { canEdit } = usePasseioPermissions({ passeio });

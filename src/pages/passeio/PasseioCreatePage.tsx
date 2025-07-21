@@ -244,7 +244,7 @@ export default function CreatePasseioPage() {
 				className="flex flex-col min-h-screen"
 				style={{ backgroundColor: "var(--background-claro)" }}
 			>
-				<Header/>
+				<Header />
 				<main className="flex-1 flex flex-col items-center px-2 py-8 md:px-0">
 					<div className="w-full max-w-4xl">
 						<div
@@ -314,10 +314,7 @@ export default function CreatePasseioPage() {
 						<div className="p-6">
 							<form onSubmit={handleSubmit} className="space-y-8">
 								<div className="space-y-6">
-									<div
-										className="pb-4 border-b"
-										style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}
-									>
+									<div className="pb-4 border-b" style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}>
 										<h3 className="text-lg font-semibold" style={{ color: "var(--verde-oliva)" }}>
 											Informações Básicas
 										</h3>
@@ -515,10 +512,7 @@ export default function CreatePasseioPage() {
 								</div>
 
 								<div className="space-y-6">
-									<div
-										className="pb-4 border-b"
-										style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}
-									>
+									<div className="pb-4 border-b" style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}>
 										<h3 className="text-lg font-semibold" style={{ color: "var(--verde-oliva)" }}>
 											Categorias
 										</h3>
@@ -567,10 +561,7 @@ export default function CreatePasseioPage() {
 								</div>
 
 								<div className="space-y-6">
-									<div
-										className="pb-4 border-b"
-										style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}
-									>
+									<div className="pb-4 border-b" style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}>
 										<h3 className="text-lg font-semibold" style={{ color: "var(--verde-oliva)" }}>
 											Restrições
 										</h3>
@@ -620,10 +611,7 @@ export default function CreatePasseioPage() {
 								</div>
 
 								<div className="space-y-6">
-									<div
-										className="pb-4 border-b"
-										style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}
-									>
+									<div className="pb-4 border-b" style={{ borderColor: "rgba(137, 143, 41, 0.1)" }}>
 										<h3 className="text-lg font-semibold" style={{ color: "var(--verde-oliva)" }}>
 											Imagens do Passeio
 										</h3>

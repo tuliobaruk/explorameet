@@ -13,20 +13,20 @@ export function usePasseioPermissions(props: PasseioPermissionProps) {
 
 	const canEdit = () => {
 		if (!user) return false;
-		
+
 		if (isAdmin()) return true;
-		
+
 		if (isGuide()) {
 			const userGuiaId = guiaInfo?.id;
 			const passeioGuiaId = props.passeio?.guia?.id;
-			
+
 			if (!userGuiaId || !passeioGuiaId) {
 				return false;
 			}
-			
+
 			return userGuiaId === passeioGuiaId;
 		}
-		
+
 		return false;
 	};
 
@@ -40,10 +40,10 @@ export function usePasseioPermissions(props: PasseioPermissionProps) {
 
 	const isOwner = () => {
 		if (!user || !isGuide()) return false;
-		
+
 		const userGuiaId = guiaInfo?.id;
 		const passeioGuiaId = props.passeio?.guia?.id;
-		
+
 		return userGuiaId === passeioGuiaId;
 	};
 
