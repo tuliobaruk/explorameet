@@ -135,13 +135,13 @@ export default function GuideSubscriptionsPage() {
                       <div className="flex items-center gap-2">
                         <Calendar size={16} />
                         <span>
-                          {new Date(subscription.horarioDisponivel.data_hora_inicio).toLocaleDateString('pt-BR')}
+                          {new Date(subscription.horarioDisponivel.data_hora).toLocaleDateString('pt-BR')}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Clock size={16} />
                         <span>
-                          {new Date(subscription.horarioDisponivel.data_hora_inicio).toLocaleTimeString('pt-BR', {
+                          {new Date(subscription.horarioDisponivel.data_hora).toLocaleTimeString('pt-BR', {
                             hour: '2-digit',
                             minute: '2-digit'
                           })}

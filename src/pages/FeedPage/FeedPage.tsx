@@ -230,10 +230,20 @@ export default function FeedPage() {
 															className="text-sm font-medium"
 															style={{ color: "var(--marrom-dourado)" }}
 														>
-															Por: {passeio.guia.perfil.nome}
+															Por:{" "}
+															<span className="sm:hidden">
+																{passeio.guia.perfil.nome.length > 16
+																	? `${passeio.guia.perfil.nome.substring(0, 16)}...`
+																	: passeio.guia.perfil.nome}
+															</span>
+															<span className="hidden sm:inline">{passeio.guia.perfil.nome}</span>
 														</p>
 														{passeio.guia.perfil.usuario && (
-															<PlanBadge usuario={passeio.guia.perfil.usuario} size="sm" width="fit-content" />
+															<PlanBadge
+																usuario={passeio.guia.perfil.usuario}
+																size="sm"
+																width="fit-content"
+															/>
 														)}
 													</div>
 

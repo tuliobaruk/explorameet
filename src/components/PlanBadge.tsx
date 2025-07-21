@@ -50,19 +50,19 @@ export const PlanBadge: React.FC<PlanBadgeProps> = ({
 				color: "#6b7280",
 				bg: "#f3f4f6",
 				icon: ThumbsUp,
-				label: "Plano Basic",
+				label: "Basic",
 			},
 			"Plano Pro": {
 				color: "#2563eb",
 				bg: "#dbeafe",
 				icon: Star,
-				label: "Plano Pro",
+				label: "Pro",
 			},
 			"Plano Premium": {
 				color: "#ca8a04",
 				bg: "#fef3c7",
 				icon: Crown,
-				label: "Plano Premium",
+				label: "Premium",
 			},
 		};
 

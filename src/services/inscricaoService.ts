@@ -20,7 +20,7 @@ export interface Inscricao {
   };
   horarioDisponivel: {
     id: string;
-    data_hora_inicio: string;
+    data_hora: string;
     vagas_disponiveis: number;
   };
 }

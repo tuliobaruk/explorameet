@@ -1,21 +1,20 @@
-import { useEffect, useState } from 'react';
-import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { Header } from '@/components/Header';
 import { useUser } from '@/hooks/useAuth';
-import { toast } from 'react-toastify';
-import { 
-  Calendar, 
-  Clock, 
-  MapPin, 
-  User, 
-  XCircle, 
-  CheckCircle, 
-  AlertCircle,
-  Eye,
-  Phone
-} from 'lucide-react';
 import InscricaoService, { Inscricao } from '@/services/inscricaoService';
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Eye,
+  MapPin,
+  User,
+  XCircle
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const statusColors = {
   'pendente': 'bg-yellow-100 text-yellow-800 border-yellow-200',
@@ -45,7 +44,7 @@ const statusIcons = {
 };
 
 export default function ClientSubscriptionsPage() {
-  const { user, isClient, clienteInfo } = useUser();
+  const { isClient, clienteInfo } = useUser();
   const [subscriptions, setSubscriptions] = useState<Inscricao[]>([]);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState<string | null>(null);
@@ -171,13 +170,13 @@ export default function ClientSubscriptionsPage() {
                       <div className="flex items-center gap-2">
                         <Calendar size={16} />
                         <span>
-                          {new Date(subscription.horarioDisponivel.data_hora_inicio).toLocaleDateString('pt-BR')}
+                          {new Date(subscription.horarioDisponivel.data_hora).toLocaleDateString('pt-BR')}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Clock size={16} />
                         <span>
-                          {new Date(subscription.horarioDisponivel.data_hora_inicio).toLocaleTimeString('pt-BR', {
+                          {new Date(subscription.horarioDisponivel.data_hora).toLocaleTimeString('pt-BR', {
                             hour: '2-digit',
                             minute: '2-digit'
                           })}
