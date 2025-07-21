@@ -5,6 +5,7 @@ import { Compass, Clock, Users, Image as ImageIcon, Edit, Trash2, Calendar } fro
 import { apiClient } from "@/api/axiosConfig";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { getDefaultPasseioImage } from "@/utils/utils";
 
 interface HorarioDisponivel {
 	id: string;
@@ -27,7 +28,7 @@ interface PasseioGuia {
 	qtd_pessoas: number;
 	nivel_dificuldade: number;
 	imagens: ImagemPasseio[];
-	horariosDisponiveis: HorarioDisponivel[];
+	horariosDisponiveis?: HorarioDisponivel[];
 }
 
 export default function GuideOwnActivityList() {
@@ -58,7 +59,7 @@ export default function GuideOwnActivityList() {
 			try {
 				await apiClient.delete(`/passeios/${passeioId}`);
 				toast.success("Passeio excluído com sucesso!");
-				fetchPasseios(); // Re-fetch the list
+				fetchPasseios();
 			} catch (error) {
 				console.error("Erro ao excluir passeio:", error);
 				toast.error("Erro ao excluir passeio. Tente novamente.");
@@ -93,8 +94,8 @@ export default function GuideOwnActivityList() {
 									<div className="flex gap-4 items-start mb-4">
 										{passeio.imagens && passeio.imagens.length > 0 ? (
 											<img
-												src={passeio.imagens[0].url_imagem}
-												alt={passeio.imagens[0].descricao}
+												src={passeio.imagens[0]?.url_imagem || getDefaultPasseioImage()}
+												alt={passeio.imagens[0].descricao || passeio.titulo}
 												className="w-20 h-20 object-cover rounded-md border"
 											/>
 										) : (
@@ -128,7 +129,7 @@ export default function GuideOwnActivityList() {
 									</div>
 									<div className="mt-2">
 										<span className="font-medium text-gray-700">Horários disponíveis:</span>
-										{passeio.horariosDisponiveis.length === 0 ? (
+										{!passeio.horariosDisponiveis || passeio.horariosDisponiveis.length === 0 ? (
 											<span className="ml-2 text-gray-400">Nenhum horário cadastrado</span>
 										) : (
 											<ul className="ml-2 mt-1 space-y-1">

@@ -6,6 +6,7 @@ import { ArrowLeft, Award, Crown, MapPin, ShieldCheck, Star, ThumbsUp } from "lu
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import "./GuidePublicProfilePage.css";
+import { getDefaultPasseioImage } from "@/utils/utils";
 
 interface GuideData {
 	id: string;
@@ -138,10 +139,6 @@ export default function GuidePublicProfilePage() {
 
 	const stats = calculateStats(guideData.passeios);
 	const activePlan = getActivePlan(guideData);
-
-	const getDefaultPasseioImage = () => {
-		return "/default-image.png";
-	};
 
 	return (
 		<div className="guide-profile-container flex min-h-screen flex-col items-center">
