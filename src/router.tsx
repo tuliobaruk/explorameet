@@ -28,6 +28,8 @@ import AdminPlansPage from "./pages/admin/AdminPlansPage";
 import SubscriptionPage from "./pages/subscription/SubscriptionPage";
 import SubscriptionSuccessPage from "./pages/subscription/SubscriptionSuccessPage";
 import SubscriptionCancelPage from "./pages/subscription/SubscriptionCancelPage";
+import GuideSubscriptionsPage from "./pages/GuideSubscriptionsPage/GuideSubscriptionsPage";
+import ClientSubscriptionsPage from "./pages/ClientSubscriptionsPage/ClientSubscriptionsPage";
 
 const router = createBrowserRouter([
 	{
@@ -170,6 +172,14 @@ const router = createBrowserRouter([
 	{
 		path: "/assinatura/cancelado",
 		element: <SubscriptionCancelPage />,
+	},
+	{
+		path: "/guia/inscricoes",
+		element: <GuideSubscriptionsPage />,
+	},
+	{
+		path: "/minhas-inscricoes",
+		element: <ClientSubscriptionsPage />,
 	},
 ]);
 
