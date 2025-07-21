@@ -30,6 +30,24 @@ export interface Passeio {
 			genero: string;
 			idade: number;
 			foto: string | null;
+			usuario?: {
+				id: string;
+				email: string;
+				emailVerificado: boolean;
+				role: string;
+				inscricoes?: Array<{
+					id: string;
+					data_inicio: string;
+					data_fim: string;
+					status: string;
+					planoAssinatura: {
+						id: string;
+						nome: string;
+						preco: string;
+						descricao: string;
+					};
+				}>;
+			};
 		};
 	};
 	horariosDisponiveis: Array<{
