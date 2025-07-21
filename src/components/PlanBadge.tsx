@@ -19,7 +19,7 @@ interface Usuario {
 }
 
 interface PlanBadgeProps {
-	usuario: Usuario;
+	usuario?: Usuario;
 	size?: "sm" | "md" | "lg";
 	width?: string;
 }
@@ -30,6 +30,8 @@ export const PlanBadge: React.FC<PlanBadgeProps> = ({
 	width = "fit-content",
 }) => {
 	const getActivePlan = () => {
+		if (!usuario) return null;
+		
 		const inscricoes = usuario.inscricoes;
 		if (!inscricoes || inscricoes.length === 0) {
 			return null;

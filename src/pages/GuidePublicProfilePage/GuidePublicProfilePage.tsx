@@ -179,7 +179,9 @@ export default function GuidePublicProfilePage() {
 							{guideData.perfil.genero}, {guideData.perfil.idade} anos
 						</p>
 
-						<PlanBadge usuario={guideData.perfil.usuario} size="lg" width="fit-content" />
+						<div className="mb-3">
+							<PlanBadge usuario={guideData.perfil.usuario} size="lg" width="fit-content" />
+						</div>
 					</div>
 				</section>
 
@@ -232,36 +234,40 @@ export default function GuidePublicProfilePage() {
 							{guideData.passeios.map((passeio) => (
 								<div
 									key={passeio.id}
-									className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:-translate-y-1"
+									className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:-translate-y-1 flex flex-col h-full"
 								>
-									<Link to={`/passeio/${passeio.id}`}>
+									<Link to={`/passeio/${passeio.id}`} className="flex-1 flex flex-col">
 										<img
 											src={passeio.imagens[0]?.url_imagem || getDefaultPasseioImage()}
 											alt={passeio.titulo}
 											className="w-full h-40 object-cover"
 										/>
-										<div className="p-4">
+										<div className="p-4 flex-1 flex flex-col">
 											<h3 className="font-bold text-lg text-gray-800 line-clamp-2">
 												{passeio.titulo}
 											</h3>
-											<p className="text-sm text-gray-600 mt-1 line-clamp-2">{passeio.descricao}</p>
-											<div className="mt-2">
-												<p className="text-xs text-gray-500">
-													Duração: {passeio.duracao_passeio} min
-												</p>
-												{passeio.qtd_pessoas && (
-													<p className="text-xs text-gray-500">
-														Máx. {passeio.qtd_pessoas} pessoas
-													</p>
-												)}
-											</div>
-											<p className="text-md font-semibold activity-price mt-2">
-												{formatPrice(passeio.valor)}
+											<p className="text-sm text-gray-600 mt-1 line-clamp-2 flex-1">
+												{passeio.descricao}
 											</p>
+											<div className="mt-auto space-y-1">
+												<div className="mt-2">
+													<p className="text-xs text-gray-500">
+														Duração: {passeio.duracao_passeio} min
+													</p>
+													{passeio.qtd_pessoas && (
+														<p className="text-xs text-gray-500">
+															Máx. {passeio.qtd_pessoas} pessoas
+														</p>
+													)}
+												</div>
+												<p className="text-md font-semibold activity-price">
+													{formatPrice(passeio.valor)}
+												</p>
+											</div>
 										</div>
 									</Link>
 
-									<div className="px-4 pb-4">
+									<div className="px-4 pb-4 mt-auto">
 										<EditPasseioButton
 											passeioId={passeio.id}
 											passeio={{
