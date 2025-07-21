@@ -13,6 +13,7 @@ import { AvaliacaoFormData } from "@/schemas/avaliacaoSchemas";
 import { toast } from "react-toastify";
 import { ApiError } from "@/api/axiosConfig";
 import AvaliacaoList from "@/components/AvaliacaoList";
+import { SubscriptionButton } from "@/components/SubscriptionButton";
 
 const StarRating = ({ rating }: { rating: number }) => {
 	const totalStars = 5;
@@ -265,18 +266,16 @@ export default function ActivityDetailPage() {
 								<li className="flex items-center gap-3">
 									<Users size={20} className="text-gray-500" />
 									<div>
-										<strong>Vagas restantes:</strong> {passeio.qtd_pessoas || 0}
+										<strong>Quantidade de pessoas:</strong> {passeio.qtd_pessoas || 0}
 									</div>
 								</li>
 							</ul>
 							<div className="mt-6">
 								{isClient() && (
-									<button
-										className="w-full text-white font-bold py-3 rounded-lg shadow-md transition-transform duration-300 hover:scale-105"
-										style={{ backgroundColor: "var(--verde-vibrante)" }}
-									>
-										Reservar Vaga
-									</button>
+									<SubscriptionButton 
+										passeio={passeio} 
+										clienteId={clienteInfo?.id || ''} 
+									/>
 								)}
 								{isOwner && (
 									<Link
