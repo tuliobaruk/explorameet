@@ -1,9 +1,10 @@
 import { Link, useParams } from "react-router-dom";
-import { MapPin, ShieldCheck, Award, ThumbsUp } from "lucide-react";
+import { MapPin, ShieldCheck, Award, ThumbsUp, ArrowLeft, Crown, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { GuiaService } from "@/services/guiaService";
 import "./GuidePublicProfilePage.css";
 import EditPasseioButton from "@/components/EditPasseioButton";
+import { Header } from "../../components/Header";
 
 interface GuideData {
 	id: string;
@@ -22,6 +23,18 @@ interface GuideData {
 			email: string;
 			emailVerificado: boolean;
 			role: string;
+			inscricoes?: Array<{
+				id: string;
+				data_inicio: string;
+				data_fim: string;
+				status: string;
+				planoAssinatura: {
+					id: string;
+					nome: string;
+					preco: string;
+					descricao: string;
+				};
+			}>;
 		};
 	};
 	passeios: Array<{
@@ -93,6 +106,46 @@ export default function GuidePublicProfilePage() {
 		return `https://placehold.co/150x150/898f29/FFFFFF?text=${initials}&font=roboto`;
 	};
 
+	const getActivePlan = (guideData: GuideData) => {
+		const inscricoes = guideData.perfil.usuario.inscricoes;
+		if (!inscricoes || inscricoes.length === 0) {
+			return null;
+		}
+
+		// Busca por inscrição ativa
+		const activeInscricao = inscricoes.find(inscricao => 
+			inscricao.status === 'ativa' && 
+			new Date(inscricao.data_fim) > new Date()
+		);
+
+		return activeInscricao ? activeInscricao.planoAssinatura : null;
+	};
+
+	const getPlanBadge = (planName: string) => {
+		const planStyles = {
+			'Plano Basic': {
+				color: '#6b7280',
+				bg: '#f3f4f6',
+				icon: ThumbsUp,
+				label: 'Basic'
+			},
+			'Plano Pro': {
+				color: '#2563eb',
+				bg: '#dbeafe',
+				icon: Star,
+				label: 'Pro'
+			},
+			'Plano Premium': {
+				color: '#ca8a04',
+				bg: '#fef3c7',
+				icon: Crown,
+				label: 'Premium'
+			}
+		};
+
+		return planStyles[planName as keyof typeof planStyles] || planStyles['Plano Basic'];
+	};
+
 	if (loading) {
 		return (
 			<div className="guide-profile-container flex min-h-screen flex-col items-center justify-center">
@@ -110,6 +163,7 @@ export default function GuidePublicProfilePage() {
 	}
 
 	const stats = calculateStats(guideData.passeios);
+	const activePlan = getActivePlan(guideData);
 
 	const getDefaultPasseioImage = () => {
 		return "/default-image.png";
@@ -117,7 +171,16 @@ export default function GuidePublicProfilePage() {
 
 	return (
 		<div className="guide-profile-container flex min-h-screen flex-col items-center">
+			<Header />
 			<main className="w-full max-w-5xl mx-auto mt-10 md:mt-20 px-4">
+				<Link
+					to="/explorar"
+					className="flex items-center gap-2 font-semibold mb-6 transition-colors hover:underline"
+					style={{ color: "var(--marrom-dourado)" }}
+				>
+					<ArrowLeft size={20} />
+					Voltar para Exploração
+				</Link>
 				<section className="profile-card w-full bg-white p-6 rounded-lg shadow-xl flex flex-col md:flex-row items-center gap-6 mb-8">
 					<img
 						src={guideData.perfil.foto || getDefaultAvatar(guideData.perfil.nome)}
@@ -125,7 +188,7 @@ export default function GuidePublicProfilePage() {
 						className="w-32 h-32 rounded-full border-4 border-white shadow-md object-cover"
 					/>
 					<div className="flex-1 text-center md:text-left">
-						<div className="flex items-center justify-center md:justify-start gap-3">
+						<div className="flex items-center justify-center md:justify-start gap-3 mb-2">
 							<h1 className="profile-name text-3xl font-bold">{guideData.perfil.nome}</h1>
 							{guideData.cadasturStatus && (
 								<div className="premium-badge" title="Guia Verificado">
@@ -133,6 +196,28 @@ export default function GuidePublicProfilePage() {
 								</div>
 							)}
 						</div>
+						
+						{activePlan && (
+							<div className="flex items-center justify-center md:justify-start gap-2 mb-3">
+								{(() => {
+									const planBadge = getPlanBadge(activePlan.nome);
+									const IconComponent = planBadge.icon;
+									return (
+										<div 
+											className="flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold"
+											style={{ 
+												backgroundColor: planBadge.bg, 
+												color: planBadge.color 
+											}}
+										>
+											<IconComponent size={16} />
+											<span>{planBadge.label}</span>
+										</div>
+									);
+								})()}
+							</div>
+						)}
+
 						<div className="flex items-center justify-center md:justify-start gap-2 mt-2 text-gray-600">
 							<MapPin size={16} />
 							<span>Cadastur: {guideData.num_cadastro}</span>
@@ -140,10 +225,16 @@ export default function GuidePublicProfilePage() {
 						<p className="text-gray-700 mt-3">
 							{guideData.perfil.genero}, {guideData.perfil.idade} anos
 						</p>
+						
+						{activePlan && (
+							<p className="text-sm text-gray-600 mt-2">
+								{activePlan.descricao}
+							</p>
+						)}
 					</div>
 				</section>
 
-				<section className="stats-container grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
+				<section className="stats-container grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
 					<div className="stat-item">
 						<ThumbsUp size={24} />
 						<div>
@@ -158,6 +249,19 @@ export default function GuidePublicProfilePage() {
 							<p>Status Cadastur</p>
 						</div>
 					</div>
+					{activePlan && (
+						<div className="stat-item">
+							{(() => {
+								const planBadge = getPlanBadge(activePlan.nome);
+								const IconComponent = planBadge.icon;
+								return <IconComponent size={24} style={{ color: planBadge.color }} />;
+							})()}
+							<div>
+								<strong>{activePlan.nome.replace('Plano ', '')}</strong>
+								<p>Plano Ativo</p>
+							</div>
+						</div>
+					)}
 				</section>
 
 				<section className="mb-12">
