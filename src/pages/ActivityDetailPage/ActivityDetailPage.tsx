@@ -68,7 +68,7 @@ export default function ActivityDetailPage() {
 				comentario: data.comentario,
 			});
 			toast.success("Avaliação enviada com sucesso!");
-			fetchPasseio(); // Re-fetch data to show the new review
+			fetchPasseio();
 		} catch (err) {
 			if (err instanceof ApiError && err.status === 409) {
 				toast.error("Você já avaliou este passeio.");

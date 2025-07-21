@@ -83,7 +83,7 @@ export default function ProfilePage() {
 					</div>
 					<button
 						onClick={() => navigate("/perfil/editar")}
-						className="font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors duration-200 border-2 hover:bg-gray-100"
+						className="w-full md:w-auto justify-center font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors duration-200 border-2 hover:bg-gray-100"
 						style={{ color: "var(--verde-oliva)", borderColor: "var(--verde-oliva)" }}
 					>
 						<Edit size={18} />
