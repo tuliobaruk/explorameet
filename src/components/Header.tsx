@@ -7,7 +7,7 @@ import {
 	Settings,
 	LogOut,
 	MapPinCheckIcon,
-  Crown,
+	Crown,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
@@ -25,7 +25,7 @@ export const LogoEM = () => (
 			style={{ display: "block" }}
 		/>
 		<span
-			className="text-2xl font-bold whitespace-nowrap"
+			className="text-2xl font-bold whitespace-nowrap hidden min-[440px]:inline"
 			style={{ color: "var(--verde-oliva)", lineHeight: 1 }}
 		>
 			ExploraMeet
@@ -138,7 +138,7 @@ export function Header({ variant = "default" }: HeaderProps) {
 							<LogoEM />
 						</div>
 					</Link>
-					<nav className="hidden md:flex gap-2 ml-6">
+					<nav className="hidden min-[928px]:flex gap-2 ml-6">
 						<Link
 							to="/explorar"
 							className="flex items-center gap-1 px-3 py-2 rounded-md font-medium text-verde-oliva hover:bg-green-50 transition-all"
@@ -189,7 +189,7 @@ export function Header({ variant = "default" }: HeaderProps) {
 								</div>
 							)}
 							<span
-								className="text-sm font-medium"
+								className="text-sm font-medium hidden min-[440px]:inline"
 								style={{
 									color: "var(--verde-oliva)",
 									maxWidth: 100,
@@ -199,11 +199,38 @@ export function Header({ variant = "default" }: HeaderProps) {
 									display: "inline-block",
 								}}
 							>
-								{name && name.length > 10 ? name.slice(0, 10) + "..." : name}
+								{name && name.length > 15 ? name.slice(0, 15) + "..." : name}
 							</span>
 							{/* Dropdown */}
 							{dropdownOpen && (
 								<div className="absolute right-0 top-12 bg-white border border-gray-200 rounded-lg shadow-lg min-w-[180px] z-50 py-2">
+									<div className="block min-[928px]:hidden border-b border-gray-200 pb-2 mb-2">
+										<Link
+											to="/explorar"
+											className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
+											onClick={() => setDropdownOpen(false)}
+										>
+											<Compass size={16} /> Explorar
+										</Link>
+										{isAuthenticated && canCreatePasseio && (
+											<>
+												<Link
+													to="/meus-passeios"
+													className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
+													onClick={() => setDropdownOpen(false)}
+												>
+													<MapPinCheckIcon size={16} /> Meus Passeios
+												</Link>
+												<Link
+													to="/criar-passeio"
+													className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
+													onClick={() => setDropdownOpen(false)}
+												>
+													<Plus size={16} /> Criar Passeio
+												</Link>
+											</>
+										)}
+									</div>
 									<Link
 										to="/perfil"
 										className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
