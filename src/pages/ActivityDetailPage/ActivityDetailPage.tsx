@@ -12,6 +12,7 @@ import AvaliacaoService from "@/services/avaliacaoService";
 import { AvaliacaoFormData } from "@/schemas/avaliacaoSchemas";
 import { toast } from "react-toastify";
 import { ApiError } from "@/api/axiosConfig";
+import AvaliacaoList from "@/components/AvaliacaoList";
 
 const StarRating = ({ rating }: { rating: number }) => {
 	const totalStars = 5;
@@ -21,6 +22,7 @@ const StarRating = ({ rating }: { rating: number }) => {
 				<Star
 					key={index}
 					size={18}
+					fill={index < Math.round(rating) ? "var(--amarelo-estrela, #facc15)" : "transparent"}
 					style={{
 						color: index < Math.round(rating) ? "var(--amarelo-estrela, #facc15)" : "#d1d5db",
 					}}
@@ -304,34 +306,7 @@ export default function ActivityDetailPage() {
 							<AvaliacaoForm onSubmit={handleAvaliacaoSubmit} loading={formLoading} />
 						</div>
 					)}
-					{passeio.avaliacoes && passeio.avaliacoes.length > 0 ? (
-						<div className="space-y-6">
-							{passeio.avaliacoes.map((avaliacao) => (
-								<div
-									key={avaliacao.id}
-									className="bg-white p-5 rounded-lg shadow-sm"
-									style={{ borderLeft: "4px solid var(--verde-vibrante)" }}
-								>
-									<div className="flex justify-between items-start mb-2">
-										<div>
-											<h4 className="font-bold text-gray-800">Anônimo</h4>
-											<p className="text-sm text-gray-500">
-												{new Date(avaliacao.createdAt).toLocaleDateString("pt-BR")}
-											</p>
-										</div>
-										<StarRating rating={avaliacao.nota} />
-									</div>
-									<p className="text-gray-700 italic">"{avaliacao.comentario}"</p>
-								</div>
-							))}
-						</div>
-					) : (
-						<div className="bg-white p-8 rounded-lg shadow-sm border text-center">
-							<p className="text-gray-600">
-								Este passeio ainda não tem avaliações. Seja o primeiro a avaliar!
-							</p>
-						</div>
-					)}
+					<AvaliacaoList avaliacoes={passeio.avaliacoes} />
 				</div>
 			</main>
 			<Footer />

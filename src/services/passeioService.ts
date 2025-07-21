@@ -67,7 +67,7 @@ export interface Passeio {
 		nota: number;
 		comentario: string;
 		createdAt: string;
-		cliente: unknown;
+		cliente: { id: string };
 	}>;
 }
 
