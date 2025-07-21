@@ -7,6 +7,11 @@ import { Footer } from "@/components/Footer";
 import { useUser } from "@/hooks/useAuth";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import AvaliacaoForm from "@/components/AvaliacaoForm";
+import AvaliacaoService from "@/services/avaliacaoService";
+import { AvaliacaoFormData } from "@/schemas/avaliacaoSchemas";
+import { toast } from "react-toastify";
+import { ApiError } from "@/api/axiosConfig";
 
 const StarRating = ({ rating }: { rating: number }) => {
   const totalStars = 5;
@@ -30,16 +35,49 @@ export default function ActivityDetailPage() {
   const [passeio, setPasseio] = useState<Passeio | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useUser();
+  const { user, isClient, clienteInfo } = useUser();
+  const [formLoading, setFormLoading] = useState(false);
 
-  useEffect(() => {
+  const fetchPasseio = () => {
     if (!passeioId) return;
     setLoading(true);
     PasseioService.getPasseioById(passeioId)
       .then(setPasseio)
       .catch(() => setError("Não foi possível carregar os detalhes do passeio."))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchPasseio();
   }, [passeioId]);
+
+  const handleAvaliacaoSubmit = async (data: AvaliacaoFormData) => {
+    if (!passeioId || !isClient() || !clienteInfo?.id) {
+      toast.error("Você precisa estar logado como cliente para avaliar.");
+      return;
+    }
+
+    setFormLoading(true);
+    try {
+      await AvaliacaoService.create({
+        id_passeio: passeioId,
+        id_cliente: clienteInfo.id,
+        nota: data.nota,
+        comentario: data.comentario,
+      });
+      toast.success("Avaliação enviada com sucesso!");
+      fetchPasseio(); // Re-fetch data to show the new review
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 409) {
+        toast.error("Você já avaliou este passeio.");
+      } else {
+        toast.error("Erro ao enviar avaliação.");
+      }
+      console.error(err);
+    } finally {
+      setFormLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -65,7 +103,6 @@ export default function ActivityDetailPage() {
   }
 
   const isOwner = user && user.role === "GUIA" && user.id === passeio.guia.id;
-  const isTurista = user && user.role === "CLIENTE";
   const defaultImage = "/default-image.png";
   const imagens = passeio.imagens && passeio.imagens.length > 0 ? passeio.imagens : [{ url_imagem: defaultImage, descricao: passeio.titulo }];
   const duracaoDias = Math.round((passeio.duracao_passeio || 0) / (60*24));
@@ -152,7 +189,7 @@ export default function ActivityDetailPage() {
                 <li className="flex items-center gap-3"><Users size={20} className="text-gray-500" /><div><strong>Vagas restantes:</strong> {passeio.qtd_pessoas || 0}</div></li>
               </ul>
               <div className="mt-6">
-                {isTurista && (<button className="w-full text-white font-bold py-3 rounded-lg shadow-md transition-transform duration-300 hover:scale-105" style={{ backgroundColor: 'var(--verde-vibrante)' }}>Reservar Vaga</button>)} 
+                {isClient() && (<button className="w-full text-white font-bold py-3 rounded-lg shadow-md transition-transform duration-300 hover:scale-105" style={{ backgroundColor: 'var(--verde-vibrante)' }}>Reservar Vaga</button>)} 
                 {isOwner && (<Link to={`/editar-passeio/${passeio.id}`} className="w-full text-center font-bold py-3 rounded-lg flex items-center justify-center gap-2 border-2 transition-colors hover:bg-gray-100" style={{ color: 'var(--verde-oliva)', borderColor: 'var(--verde-oliva)' }}><Edit size={18} />Editar Atividade</Link>)} 
               </div>
             </div>
@@ -161,6 +198,11 @@ export default function ActivityDetailPage() {
 
         <div className="mt-12">
           <h2 className="text-2xl font-bold border-b pb-2 mb-6" style={{ color: 'var(--verde-oliva)', borderColor: 'rgba(137,143,41,0.15)' }}>Avaliações</h2>
+          {isClient() && (
+            <div className="mb-8">
+              <AvaliacaoForm onSubmit={handleAvaliacaoSubmit} loading={formLoading} />
+            </div>
+          )}
           {passeio.avaliacoes && passeio.avaliacoes.length > 0 ? (
             <div className="space-y-6">
               {passeio.avaliacoes.map((avaliacao) => (
