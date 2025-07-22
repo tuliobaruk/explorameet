@@ -62,6 +62,8 @@ export const createRegisterStep2Schema = (userType: "CLIENTE" | "GUIA") => {
 	return userType === "CLIENTE" ? registerStep2ClienteSchema : registerStep2GuiaSchema;
 };
 
+export type RegisterStep2FormData = z.infer<typeof registerStep2ClienteSchema> | z.infer<typeof registerStep2GuiaSchema>;
+
 const baseGoogleRegistrationSchema = z.object({
 	celular: z
 		.string()

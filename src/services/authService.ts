@@ -173,6 +173,16 @@ export class AuthService {
 		}
 	}
 
+	static async checkEmailExists(email: string): Promise<boolean> {
+		try {
+			const response = await apiClient.get<boolean>(`/usuarios/email/${encodeURIComponent(email)}`);
+			return response.data;
+		} catch (error) {
+			console.error("Erro ao verificar email:", error);
+			return false;
+		}
+	}
+
 	static async authenticatedRequest<T>(
 		method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
 		url: string,
