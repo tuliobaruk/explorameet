@@ -135,7 +135,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
         className="w-full md:w-auto flex items-center justify-center gap-2 px-4 py-3 bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 border border-[rgba(137,143,41,0.15)]"
       >
         <MapPin size={18} className="text-gray-600" />
-        <span className={`font-medium ${hasActiveFilters ? 'text-verde-vibrante' : 'text-gray-700'}`}>
+        <span className={`font-medium ${hasActiveFilters ? 'text-green-600' : 'text-gray-700'}`}>
           {getFilterText()}
         </span>
         <ChevronDown
@@ -225,15 +225,6 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
               )}
             </div>
 
-            {/* Coordenadas atuais (apenas para debug/info) */}
-            {(localFilters.latitude && localFilters.longitude) && (
-              <div className="mt-3 p-2 bg-gray-50 rounded text-xs text-gray-600">
-                Lat: {localFilters.latitude.toFixed(6)}, 
-                Lng: {localFilters.longitude.toFixed(6)}
-              </div>
-            )}
-
-            {/* Botões de ação */}
             <div className="flex gap-2 mt-4 pt-3 border-t border-gray-200">
               <button
                 onClick={clearFilters}
@@ -243,7 +234,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
               </button>
               <button
                 onClick={applyFilters}
-                className="flex-1 px-3 py-2 text-sm font-medium text-white bg-verde-vibrante hover:bg-green-600 rounded-lg transition-colors duration-200"
+                className="flex-1 px-3 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors duration-200"
               >
                 Aplicar
               </button>
