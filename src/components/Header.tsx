@@ -1,21 +1,22 @@
-import { useUser, useAuthContext } from "@/hooks/useAuth";
+import { useAuthContext, useUser } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
 import {
-	UserRound,
-	Compass,
-	UserCircle,
-	Plus,
-	Settings,
-	LogOut,
-	MapPinCheckIcon,
-	Crown,
-	Bell,
-	X,
-	Check,
-	RefreshCw,
+  Bell,
+  Check,
+  Compass,
+  Crown,
+  LogOut,
+  Map,
+  MapPinCheckIcon,
+  Plus,
+  RefreshCw,
+  Settings,
+  UserCircle,
+  UserRound,
+  X,
 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useRef, useEffect } from "react";
 
 interface HeaderProps {
 	variant?: "default" | "homepage";
@@ -41,7 +42,15 @@ export const LogoEM = () => (
 export function Header({ variant = "default" }: HeaderProps) {
 	const { user, isLoading, isAuthenticated, name, avatarUrl } = useUser();
 	const { logout } = useAuthContext();
-	const { notifications, unreadCount, markAsRead, markAllAsRead, deleteNotification, refreshNotifications, loading } = useNotifications();
+	const {
+		notifications,
+		unreadCount,
+		markAsRead,
+		markAllAsRead,
+		deleteNotification,
+		refreshNotifications,
+		loading,
+	} = useNotifications();
 	const [dropdownOpen, setDropdownOpen] = useState(false);
 	const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
@@ -55,7 +64,10 @@ export function Header({ variant = "default" }: HeaderProps) {
 			if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
 				setDropdownOpen(false);
 			}
-			if (notificationDropdownRef.current && !notificationDropdownRef.current.contains(event.target as Node)) {
+			if (
+				notificationDropdownRef.current &&
+				!notificationDropdownRef.current.contains(event.target as Node)
+			) {
 				setNotificationDropdownOpen(false);
 			}
 		}
@@ -181,17 +193,19 @@ export function Header({ variant = "default" }: HeaderProps) {
 					{isAuthenticated ? (
 						<div className="flex items-center gap-3">
 							<div className="relative" ref={notificationDropdownRef}>
-								<Bell 
-									size={20} 
-									className="text-verde-oliva hover:text-verde-oliva/80 cursor-pointer transition-colors" 
+								<Bell
+									size={20}
+									className="text-verde-oliva hover:text-verde-oliva/80 cursor-pointer transition-colors"
 									onClick={() => setNotificationDropdownOpen(!notificationDropdownOpen)}
 								/>
 								{unreadCount > 0 && (
 									<div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-										<span className="text-xs text-white font-bold">{unreadCount > 9 ? '9+' : unreadCount}</span>
+										<span className="text-xs text-white font-bold">
+											{unreadCount > 9 ? "9+" : unreadCount}
+										</span>
 									</div>
 								)}
-								
+
 								{notificationDropdownOpen && (
 									<div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg w-80 z-50 max-h-96 overflow-y-auto">
 										<div className="p-3 border-b border-gray-200 flex justify-between items-center">
@@ -203,7 +217,7 @@ export function Header({ variant = "default" }: HeaderProps) {
 													className="text-sm text-verde-oliva hover:text-verde-oliva/80 flex items-center gap-1 disabled:opacity-50"
 													title="Atualizar notificações"
 												>
-													<RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+													<RefreshCw size={14} className={loading ? "animate-spin" : ""} />
 												</button>
 												{unreadCount > 0 && (
 													<button
@@ -216,18 +230,16 @@ export function Header({ variant = "default" }: HeaderProps) {
 												)}
 											</div>
 										</div>
-										
+
 										{notifications.length === 0 ? (
-											<div className="p-4 text-center text-gray-500">
-												Nenhuma notificação
-											</div>
+											<div className="p-4 text-center text-gray-500">Nenhuma notificação</div>
 										) : (
 											<div className="max-h-64 overflow-y-auto">
 												{notifications.slice(0, 10).map((notification) => (
 													<div
 														key={notification.id}
 														className={`p-3 border-b border-gray-100 hover:bg-gray-50 ${
-															!notification.lida ? 'bg-blue-50' : ''
+															!notification.lida ? "bg-blue-50" : ""
 														}`}
 													>
 														<div className="flex justify-between items-start gap-2">
@@ -239,12 +251,12 @@ export function Header({ variant = "default" }: HeaderProps) {
 																	{notification.mensagem}
 																</p>
 																<span className="text-xs text-gray-400 mt-1 block">
-																	{new Date(notification.createdAt).toLocaleDateString('pt-BR', {
-																		day: '2-digit',
-																		month: '2-digit',
-																		year: 'numeric',
-																		hour: '2-digit',
-																		minute: '2-digit'
+																	{new Date(notification.createdAt).toLocaleDateString("pt-BR", {
+																		day: "2-digit",
+																		month: "2-digit",
+																		year: "numeric",
+																		hour: "2-digit",
+																		minute: "2-digit",
 																	})}
 																</span>
 															</div>
@@ -279,97 +291,103 @@ export function Header({ variant = "default" }: HeaderProps) {
 								onClick={() => setDropdownOpen((v) => !v)}
 								ref={dropdownRef}
 							>
-							{avatarUrl ? (
-								<img
-									src={avatarUrl}
-									alt={name || "Usuário"}
-									className="w-8 h-8 rounded-full object-cover border border-gray-300"
-									onError={(e) =>
-										(e.currentTarget.src = "https://placehold.co/32x32/cccccc/333333?text=U")
-									}
-								/>
-							) : (
-								<div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-									<UserRound size={18} className="text-gray-600" />
-								</div>
-							)}
-							<span
-								className="text-sm font-medium hidden min-[440px]:inline"
-								style={{
-									color: "var(--verde-oliva)",
-									maxWidth: 100,
-									overflow: "hidden",
-									textOverflow: "ellipsis",
-									whiteSpace: "nowrap",
-									display: "inline-block",
-								}}
-							>
-								{name && name.length > 15 ? name.slice(0, 15) + "..." : name}
-							</span>
-							{/* Dropdown */}
-							{dropdownOpen && (
-								<div className="absolute right-0 top-12 bg-white border border-gray-200 rounded-lg shadow-lg min-w-[180px] z-50 py-2">
-									<div className="block min-[928px]:hidden border-b border-gray-200 pb-2 mb-2">
+								{avatarUrl ? (
+									<img
+										src={avatarUrl}
+										alt={name || "Usuário"}
+										className="w-8 h-8 rounded-full object-cover border border-gray-300"
+										onError={(e) =>
+											(e.currentTarget.src = "https://placehold.co/32x32/cccccc/333333?text=U")
+										}
+									/>
+								) : (
+									<div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+										<UserRound size={18} className="text-gray-600" />
+									</div>
+								)}
+								<span
+									className="text-sm font-medium hidden min-[440px]:inline"
+									style={{
+										color: "var(--verde-oliva)",
+										maxWidth: 100,
+										overflow: "hidden",
+										textOverflow: "ellipsis",
+										whiteSpace: "nowrap",
+										display: "inline-block",
+									}}
+								>
+									{name && name.length > 15 ? name.slice(0, 15) + "..." : name}
+								</span>
+								{/* Dropdown */}
+								{dropdownOpen && (
+									<div className="absolute right-0 top-12 bg-white border border-gray-200 rounded-lg shadow-lg min-w-[180px] z-50 py-2">
+										<div className="block min-[928px]:hidden border-b border-gray-200 pb-2 mb-2">
+											<Link
+												to="/explorar"
+												className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
+												onClick={() => setDropdownOpen(false)}
+											>
+												<Compass size={16} /> Explorar
+											</Link>
+											{isAuthenticated && canCreatePasseio && (
+												<>
+													<Link
+														to="/meus-passeios"
+														className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
+														onClick={() => setDropdownOpen(false)}
+													>
+														<MapPinCheckIcon size={16} /> Meus Passeios
+													</Link>
+													<Link
+														to="/criar-passeio"
+														className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
+														onClick={() => setDropdownOpen(false)}
+													>
+														<Plus size={16} /> Criar Passeio
+													</Link>
+												</>
+											)}
+										</div>
 										<Link
-											to="/explorar"
+											to="/perfil"
 											className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
 											onClick={() => setDropdownOpen(false)}
 										>
-											<Compass size={16} /> Explorar
+											<UserCircle size={16} /> Meu Perfil
 										</Link>
-										{isAuthenticated && canCreatePasseio && (
-											<>
-												<Link
-													to="/meus-passeios"
-													className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
-													onClick={() => setDropdownOpen(false)}
-												>
-													<MapPinCheckIcon size={16} /> Meus Passeios
-												</Link>
-												<Link
-													to="/criar-passeio"
-													className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
-													onClick={() => setDropdownOpen(false)}
-												>
-													<Plus size={16} /> Criar Passeio
-												</Link>
-											</>
-										)}
+										<Link
+											to="/assinatura"
+											className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
+											onClick={() => setDropdownOpen(false)}
+										>
+											<Crown size={16} /> Assinatura
+										</Link>
+										<Link
+											to="/guia/inscricoes"
+											className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
+										>
+											<Map size={16} /> Inscrições
+										</Link>
+										<Link
+											to="/configuracoes"
+											className="flex items-center gap-2 px-4 py-2 hov   er:bg-gray-50 text-verde-oliva"
+											onClick={() => setDropdownOpen(false)}
+										>
+											<Settings size={16} /> Configurações
+										</Link>
+										<hr className="my-1 border-t border-gray-200" />
+										<button
+											className="flex items-center gap-2 px-4 py-2 w-full text-left hover:bg-gray-50 text-red-600"
+											onClick={() => {
+												setDropdownOpen(false);
+												logout();
+												navigate("/login");
+											}}
+										>
+											<LogOut size={16} /> Sair
+										</button>
 									</div>
-									<Link
-										to="/perfil"
-										className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
-										onClick={() => setDropdownOpen(false)}
-									>
-										<UserCircle size={16} /> Meu Perfil
-									</Link>
-									<Link
-										to="/assinatura"
-										className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
-										onClick={() => setDropdownOpen(false)}
-									>
-										<Crown size={16} /> Assinatura
-									</Link>
-									<Link
-										to="/configuracoes"
-										className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
-										onClick={() => setDropdownOpen(false)}
-									>
-										<Settings size={16} /> Configurações
-									</Link>
-									<hr className="my-1 border-t border-gray-200" />
-									<button
-										className="flex items-center gap-2 px-4 py-2 w-full text-left hover:bg-gray-50 text-red-600"
-										onClick={() => {
-											setDropdownOpen(false);
-											logout();
-											navigate("/login");
-										}}
-									>
-										<LogOut size={16} /> Sair
-									</button>
-								</div>
-							)}
+								)}
 							</div>
 						</div>
 					) : (
