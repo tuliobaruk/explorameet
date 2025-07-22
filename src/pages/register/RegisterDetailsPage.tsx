@@ -1,7 +1,6 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Calendar, IdCard, Phone, UserPlus } from "lucide-react";
 import { useEffect } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import AuthCardHeader from "@/components/auth/AuthCardHeader";
@@ -9,11 +8,7 @@ import AuthInput from "@/components/auth/AuthInput";
 import AuthLayout from "@/components/auth/AuthLayout";
 import AuthSelect from "@/components/auth/AuthSelect";
 import { useRegister } from "@/hooks/useRegister";
-import {
-	RegisterStep1Data,
-	RegisterStep2FormData,
-	createRegisterStep2Schema,
-} from "@/schemas/authSchemas";
+import { RegisterStep1Data } from "@/schemas/authSchemas";
 import { Genero } from "@/types/Usuario";
 import { maskCadastur, maskCPF, maskCpfCnpj, maskPhone } from "@/utils/masks";
 
@@ -25,8 +20,6 @@ export default function RegisterDetailsPage() {
 	const registerState = location.state as RegisterStep1Data;
 	const { loading, error, success, registerCliente, registerGuia, clearError, clearSuccess } =
 		useRegister();
-
-	const userType = registerState?.userType || "CLIENTE";
 
 	useEffect(() => {
 		if (!registerState || !registerState.fullName || !registerState.userType) {
@@ -52,32 +45,16 @@ export default function RegisterDetailsPage() {
 		}
 	}, [success, navigate, registerState?.email, registerState?.password]);
 
-	const {
-		register,
-		handleSubmit,
-		setValue,
-		watch,
-		formState: { errors },
-	} = useForm<RegisterStep2FormData>({
-		resolver: zodResolver(createRegisterStep2Schema(userType)),
-		defaultValues: {
-			celular: "",
-			genero: "",
-			idade: undefined,
-			foto: "",
-			cpf: "",
-			cpfCnpj: "",
-			numCadastro: "",
-			termsAccepted: false,
-		},
-	});
+	const { register, handleSubmit, setValue, formState: { errors } } = useForm();
 
-	const celularValue = watch("celular");
-	const cpfValue = watch("cpf");
-	const cpfCnpjValue = watch("cpfCnpj");
-	const numCadastroValue = watch("numCadastro");
+	const getErrorMessage = (error: unknown): string | undefined => {
+		if (error && typeof error === 'object' && 'message' in error) {
+			return error.message as string;
+		}
+		return undefined;
+	};
 
-	const handleSubmitFinal: SubmitHandler<RegisterStep2FormData> = async (data) => {
+	const handleSubmitFinal = async (data: Record<string, unknown>) => {
 		if (!registerState) {
 			alert("Erro: Dados da etapa anterior não encontrados. Redirecionando.");
 			navigate("/cadastro");
@@ -88,22 +65,22 @@ export default function RegisterDetailsPage() {
 
 		const baseProfile = {
 			nome: registerState.fullName,
-			celular: data.celular,
-			genero: data.genero,
-			idade: data.idade,
-			foto: data.foto || "",
+			celular: data.celular as string,
+			genero: data.genero as string,
+			idade: Number(data.idade),
+			foto: (data.foto as string) || "",
 		};
 
 		const baseUser = {
 			email: registerState.email,
 			password: registerState.password,
-			termsAccepted: data.termsAccepted,
+			termsAccepted: Boolean(data.termsAccepted),
 		};
 
 		try {
 			if (registerState.userType === "CLIENTE") {
 				const payload = {
-					cpf: data.cpf || "",
+					cpf: (data.cpf as string) || "",
 					perfil: baseProfile,
 					usuario: baseUser,
 				};
@@ -112,9 +89,9 @@ export default function RegisterDetailsPage() {
 				await registerCliente(payload);
 			} else {
 				const payload = {
-					cpf_cnpj: data.cpfCnpj || "",
+					cpf_cnpj: (data.cpfCnpj as string) || "",
 					num_cadastro:
-						data.numCadastro && data.numCadastro.trim() !== "" ? data.numCadastro : undefined,
+						data.numCadastro && typeof data.numCadastro === 'string' && data.numCadastro.trim() !== "" ? data.numCadastro as string : undefined,
 					verificado: false,
 					perfil: baseProfile,
 					usuario: baseUser,
@@ -167,13 +144,11 @@ export default function RegisterDetailsPage() {
 					required
 					icon={Phone}
 					placeholder="(XX) XXXXX-XXXX"
+					maxLength={15}
 					{...register("celular")}
-					value={celularValue || ""}
-					onChange={(e) => {
-						const masked = maskPhone(e.target.value);
-						setValue("celular", masked);
-					}}
-					error={errors.celular?.message}
+					maskFunction={maskPhone}
+					onChange={(e) => setValue("celular", e.target.value)}
+					error={getErrorMessage(errors.celular)}
 				/>
 
 				<AuthSelect
@@ -181,7 +156,7 @@ export default function RegisterDetailsPage() {
 					label="Gênero"
 					id="genero"
 					{...register("genero")}
-					error={errors.genero?.message}
+					error={getErrorMessage(errors.genero)}
 					required
 				>
 					<option value="" disabled>
@@ -196,14 +171,15 @@ export default function RegisterDetailsPage() {
 				<AuthInput
 					label="Idade"
 					id="idade"
-					type="number"
+					type="text"
 					required
 					icon={Calendar}
 					min={16}
 					max={120}
+					maxLength={3}
 					placeholder="Ex: 30"
 					{...register("idade", { valueAsNumber: true })}
-					error={errors.idade?.message}
+					error={getErrorMessage(errors.idade)}
 				/>
 
 				{registerState.userType === "CLIENTE" && (
@@ -214,13 +190,11 @@ export default function RegisterDetailsPage() {
 						required
 						icon={IdCard}
 						placeholder="XXX.XXX.XXX-XX"
+						maxLength={14}
 						{...register("cpf")}
-						value={cpfValue || ""}
-						onChange={(e) => {
-							const masked = maskCPF(e.target.value);
-							setValue("cpf", masked);
-						}}
-						error={errors.cpf?.message}
+						maskFunction={maskCPF}
+						onChange={(e) => setValue("cpf", e.target.value)}
+						error={getErrorMessage(errors.cpf)}
 					/>
 				)}
 
@@ -233,13 +207,11 @@ export default function RegisterDetailsPage() {
 							required
 							icon={IdCard}
 							placeholder="XXX.XXX.XXX-XX ou XX.XXX.XXX/XXXX-XX"
+							maxLength={18}
 							{...register("cpfCnpj")}
-							value={cpfCnpjValue || ""}
-							onChange={(e) => {
-								const masked = maskCpfCnpj(e.target.value);
-								setValue("cpfCnpj", masked);
-							}}
-							error={errors.cpfCnpj?.message}
+							maskFunction={maskCpfCnpj}
+							onChange={(e) => setValue("cpfCnpj", e.target.value)}
+							error={getErrorMessage(errors.cpfCnpj)}
 						/>
 
 						<AuthInput
@@ -248,13 +220,11 @@ export default function RegisterDetailsPage() {
 							type="text"
 							icon={IdCard}
 							placeholder="XX.XXXXXX.XX-X"
+							maxLength={11}
 							{...register("numCadastro")}
-							value={numCadastroValue || ""}
-							onChange={(e) => {
-								const masked = maskCadastur(e.target.value);
-								setValue("numCadastro", masked);
-							}}
-							error={errors.numCadastro?.message}
+							maskFunction={maskCadastur}
+							onChange={(e) => setValue("numCadastro", e.target.value)}
+							error={getErrorMessage(errors.numCadastro)}
 						/>
 					</>
 				)}
@@ -273,7 +243,7 @@ export default function RegisterDetailsPage() {
 						</Link>
 					</label>
 				</div>
-				{errors.termsAccepted && <p className="error-message">{errors.termsAccepted.message}</p>}
+				{errors.termsAccepted && <p className="error-message">{getErrorMessage(errors.termsAccepted)}</p>}
 
 				<div className="pt-1">
 					<button type="submit" className="auth-button-primary" disabled={loading}>
