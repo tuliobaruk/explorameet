@@ -117,3 +117,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  color: white;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  opacity: 1;
+}
+.btn-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
