@@ -46,7 +46,7 @@ export default function AuthInput({
 				<input
 					id={id}
 					{...props}
-					{...(maskFunction ? { onChange: handleChange } : {})}
+					onChange={maskFunction ? handleChange : props.onChange}
 					className={`block w-full pl-10 pr-3 py-2 text-sm border ${error ? "border-red-500" : "border-verde-oliva/40"} rounded-md shadow-sm bg-white text-verde-oliva placeholder:text-stone-400 focus:outline-none focus:border-verde-vibrante focus:ring-3 focus:ring-verde-vibrante/25 transition-all`}
 				/>
 			</div>
