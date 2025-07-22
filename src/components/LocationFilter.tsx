@@ -132,22 +132,24 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
     <div className="relative" ref={filterRef}>
       <button
         onClick={() => setIsFilterOpen(!isFilterOpen)}
-        className="w-full md:w-auto flex items-center justify-center gap-2 px-4 py-3 bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 border border-[rgba(137,143,41,0.15)]"
+        className="w-full flex items-center justify-between gap-2 px-4 py-3 bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 border border-[rgba(137,143,41,0.15)]"
       >
-        <MapPin size={18} className="text-gray-600" />
-        <span className={`font-medium ${hasActiveFilters ? 'text-green-600' : 'text-gray-700'}`}>
-          {getFilterText()}
-        </span>
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <MapPin size={18} className="text-gray-600 flex-shrink-0" />
+          <span className={`font-medium truncate ${hasActiveFilters ? 'text-green-600' : 'text-gray-700'}`}>
+            {getFilterText()}
+          </span>
+        </div>
         <ChevronDown
           size={18}
-          className={`text-gray-600 transition-transform ${
+          className={`text-gray-600 transition-transform flex-shrink-0 ${
             isFilterOpen ? 'rotate-180' : ''
           }`}
         />
       </button>
 
       {isFilterOpen && (
-        <div className="absolute top-full mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-20 right-0 md:left-0">
+        <div className="absolute top-full mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-xl border border-gray-200 z-50 left-0 right-0 mx-auto md:right-0 md:left-auto md:mx-0">
           <div className="p-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-gray-800">Filtrar por Localização</h3>
