@@ -1,37 +1,19 @@
-import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, MapPin, Zap, Users, Hourglass, Edit, Star, AlertTriangle } from "lucide-react";
-import { useEffect, useState } from "react";
-import PasseioService, { Passeio } from "@/services/passeioService";
-import { Header } from "@/components/Header";
+import { ApiError } from "@/api/axiosConfig";
+import AvaliacaoForm from "@/components/AvaliacaoForm";
+import AvaliacaoList from "@/components/AvaliacaoList";
 import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
+import { SubscriptionButton } from "@/components/SubscriptionButton";
 import { useUser } from "@/hooks/useAuth";
+import { AvaliacaoFormData } from "@/schemas/avaliacaoSchemas";
+import AvaliacaoService from "@/services/avaliacaoService";
+import PasseioService, { Passeio } from "@/services/passeioService";
+import { AlertTriangle, ArrowLeft, Edit, Hourglass, MapPin, Users, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import AvaliacaoForm from "@/components/AvaliacaoForm";
-import AvaliacaoService from "@/services/avaliacaoService";
-import { AvaliacaoFormData } from "@/schemas/avaliacaoSchemas";
+import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { ApiError } from "@/api/axiosConfig";
-import AvaliacaoList from "@/components/AvaliacaoList";
-import { SubscriptionButton } from "@/components/SubscriptionButton";
-
-const StarRating = ({ rating }: { rating: number }) => {
-	const totalStars = 5;
-	return (
-		<div className="flex items-center">
-			{[...Array(totalStars)].map((_, index) => (
-				<Star
-					key={index}
-					size={18}
-					fill={index < Math.round(rating) ? "var(--amarelo-estrela, #facc15)" : "transparent"}
-					style={{
-						color: index < Math.round(rating) ? "var(--amarelo-estrela, #facc15)" : "#d1d5db",
-					}}
-				/>
-			))}
-		</div>
-	);
-};
 
 export default function ActivityDetailPage() {
 	const { passeioId } = useParams<{ passeioId: string }>();
@@ -113,7 +95,7 @@ export default function ActivityDetailPage() {
 		);
 	}
 
-	const isOwner = user && user.role === "GUIA" && user.id === passeio.guia.id;
+	const isOwner = user && user.role === "GUIA" && user.sub === passeio.guia.id;
 	const defaultImage = "/default-image.png";
 	const imagens =
 		passeio.imagens && passeio.imagens.length > 0
@@ -272,10 +254,7 @@ export default function ActivityDetailPage() {
 							</ul>
 							<div className="mt-6">
 								{isClient() && (
-									<SubscriptionButton 
-										passeio={passeio} 
-										clienteId={clienteInfo?.id || ''} 
-									/>
+									<SubscriptionButton passeio={passeio} clienteId={clienteInfo?.id || ""} />
 								)}
 								{isOwner && (
 									<Link
