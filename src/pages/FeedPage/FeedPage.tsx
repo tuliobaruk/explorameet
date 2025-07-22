@@ -6,15 +6,16 @@ import CategoriaService, { Categoria } from "@/services/categoriaService";
 import { Passeio } from "@/services/passeioService";
 import { formatPrice } from "@/utils/utils";
 import {
-  Banknote,
-  ChevronDown,
-  Clock,
-  Compass,
-  Mountain,
-  Search,
-  Star,
-  Users,
-  X,
+	Banknote,
+	ChevronDown,
+	Clock,
+	Compass,
+	Mountain,
+	Search,
+	Star,
+	Tags,
+	Users,
+	X,
 } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -118,7 +119,7 @@ export default function FeedPage() {
 	});
 
 	const handleLoadPasseios = useCallback(() => {
-		loadPasseios({ 
+		loadPasseios({
 			categorias: selectedCategorias.join(","),
 			...locationFilters,
 		});
@@ -145,7 +146,7 @@ export default function FeedPage() {
 			setIsSearching(true);
 			try {
 				if (term.trim()) {
-					await searchPasseios(term, { 
+					await searchPasseios(term, {
 						categorias: selectedCategorias.join(","),
 						...locationFilters,
 					});
@@ -211,9 +212,7 @@ export default function FeedPage() {
 
 	const handleCategoriaChange = (categoriaId: string) => {
 		setSelectedCategorias((prev) =>
-			prev.includes(categoriaId)
-				? prev.filter((id) => id !== categoriaId)
-				: [...prev, categoriaId],
+			prev.includes(categoriaId) ? prev.filter((id) => id !== categoriaId) : [...prev, categoriaId],
 		);
 	};
 
@@ -293,66 +292,73 @@ export default function FeedPage() {
 							</div>
 						</form>
 
-						<div className="flex gap-2">
+            <div className="flex gap-2 flex-col sm:flex-row">
 							{/* Filtro de Localização */}
-							<LocationFilter
-								onLocationChange={handleLocationChange}
-								selectedFilters={locationFilters}
-							/>
+							<div className="flex-1">
+								<LocationFilter
+									onLocationChange={handleLocationChange}
+									selectedFilters={locationFilters}
+								/>
+							</div>
 
 							{/* Filtro de Categorias */}
-							<div className="relative" ref={filterRef}>
-							<button
-								onClick={() => setIsFilterOpen(!isFilterOpen)}
-								className="w-full md:w-auto flex items-center justify-center gap-2 px-4 py-3 bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 border border-[rgba(137,143,41,0.15)]"
-							>
-								<span className="font-medium text-gray-700">
-									{selectedCategorias.length > 0
-										? `Categorias (${selectedCategorias.length})`
-										: "Categorias"}
-								</span>
-								<ChevronDown
-									size={18}
-									className={`text-gray-600 transition-transform ${
-										isFilterOpen ? "rotate-180" : ""
-									}`}
-								/>
-							</button>
-							{isFilterOpen && (
-								<div className="absolute top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-10 right-0 md:left-0">
-									<div className="p-4 max-h-72 overflow-y-auto">
-										{categorias.length > 0 ? (
-											categorias.map((cat) => (
-												<label
-													key={cat.id}
-													className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 cursor-pointer"
+							<div className="relative flex-1" ref={filterRef}>
+								<button
+									onClick={() => setIsFilterOpen(!isFilterOpen)}
+									className="w-full flex items-center justify-between gap-2 px-4 py-3 bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 border border-[rgba(137,143,41,0.15)]"
+								>
+									<div className="flex items-center gap-2 min-w-0 flex-1">
+										<Tags size={18} className="text-gray-600 flex-shrink-0" />
+										<span
+											className={`font-medium truncate ${selectedCategorias.length > 0 ? "text-green-600" : "text-gray-700"}`}
+										>
+											{selectedCategorias.length > 0
+												? `Categorias (${selectedCategorias.length})`
+												: "Categorias"}
+										</span>
+									</div>
+									<ChevronDown
+										size={18}
+										className={`text-gray-600 transition-transform flex-shrink-0 ${
+											isFilterOpen ? "rotate-180" : ""
+										}`}
+									/>
+								</button>
+								{isFilterOpen && (
+									<div className="absolute top-full mt-2 w-full sm:w-64 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-xl border border-gray-200 z-50 left-0 right-0 mx-auto sm:right-0 sm:left-auto sm:mx-0">
+										<div className="p-4 max-h-72 overflow-y-auto">
+											{categorias.length > 0 ? (
+												categorias.map((cat) => (
+													<label
+														key={cat.id}
+														className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 cursor-pointer"
+													>
+														<input
+															type="checkbox"
+															checked={selectedCategorias.includes(cat.id)}
+															onChange={() => handleCategoriaChange(cat.id)}
+															className="h-4 w-4 rounded border-gray-300 text-verde-vibrante focus:ring-green-500"
+														/>
+														<span className="text-gray-800">{cat.nome}</span>
+													</label>
+												))
+											) : (
+												<p className="text-gray-500">Nenhuma categoria encontrada.</p>
+											)}
+										</div>
+										{selectedCategorias.length > 0 && (
+											<div className="p-2 border-t border-gray-200">
+												<button
+													onClick={() => setSelectedCategorias([])}
+													className="w-full text-center text-sm font-medium text-red-600 hover:bg-red-50 p-2 rounded-md"
 												>
-													<input
-														type="checkbox"
-														checked={selectedCategorias.includes(cat.id)}
-														onChange={() => handleCategoriaChange(cat.id)}
-														className="h-4 w-4 rounded border-gray-300 text-verde-vibrante focus:ring-green-500"
-													/>
-													<span className="text-gray-800">{cat.nome}</span>
-												</label>
-											))
-										) : (
-											<p className="text-gray-500">Nenhuma categoria encontrada.</p>
+													Limpar filtros
+												</button>
+											</div>
 										)}
 									</div>
-									{selectedCategorias.length > 0 && (
-										<div className="p-2 border-t border-gray-200">
-											<button
-												onClick={() => setSelectedCategorias([])}
-												className="w-full text-center text-sm font-medium text-red-600 hover:bg-red-50 p-2 rounded-md"
-											>
-												Limpar filtros
-											</button>
-										</div>
-									)}
-								</div>
-							)}
-						</div>
+								)}
+							</div>
 						</div>
 					</div>
 
