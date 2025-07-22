@@ -1,4 +1,5 @@
 import { useUser, useAuthContext } from "@/hooks/useAuth";
+import { useNotifications } from "@/hooks/useNotifications";
 import {
 	UserRound,
 	Compass,
@@ -8,6 +9,10 @@ import {
 	LogOut,
 	MapPinCheckIcon,
 	Crown,
+	Bell,
+	X,
+	Check,
+	RefreshCw,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
@@ -36,24 +41,29 @@ export const LogoEM = () => (
 export function Header({ variant = "default" }: HeaderProps) {
 	const { user, isLoading, isAuthenticated, name, avatarUrl } = useUser();
 	const { logout } = useAuthContext();
+	const { notifications, unreadCount, markAsRead, markAllAsRead, deleteNotification, refreshNotifications, loading } = useNotifications();
 	const [dropdownOpen, setDropdownOpen] = useState(false);
+	const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
+	const notificationDropdownRef = useRef<HTMLDivElement>(null);
 	const navigate = useNavigate();
 
 	const canCreatePasseio = Boolean(user && (user.role === "GUIA" || user.role === "ADMIN"));
 
-	// Fecha o dropdown ao clicar fora
 	useEffect(() => {
 		function handleClickOutside(event: MouseEvent) {
 			if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
 				setDropdownOpen(false);
 			}
+			if (notificationDropdownRef.current && !notificationDropdownRef.current.contains(event.target as Node)) {
+				setNotificationDropdownOpen(false);
+			}
 		}
-		if (dropdownOpen) {
+		if (dropdownOpen || notificationDropdownOpen) {
 			document.addEventListener("mousedown", handleClickOutside);
 			return () => document.removeEventListener("mousedown", handleClickOutside);
 		}
-	}, [dropdownOpen]);
+	}, [dropdownOpen, notificationDropdownOpen]);
 
 	if (isLoading && variant === "default") {
 		return (
@@ -133,7 +143,7 @@ export function Header({ variant = "default" }: HeaderProps) {
 		>
 			<div className="max-w-7xl mx-auto w-full h-full px-4 sm:px-8 flex items-center justify-between">
 				<div className="flex items-center gap-2">
-					<Link to={"/"} className="flex items-center">
+					<Link to={"/explorar"} className="flex items-center">
 						<div className="header-logo text-3xl font-bold flex items-center gap-2">
 							<LogoEM />
 						</div>
@@ -169,11 +179,106 @@ export function Header({ variant = "default" }: HeaderProps) {
 				</div>
 				<div className="flex items-center relative">
 					{isAuthenticated ? (
-						<div
-							className="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 relative"
-							onClick={() => setDropdownOpen((v) => !v)}
-							ref={dropdownRef}
-						>
+						<div className="flex items-center gap-3">
+							<div className="relative" ref={notificationDropdownRef}>
+								<Bell 
+									size={20} 
+									className="text-verde-oliva hover:text-verde-oliva/80 cursor-pointer transition-colors" 
+									onClick={() => setNotificationDropdownOpen(!notificationDropdownOpen)}
+								/>
+								{unreadCount > 0 && (
+									<div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+										<span className="text-xs text-white font-bold">{unreadCount > 9 ? '9+' : unreadCount}</span>
+									</div>
+								)}
+								
+								{notificationDropdownOpen && (
+									<div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg w-80 z-50 max-h-96 overflow-y-auto">
+										<div className="p-3 border-b border-gray-200 flex justify-between items-center">
+											<h3 className="font-semibold text-gray-800">Notificações</h3>
+											<div className="flex gap-2">
+												<button
+													onClick={() => refreshNotifications()}
+													disabled={loading}
+													className="text-sm text-verde-oliva hover:text-verde-oliva/80 flex items-center gap-1 disabled:opacity-50"
+													title="Atualizar notificações"
+												>
+													<RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+												</button>
+												{unreadCount > 0 && (
+													<button
+														onClick={() => markAllAsRead()}
+														className="text-sm text-verde-oliva hover:text-verde-oliva/80 flex items-center gap-1"
+													>
+														<Check size={14} />
+														Marcar todas como lidas
+													</button>
+												)}
+											</div>
+										</div>
+										
+										{notifications.length === 0 ? (
+											<div className="p-4 text-center text-gray-500">
+												Nenhuma notificação
+											</div>
+										) : (
+											<div className="max-h-64 overflow-y-auto">
+												{notifications.slice(0, 10).map((notification) => (
+													<div
+														key={notification.id}
+														className={`p-3 border-b border-gray-100 hover:bg-gray-50 ${
+															!notification.lida ? 'bg-blue-50' : ''
+														}`}
+													>
+														<div className="flex justify-between items-start gap-2">
+															<div className="flex-1">
+																<h4 className="font-medium text-sm text-gray-800">
+																	{notification.titulo}
+																</h4>
+																<p className="text-xs text-gray-600 mt-1">
+																	{notification.mensagem}
+																</p>
+																<span className="text-xs text-gray-400 mt-1 block">
+																	{new Date(notification.createdAt).toLocaleDateString('pt-BR', {
+																		day: '2-digit',
+																		month: '2-digit',
+																		year: 'numeric',
+																		hour: '2-digit',
+																		minute: '2-digit'
+																	})}
+																</span>
+															</div>
+															<div className="flex gap-1">
+																{!notification.lida && (
+																	<button
+																		onClick={() => markAsRead(notification.id)}
+																		className="text-verde-oliva hover:text-verde-oliva/80 p-1"
+																		title="Marcar como lida"
+																	>
+																		<Check size={14} />
+																	</button>
+																)}
+																<button
+																	onClick={() => deleteNotification(notification.id)}
+																	className="text-red-500 hover:text-red-700 p-1"
+																	title="Remover notificação"
+																>
+																	<X size={14} />
+																</button>
+															</div>
+														</div>
+													</div>
+												))}
+											</div>
+										)}
+									</div>
+								)}
+							</div>
+							<div
+								className="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 relative"
+								onClick={() => setDropdownOpen((v) => !v)}
+								ref={dropdownRef}
+							>
 							{avatarUrl ? (
 								<img
 									src={avatarUrl}
@@ -265,6 +370,7 @@ export function Header({ variant = "default" }: HeaderProps) {
 									</button>
 								</div>
 							)}
+							</div>
 						</div>
 					) : (
 						<Link to="/login">

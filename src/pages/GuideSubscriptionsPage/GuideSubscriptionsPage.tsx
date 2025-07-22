@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { useUser } from '@/hooks/useAuth';
+import { useNotifications } from '@/hooks/useNotifications';
 import { toast } from 'react-toastify';
-import { Users, Calendar, Clock, Mail, CheckCircle, XCircle, AlertCircle, Eye } from 'lucide-react';
+import { Users, Calendar, Clock, Mail, CheckCircle, XCircle, AlertCircle, Eye, RefreshCw } from 'lucide-react';
 import InscricaoService, { Inscricao } from '@/services/inscricaoService';
 
 
@@ -36,23 +37,30 @@ const statusIcons = {
 
 export default function GuideSubscriptionsPage() {
   const { user, isGuide, guiaInfo } = useUser();
+  const { notifications, unreadCount } = useNotifications();
   const [subscriptions, setSubscriptions] = useState<Inscricao[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [lastNotificationCount, setLastNotificationCount] = useState(0);
 
-  const fetchSubscriptions = async () => {
+  const fetchSubscriptions = useCallback(async (showRefreshState = false) => {
     if (!guiaInfo?.id) return;
+
+    if (showRefreshState) setRefreshing(true);
 
     try {
       const data = await InscricaoService.findByGuia(guiaInfo.id);
       setSubscriptions(data);
+      console.log('Inscrições atualizadas:', data.length);
     } catch (error) {
       console.error('Erro ao carregar inscrições:', error);
       toast.error('Erro ao carregar inscrições');
     } finally {
       setLoading(false);
+      if (showRefreshState) setRefreshing(false);
     }
-  };
+  }, [guiaInfo?.id]);
 
   const updateSubscriptionStatus = async (subscriptionId: string, newStatus: string) => {
     setUpdating(subscriptionId);
@@ -68,11 +76,50 @@ export default function GuideSubscriptionsPage() {
     }
   };
 
+  // Effect inicial para carregar inscrições
   useEffect(() => {
     if (isGuide() && guiaInfo) {
       fetchSubscriptions();
     }
-  }, [isGuide, guiaInfo]);
+  }, [isGuide, guiaInfo, fetchSubscriptions]);
+
+  // Effect para detectar novas notificações e atualizar inscrições
+  useEffect(() => {
+    const currentNotificationCount = notifications.filter(n => n.tipo === 'INSCRICAO_CLIENTE').length;
+    
+    if (lastNotificationCount > 0 && currentNotificationCount > lastNotificationCount) {
+      console.log('Nova inscrição detectada via notificação');
+      fetchSubscriptions();
+      toast.info('Nova inscrição recebida!');
+    }
+    
+    setLastNotificationCount(currentNotificationCount);
+  }, [notifications, lastNotificationCount, fetchSubscriptions]);
+
+  // Polling automático a cada 30 segundos para garantir sincronização
+  useEffect(() => {
+    if (!isGuide() || !guiaInfo) return;
+
+    const interval = setInterval(() => {
+      if (!document.hidden) {
+        fetchSubscriptions();
+      }
+    }, 30000);
+
+    // Atualizar quando a aba se tornar visível
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchSubscriptions();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isGuide, guiaInfo, fetchSubscriptions]);
 
   if (!isGuide()) {
     return (
@@ -91,12 +138,35 @@ export default function GuideSubscriptionsPage() {
       <Header />
       <main className="flex-1 w-full max-w-6xl mx-auto px-4 pt-24 pb-12">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--verde-oliva)" }}>
-            Gerenciar Inscrições
-          </h1>
-          <p className="text-gray-600">
-            Visualize e gerencie as inscrições dos seus passeios
-          </p>
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold mb-2 flex items-center gap-3" style={{ color: "var(--verde-oliva)" }}>
+                Gerenciar Inscrições
+                {unreadCount > 0 && (
+                  <span className="bg-red-500 text-white text-sm px-2 py-1 rounded-full animate-pulse">
+                    {unreadCount} nova{unreadCount > 1 ? 's' : ''}
+                  </span>
+                )}
+              </h1>
+              <p className="text-gray-600">
+                Visualize e gerencie as inscrições dos seus passeios
+                {subscriptions.filter(s => s.status === 'pendente').length > 0 && (
+                  <span className="text-yellow-600 font-medium ml-2">
+                    • {subscriptions.filter(s => s.status === 'pendente').length} pendente{subscriptions.filter(s => s.status === 'pendente').length > 1 ? 's' : ''}
+                  </span>
+                )}
+              </p>
+            </div>
+            <button
+              onClick={() => fetchSubscriptions(true)}
+              disabled={refreshing || loading}
+              className="flex items-center gap-2 px-4 py-2 border border-verde-oliva text-verde-oliva rounded-lg hover:bg-green-50 disabled:opacity-50 transition-colors"
+              title="Atualizar inscrições"
+            >
+              <RefreshCw size={16} className={refreshing ? 'animate-spin' : ''} />
+              {refreshing ? 'Atualizando...' : 'Atualizar'}
+            </button>
+          </div>
         </div>
 
         {loading ? (
