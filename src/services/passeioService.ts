@@ -260,25 +260,40 @@ class PasseioService {
 		searchTerm: string,
 		params: PaginationParams = {},
 	): Promise<PasseiosResponse> {
-		// Implementar busca quando o backend suportar
-		// Por enquanto, filtrar localmente
-		const allPasseios = await this.getAllPasseios(params);
-
 		if (!searchTerm.trim()) {
-			return allPasseios;
+			return this.getAllPasseios(params);
 		}
 
-		const filteredData = allPasseios.data.filter(
-			(passeio) =>
-				passeio.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				passeio.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				passeio.guia.perfil.nome.toLowerCase().includes(searchTerm.toLowerCase()),
-		);
+		const queryParams = new URLSearchParams();
+		queryParams.append("q", searchTerm.trim());
 
-		return {
-			...allPasseios,
-			data: filteredData,
-		};
+		if (params.page) queryParams.append("page", params.page.toString());
+		if (params.limit) queryParams.append("limit", params.limit.toString());
+		if (params.status) queryParams.append("status", params.status);
+		if (params.categorias) queryParams.append("categorias", params.categorias);
+		if (params.disponiveis) queryParams.append("disponiveis", params.disponiveis.toString());
+
+		try {
+			const response = await apiClient.get<PasseiosResponse>(
+				`/passeios/search?${queryParams.toString()}`,
+			);
+			return response.data;
+		} catch (error) {
+			console.error("Erro ao buscar passeios:", error);
+			const allPasseios = await this.getAllPasseios(params);
+
+			const filteredData = allPasseios.data.filter(
+				(passeio) =>
+					passeio.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+					passeio.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
+					passeio.guia.perfil.nome.toLowerCase().includes(searchTerm.toLowerCase()),
+			);
+
+			return {
+				...allPasseios,
+				data: filteredData,
+			};
+		}
 	}
 }
 

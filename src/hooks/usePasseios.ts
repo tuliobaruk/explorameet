@@ -51,6 +51,7 @@ export const usePasseios = (options: UsePasseiosOptions = {}): UsePasseiosReturn
 					page: initialPage,
 					limit: initialLimit,
 					disponiveis,
+          status: 'ativo',
 					...params,
 				};
 

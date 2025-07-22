@@ -3,7 +3,7 @@ import { PlanBadge } from "@/components/PlanBadge";
 import { usePasseios } from "@/hooks/usePasseios";
 import { Passeio } from "@/services/passeioService";
 import { Banknote, Clock, Compass, Mountain, Search, Star, Users } from "lucide-react";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
 const Categories: React.FC<{ categorias: Passeio["categorias"] }> = ({ categorias }) => {
@@ -77,6 +77,8 @@ const limitDescricao = (descricao: string, maxLength: number = 500): string => {
 
 export default function FeedPage() {
 	const [searchTerm, setSearchTerm] = useState("");
+	const [isSearching, setIsSearching] = useState(false);
+	const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 	const {
 		passeios,
@@ -94,26 +96,64 @@ export default function FeedPage() {
 		autoLoad: true,
 	});
 
+	const performSearch = useCallback(
+		async (term: string) => {
+			setIsSearching(true);
+			try {
+				if (term.trim()) {
+					await searchPasseios(term);
+				} else {
+					await loadPasseios();
+				}
+			} finally {
+				setIsSearching(false);
+			}
+		},
+		[searchPasseios, loadPasseios],
+	);
+
 	const handleSearch = useCallback(
 		async (e: React.FormEvent) => {
 			e.preventDefault();
-			if (searchTerm.trim()) {
-				await searchPasseios(searchTerm);
-			} else {
-				await loadPasseios();
+			if (debounceTimeoutRef.current) {
+				clearTimeout(debounceTimeoutRef.current);
 			}
+			await performSearch(searchTerm);
 		},
-		[searchTerm, searchPasseios, loadPasseios],
+		[searchTerm, performSearch],
 	);
 
-	const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value;
-		setSearchTerm(value);
+	const handleSearchInputChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			const value = e.target.value;
+			setSearchTerm(value);
 
-		if (!value.trim()) {
-			loadPasseios();
+			if (debounceTimeoutRef.current) {
+				clearTimeout(debounceTimeoutRef.current);
+			}
+
+			debounceTimeoutRef.current = setTimeout(() => {
+				performSearch(value);
+			}, 300);
+		},
+		[performSearch],
+	);
+
+	useEffect(() => {
+		return () => {
+			if (debounceTimeoutRef.current) {
+				clearTimeout(debounceTimeoutRef.current);
+			}
+		};
+	}, []);
+
+	const clearSearch = useCallback(async () => {
+		setSearchTerm("");
+		if (debounceTimeoutRef.current) {
+			clearTimeout(debounceTimeoutRef.current);
 		}
-	};
+		await performSearch("");
+	}, [performSearch]);
 
 	const handlePageChange = useCallback(
 		(newPage: number) => {
@@ -156,13 +196,13 @@ export default function FeedPage() {
 		>
 			<Header />
 
-			<main className="flex-1 flex flex-col items-center px-2 py-8 md:px-0">
-				<div className="w-full max-w-2xl mb-8">
+			<main className="flex-1 flex flex-col items-center px-2 pt-24 pb-8 md:px-0">
+				<div className="w-full max-w-2xl mb-16 relative">
 					<form onSubmit={handleSearch} className="w-full">
-						<div className="relative bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 focus-within:shadow-lg border border-[rgba(137,143,41,0.15)]">
+						<div className="relative bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 focus-within:shadow-lg border border-[rgba(137,143,41,0.15)] z-20">
 							<Search
 								size={18}
-								className="absolute left-4 top-1/2 transform -translate-y-1/2 opacity-70"
+								className="absolute left-4 top-1/2 transform -translate-y-1/2 opacity-70 z-30"
 								style={{ color: "var(--verde-oliva)" }}
 							/>
 							<input
@@ -170,16 +210,51 @@ export default function FeedPage() {
 								placeholder="Buscar passeios, guias ou destinos..."
 								value={searchTerm}
 								onChange={handleSearchInputChange}
-								className="w-full pl-12 pr-4 py-3 bg-transparent border-none outline-none rounded-full placeholder-opacity-60 text-verde-oliva"
+								className="w-full pl-12 pr-20 py-3 bg-transparent border-none outline-none rounded-full placeholder-opacity-60 text-verde-oliva relative z-30"
+								disabled={isSearching}
 							/>
+							{searchTerm && (
+								<button
+									type="button"
+									onClick={clearSearch}
+									className="absolute right-12 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200 z-30"
+									title="Limpar busca"
+								>
+									×
+								</button>
+							)}
+							<button
+								type="submit"
+								disabled={isSearching}
+								className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-verde-vibrante hover:bg-green-600 disabled:bg-gray-400 text-white rounded-full p-2 transition-colors duration-200 z-30"
+								title="Buscar"
+							>
+								<Search size={14} />
+							</button>
 						</div>
 					</form>
+					{searchTerm && (
+						<div className="mt-2 text-sm text-gray-600 text-center">
+							{isSearching ? (
+								"Buscando..."
+							) : (
+								<>
+									Resultados para: <span className="font-medium">"{searchTerm}"</span>
+									{passeios.length > 0 && (
+										<span className="ml-2">({passeios.length} encontrados)</span>
+									)}
+								</>
+							)}
+						</div>
+					)}
 				</div>
 
 				<div className="w-full max-w-4xl">
-					{loading ? (
+					{loading || isSearching ? (
 						<div className="flex justify-center items-center py-12">
-							<div className="text-lg text-gray-600">Carregando passeios...</div>
+							<div className="text-lg text-gray-600">
+								{isSearching ? "Buscando passeios..." : "Carregando passeios..."}
+							</div>
 						</div>
 					) : passeios.length === 0 ? (
 						<div className="flex flex-col justify-center items-center py-12 text-center">
@@ -188,9 +263,19 @@ export default function FeedPage() {
 								{searchTerm ? "Nenhum passeio encontrado" : "Nenhum passeio disponível"}
 							</h3>
 							<p className="text-gray-500">
-								{searchTerm
-									? "Tente ajustar os termos de busca ou explorar outras opções"
-									: "Seja o primeiro a criar um passeio incrível!"}
+								{searchTerm ? (
+									<>
+										Tente ajustar os termos de busca ou{" "}
+										<button
+											onClick={clearSearch}
+											className="text-verde-vibrante hover:underline font-medium"
+										>
+											explorar todos os passeios
+										</button>
+									</>
+								) : (
+									"Seja o primeiro a criar um passeio incrível!"
+								)}
 							</p>
 						</div>
 					) : (
