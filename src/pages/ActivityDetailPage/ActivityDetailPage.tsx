@@ -8,7 +8,16 @@ import { useUser } from "@/hooks/useAuth";
 import { AvaliacaoFormData } from "@/schemas/avaliacaoSchemas";
 import AvaliacaoService from "@/services/avaliacaoService";
 import PasseioService, { Passeio } from "@/services/passeioService";
-import { AlertTriangle, ArrowLeft, Edit, Hourglass, MapPin, Users, Zap } from "lucide-react";
+import {
+	AlertTriangle,
+	ArrowLeft,
+	Edit,
+	Hourglass,
+	MapPin,
+	Tag,
+	Users,
+	Zap,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
@@ -166,6 +175,19 @@ export default function ActivityDetailPage() {
 								{passeio.qtd_pessoas || 0} vagas
 							</div>
 						</div>
+						{passeio.categorias && passeio.categorias.length > 0 && (
+							<div className="flex flex-wrap gap-3 mb-6">
+								{passeio.categorias.map((categoria) => (
+									<div
+										key={categoria.id}
+										className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium"
+									>
+										<Tag size={16} />
+										{categoria.nome}
+									</div>
+								))}
+							</div>
+						)}
 
 						<h2
 							className="text-2xl font-bold border-b pb-2 mt-8 mb-4"
