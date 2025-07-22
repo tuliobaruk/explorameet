@@ -11,6 +11,7 @@ interface UsePasseiosOptions {
 	initialLimit?: number;
 	autoLoad?: boolean;
 	disponiveis?: boolean;
+	categorias?: string;
 }
 
 interface UsePasseiosReturn {
@@ -30,7 +31,13 @@ interface UsePasseiosReturn {
 }
 
 export const usePasseios = (options: UsePasseiosOptions = {}): UsePasseiosReturn => {
-	const { initialPage = 1, initialLimit = 10, autoLoad = true, disponiveis = true } = options;
+	const {
+		initialPage = 1,
+		initialLimit = 10,
+		autoLoad = true,
+		disponiveis = true,
+		categorias = "",
+	} = options;
 
 	const [passeios, setPasseios] = useState<Passeio[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -51,7 +58,8 @@ export const usePasseios = (options: UsePasseiosOptions = {}): UsePasseiosReturn
 					page: initialPage,
 					limit: initialLimit,
 					disponiveis,
-          status: 'ativo',
+					status: "ativo",
+					categorias,
 					...params,
 				};
 
@@ -78,7 +86,7 @@ export const usePasseios = (options: UsePasseiosOptions = {}): UsePasseiosReturn
 				setLoading(false);
 			}
 		},
-		[initialPage, initialLimit, disponiveis],
+		[initialPage, initialLimit, disponiveis, categorias],
 	);
 
 	const searchPasseios = useCallback(
@@ -91,6 +99,7 @@ export const usePasseios = (options: UsePasseiosOptions = {}): UsePasseiosReturn
 					page: 1,
 					limit: initialLimit,
 					disponiveis,
+					categorias,
 					...params,
 				};
 
@@ -120,7 +129,7 @@ export const usePasseios = (options: UsePasseiosOptions = {}): UsePasseiosReturn
 				setLoading(false);
 			}
 		},
-		[initialLimit, disponiveis],
+		[initialLimit, disponiveis, categorias],
 	);
 
 	const refreshPasseios = useCallback(async () => {

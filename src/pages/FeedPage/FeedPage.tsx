@@ -1,10 +1,22 @@
 import { Header } from "@/components/Header";
 import { PlanBadge } from "@/components/PlanBadge";
 import { usePasseios } from "@/hooks/usePasseios";
+import CategoriaService, { Categoria } from "@/services/categoriaService";
 import { Passeio } from "@/services/passeioService";
-import { Banknote, Clock, Compass, Mountain, Search, Star, Users } from "lucide-react";
+import {
+	Banknote,
+	ChevronDown,
+	Clock,
+	Compass,
+	Mountain,
+	Search,
+	Star,
+	Users,
+	X,
+} from "lucide-react";
 import React, { useCallback, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Categories: React.FC<{ categorias: Passeio["categorias"] }> = ({ categorias }) => {
 	if (!categorias || categorias.length === 0) return null;
@@ -79,6 +91,10 @@ export default function FeedPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [isSearching, setIsSearching] = useState(false);
 	const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const [categorias, setCategorias] = useState<Categoria[]>([]);
+	const [selectedCategorias, setSelectedCategorias] = useState<string[]>([]);
+	const [isFilterOpen, setIsFilterOpen] = useState(false);
+	const filterRef = useRef<HTMLDivElement>(null);
 
 	const {
 		passeios,
@@ -93,23 +109,44 @@ export default function FeedPage() {
 	} = usePasseios({
 		initialLimit: 10,
 		disponiveis: false,
-		autoLoad: true,
+		autoLoad: false,
+		categorias: selectedCategorias.join(","),
 	});
+
+	const handleLoadPasseios = useCallback(() => {
+		loadPasseios({ categorias: selectedCategorias.join(",") });
+	}, [loadPasseios, selectedCategorias]);
+
+	useEffect(() => {
+		const fetchCategorias = async () => {
+			try {
+				const data = await CategoriaService.getAllCategorias();
+				setCategorias(data);
+			} catch (error) {
+				toast.error("Erro ao carregar categorias.");
+			}
+		};
+		fetchCategorias();
+	}, []);
+
+	useEffect(() => {
+		handleLoadPasseios();
+	}, [selectedCategorias, handleLoadPasseios]);
 
 	const performSearch = useCallback(
 		async (term: string) => {
 			setIsSearching(true);
 			try {
 				if (term.trim()) {
-					await searchPasseios(term);
+					await searchPasseios(term, { categorias: selectedCategorias.join(",") });
 				} else {
-					await loadPasseios();
+					await handleLoadPasseios();
 				}
 			} finally {
 				setIsSearching(false);
 			}
 		},
-		[searchPasseios, loadPasseios],
+		[searchPasseios, handleLoadPasseios, selectedCategorias],
 	);
 
 	const handleSearch = useCallback(
@@ -162,6 +199,26 @@ export default function FeedPage() {
 		[goToPage],
 	);
 
+	const handleCategoriaChange = (categoriaId: string) => {
+		setSelectedCategorias((prev) =>
+			prev.includes(categoriaId)
+				? prev.filter((id) => id !== categoriaId)
+				: [...prev, categoriaId],
+		);
+	};
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+				setIsFilterOpen(false);
+			}
+		};
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
+
 	const formatDuration = (minutes: number) => {
 		const hours = Math.floor(minutes / 60);
 		const mins = minutes % 60;
@@ -197,44 +254,92 @@ export default function FeedPage() {
 			<Header />
 
 			<main className="flex-1 flex flex-col items-center px-2 pt-24 pb-8 md:px-0">
-				<div className="w-full max-w-2xl mb-16 relative">
-					<form onSubmit={handleSearch} className="w-full">
-						<div className="relative bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 focus-within:shadow-lg border border-[rgba(137,143,41,0.15)] z-20">
-							<Search
-								size={18}
-								className="absolute left-4 top-1/2 transform -translate-y-1/2 opacity-70 z-30"
-								style={{ color: "var(--verde-oliva)" }}
-							/>
-							<input
-								type="text"
-								placeholder="Buscar passeios, guias ou destinos..."
-								value={searchTerm}
-								onChange={handleSearchInputChange}
-								className="w-full pl-12 pr-20 py-3 bg-transparent border-none outline-none rounded-full placeholder-opacity-60 text-verde-oliva relative z-30"
-								disabled={isSearching}
-							/>
-							{searchTerm && (
-								<button
-									type="button"
-									onClick={clearSearch}
-									className="absolute right-12 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200 z-30"
-									title="Limpar busca"
-								>
-									×
-								</button>
-							)}
+				<div className="w-full max-w-4xl mb-12 px-4">
+					<div className="flex flex-col md:flex-row gap-4">
+						<form onSubmit={handleSearch} className="flex-grow">
+							<div className="relative bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 focus-within:shadow-lg border border-[rgba(137,143,41,0.15)]">
+								<Search
+									size={18}
+									className="absolute left-4 top-1/2 transform -translate-y-1/2 opacity-70"
+									style={{ color: "var(--verde-oliva)" }}
+								/>
+								<input
+									type="text"
+									placeholder="Buscar passeios, guias ou destinos..."
+									value={searchTerm}
+									onChange={handleSearchInputChange}
+									className="w-full pl-12 pr-20 py-3 bg-transparent border-none outline-none rounded-full placeholder-opacity-60 text-verde-oliva"
+									disabled={isSearching}
+								/>
+								{searchTerm && (
+									<button
+										type="button"
+										onClick={clearSearch}
+										className="absolute right-12 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+										title="Limpar busca"
+									>
+										<X size={18} />
+									</button>
+								)}
+							</div>
+						</form>
+
+						<div className="relative" ref={filterRef}>
 							<button
-								type="submit"
-								disabled={isSearching}
-								className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-verde-vibrante hover:bg-green-600 disabled:bg-gray-400 text-white rounded-full p-2 transition-colors duration-200 z-30"
-								title="Buscar"
+								onClick={() => setIsFilterOpen(!isFilterOpen)}
+								className="w-full md:w-auto flex items-center justify-center gap-2 px-4 py-3 bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 border border-[rgba(137,143,41,0.15)]"
 							>
-								<Search size={14} />
+								<span className="font-medium text-gray-700">
+									{selectedCategorias.length > 0
+										? `Categorias (${selectedCategorias.length})`
+										: "Categorias"}
+								</span>
+								<ChevronDown
+									size={18}
+									className={`text-gray-600 transition-transform ${
+										isFilterOpen ? "rotate-180" : ""
+									}`}
+								/>
 							</button>
+							{isFilterOpen && (
+								<div className="absolute top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-10 right-0 md:left-0">
+									<div className="p-4 max-h-72 overflow-y-auto">
+										{categorias.length > 0 ? (
+											categorias.map((cat) => (
+												<label
+													key={cat.id}
+													className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 cursor-pointer"
+												>
+													<input
+														type="checkbox"
+														checked={selectedCategorias.includes(cat.id)}
+														onChange={() => handleCategoriaChange(cat.id)}
+														className="h-4 w-4 rounded border-gray-300 text-verde-vibrante focus:ring-green-500"
+													/>
+													<span className="text-gray-800">{cat.nome}</span>
+												</label>
+											))
+										) : (
+											<p className="text-gray-500">Nenhuma categoria encontrada.</p>
+										)}
+									</div>
+									{selectedCategorias.length > 0 && (
+										<div className="p-2 border-t border-gray-200">
+											<button
+												onClick={() => setSelectedCategorias([])}
+												className="w-full text-center text-sm font-medium text-red-600 hover:bg-red-50 p-2 rounded-md"
+											>
+												Limpar filtros
+											</button>
+										</div>
+									)}
+								</div>
+							)}
 						</div>
-					</form>
+					</div>
+
 					{searchTerm && (
-						<div className="mt-2 text-sm text-gray-600 text-center">
+						<div className="mt-3 text-sm text-gray-600 text-center">
 							{isSearching ? (
 								"Buscando..."
 							) : (
@@ -250,32 +355,25 @@ export default function FeedPage() {
 				</div>
 
 				<div className="w-full max-w-4xl">
-					{loading || isSearching ? (
+					{loading ? (
 						<div className="flex justify-center items-center py-12">
-							<div className="text-lg text-gray-600">
-								{isSearching ? "Buscando passeios..." : "Carregando passeios..."}
-							</div>
+							<div className="text-lg text-gray-600">Carregando passeios...</div>
 						</div>
 					) : passeios.length === 0 ? (
 						<div className="flex flex-col justify-center items-center py-12 text-center">
 							<Compass size={64} className="text-gray-400 mb-4" />
 							<h3 className="text-xl font-semibold text-gray-600 mb-2">
-								{searchTerm ? "Nenhum passeio encontrado" : "Nenhum passeio disponível"}
+								Nenhum passeio encontrado
 							</h3>
 							<p className="text-gray-500">
-								{searchTerm ? (
-									<>
-										Tente ajustar os termos de busca ou{" "}
-										<button
-											onClick={clearSearch}
-											className="text-verde-vibrante hover:underline font-medium"
-										>
-											explorar todos os passeios
-										</button>
-									</>
-								) : (
-									"Seja o primeiro a criar um passeio incrível!"
-								)}
+								Tente ajustar os filtros ou{" "}
+								<button
+									onClick={clearSearch}
+									className="text-verde-vibrante hover:underline font-medium"
+								>
+									buscar por outro termo
+								</button>
+								.
 							</p>
 						</div>
 					) : (
