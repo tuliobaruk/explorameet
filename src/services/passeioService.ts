@@ -49,6 +49,16 @@ export interface Passeio {
 				}>;
 			};
 		};
+		localizacoes?: Array<{
+			id: number;
+			cep?: string;
+			logradouro?: string;
+			bairro?: string;
+			cidade?: string;
+			estado?: string;
+			latitude?: number;
+			longitude?: number;
+		}>;
 	};
 	horariosDisponiveis: Array<{
 		id: string;
@@ -119,6 +129,11 @@ export interface PaginationParams {
 	status?: string;
 	categorias?: string;
 	disponiveis?: boolean;
+	cidade?: string;
+	estado?: string;
+	latitude?: number;
+	longitude?: number;
+	raio?: number;
 }
 
 class PasseioService {
@@ -130,6 +145,11 @@ class PasseioService {
 		if (params.status) queryParams.append("status", params.status);
 		if (params.categorias) queryParams.append("categorias", params.categorias);
 		if (params.disponiveis) queryParams.append("disponiveis", params.disponiveis.toString());
+		if (params.cidade) queryParams.append("cidade", params.cidade);
+		if (params.estado) queryParams.append("estado", params.estado);
+		if (params.latitude) queryParams.append("latitude", params.latitude.toString());
+		if (params.longitude) queryParams.append("longitude", params.longitude.toString());
+		if (params.raio) queryParams.append("raio", params.raio.toString());
 
 		const response = await apiClient.get<PasseiosResponse>(`/passeios?${queryParams.toString()}`);
 		return response.data;
@@ -272,6 +292,11 @@ class PasseioService {
 		if (params.status) queryParams.append("status", params.status);
 		if (params.categorias) queryParams.append("categorias", params.categorias);
 		if (params.disponiveis) queryParams.append("disponiveis", params.disponiveis.toString());
+		if (params.cidade) queryParams.append("cidade", params.cidade);
+		if (params.estado) queryParams.append("estado", params.estado);
+		if (params.latitude) queryParams.append("latitude", params.latitude.toString());
+		if (params.longitude) queryParams.append("longitude", params.longitude.toString());
+		if (params.raio) queryParams.append("raio", params.raio.toString());
 
 		try {
 			const response = await apiClient.get<PasseiosResponse>(

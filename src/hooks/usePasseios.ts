@@ -12,6 +12,11 @@ interface UsePasseiosOptions {
 	autoLoad?: boolean;
 	disponiveis?: boolean;
 	categorias?: string;
+	cidade?: string;
+	estado?: string;
+	latitude?: number;
+	longitude?: number;
+	raio?: number;
 }
 
 interface UsePasseiosReturn {
@@ -37,6 +42,11 @@ export const usePasseios = (options: UsePasseiosOptions = {}): UsePasseiosReturn
 		autoLoad = true,
 		disponiveis = true,
 		categorias = "",
+		cidade,
+		estado,
+		latitude,
+		longitude,
+		raio,
 	} = options;
 
 	const [passeios, setPasseios] = useState<Passeio[]>([]);
@@ -54,16 +64,19 @@ export const usePasseios = (options: UsePasseiosOptions = {}): UsePasseiosReturn
 				setLoading(true);
 				setError(null);
 
-				const requestParams = {
-					page: initialPage,
-					limit: initialLimit,
+				const requestParams: PaginationParams = {
+					page: params?.page || initialPage,
+					limit: params?.limit || initialLimit,
 					disponiveis,
 					status: "ativo",
 					categorias,
+					cidade,
+					estado,
+					latitude,
+					longitude,
+					raio,
 					...params,
-				};
-
-				setLastParams(requestParams);
+				};				setLastParams(requestParams);
 
 				const response: PasseiosResponse = await PasseioService.getAllPasseios(requestParams);
 
@@ -86,7 +99,7 @@ export const usePasseios = (options: UsePasseiosOptions = {}): UsePasseiosReturn
 				setLoading(false);
 			}
 		},
-		[initialPage, initialLimit, disponiveis, categorias],
+		[initialPage, initialLimit, disponiveis, categorias, cidade, estado, latitude, longitude, raio],
 	);
 
 	const searchPasseios = useCallback(

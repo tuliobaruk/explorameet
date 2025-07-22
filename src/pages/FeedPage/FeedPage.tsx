@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header";
 import { PlanBadge } from "@/components/PlanBadge";
+import { LocationFilter, LocationFilters } from "@/components/LocationFilter";
 import { usePasseios } from "@/hooks/usePasseios";
 import CategoriaService, { Categoria } from "@/services/categoriaService";
 import { Passeio } from "@/services/passeioService";
@@ -95,6 +96,7 @@ export default function FeedPage() {
 	const [categorias, setCategorias] = useState<Categoria[]>([]);
 	const [selectedCategorias, setSelectedCategorias] = useState<string[]>([]);
 	const [isFilterOpen, setIsFilterOpen] = useState(false);
+	const [locationFilters, setLocationFilters] = useState<LocationFilters>({});
 	const filterRef = useRef<HTMLDivElement>(null);
 
 	const {
@@ -112,18 +114,22 @@ export default function FeedPage() {
 		disponiveis: false,
 		autoLoad: false,
 		categorias: selectedCategorias.join(","),
+		...locationFilters,
 	});
 
 	const handleLoadPasseios = useCallback(() => {
-		loadPasseios({ categorias: selectedCategorias.join(",") });
-	}, [loadPasseios, selectedCategorias]);
+		loadPasseios({ 
+			categorias: selectedCategorias.join(","),
+			...locationFilters,
+		});
+	}, [loadPasseios, selectedCategorias, locationFilters]);
 
 	useEffect(() => {
 		const fetchCategorias = async () => {
 			try {
 				const data = await CategoriaService.getAllCategorias();
 				setCategorias(data);
-			} catch (error) {
+			} catch {
 				toast.error("Erro ao carregar categorias.");
 			}
 		};
@@ -132,14 +138,17 @@ export default function FeedPage() {
 
 	useEffect(() => {
 		handleLoadPasseios();
-	}, [selectedCategorias, handleLoadPasseios]);
+	}, [selectedCategorias, locationFilters, handleLoadPasseios]);
 
 	const performSearch = useCallback(
 		async (term: string) => {
 			setIsSearching(true);
 			try {
 				if (term.trim()) {
-					await searchPasseios(term, { categorias: selectedCategorias.join(",") });
+					await searchPasseios(term, { 
+						categorias: selectedCategorias.join(","),
+						...locationFilters,
+					});
 				} else {
 					await handleLoadPasseios();
 				}
@@ -147,7 +156,7 @@ export default function FeedPage() {
 				setIsSearching(false);
 			}
 		},
-		[searchPasseios, handleLoadPasseios, selectedCategorias],
+		[searchPasseios, handleLoadPasseios, selectedCategorias, locationFilters],
 	);
 
 	const handleSearch = useCallback(
@@ -207,6 +216,10 @@ export default function FeedPage() {
 				: [...prev, categoriaId],
 		);
 	};
+
+	const handleLocationChange = useCallback((filters: LocationFilters) => {
+		setLocationFilters(filters);
+	}, []);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -280,7 +293,15 @@ export default function FeedPage() {
 							</div>
 						</form>
 
-						<div className="relative" ref={filterRef}>
+						<div className="flex gap-2">
+							{/* Filtro de Localização */}
+							<LocationFilter
+								onLocationChange={handleLocationChange}
+								selectedFilters={locationFilters}
+							/>
+
+							{/* Filtro de Categorias */}
+							<div className="relative" ref={filterRef}>
 							<button
 								onClick={() => setIsFilterOpen(!isFilterOpen)}
 								className="w-full md:w-auto flex items-center justify-center gap-2 px-4 py-3 bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-200 border border-[rgba(137,143,41,0.15)]"
@@ -331,6 +352,7 @@ export default function FeedPage() {
 									)}
 								</div>
 							)}
+						</div>
 						</div>
 					</div>
 
