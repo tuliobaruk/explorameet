@@ -362,12 +362,14 @@ export function Header({ variant = "default" }: HeaderProps) {
 										>
 											<Crown size={16} /> Assinatura
 										</Link>
-										<Link
-											to="/guia/inscricoes"
-											className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
-										>
-											<Map size={16} /> Inscrições
-										</Link>
+										{user?.role === "GUIA" && (
+											<Link
+												to="/guia/inscricoes"
+												className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
+											>
+												<Map size={16} /> Inscrições
+											</Link>
+										)}
 										{user?.role === "ADMIN" && (
 											<Link
 												to="/configuracoes"
