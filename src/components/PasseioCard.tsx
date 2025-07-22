@@ -1,13 +1,14 @@
 import { Passeio } from "@/services/passeioService";
+import { formatDuration, formatPrice, getDefaultAvatar, handleImageError } from "@/utils/utils";
 import {
-	Banknote,
-	Clock,
-	MessageSquare,
-	Mountain,
-	Share2,
-	Star,
-	ThumbsUp,
-	Users,
+  Banknote,
+  Clock,
+  MessageSquare,
+  Mountain,
+  Share2,
+  Star,
+  ThumbsUp,
+  Users,
 } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
@@ -73,34 +74,6 @@ const preparePasseioImages = (
 	}
 
 	return imagesToShow;
-};
-
-const formatDuration = (minutes: number) => {
-	const hours = Math.floor(minutes / 60);
-	const mins = minutes % 60;
-	if (hours > 0) {
-		return `${hours}h${mins > 0 ? ` ${mins}min` : ""}`;
-	}
-	return `${mins}min`;
-};
-
-const formatPrice = (price: string) => {
-	if (!price) return "";
-	const numPrice = parseFloat(price);
-	return `R$ ${numPrice.toFixed(2).replace(".", ",")}`;
-};
-
-const getDefaultAvatar = (name: string) => {
-	const initials = name
-		.split(" ")
-		.map((n) => n[0])
-		.join("")
-		.toUpperCase();
-	return `https://placehold.co/40x40/898f29/FFFFFF?text=${initials}&font=roboto`;
-};
-
-const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-	e.currentTarget.src = "/default-image.png";
 };
 
 interface PasseioCardProps {

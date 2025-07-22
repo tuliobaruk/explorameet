@@ -1,5 +1,5 @@
-import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
 import { useUser } from "@/hooks/useAuth";
 import HorarioDisponivelService, {
 	CreateHorarioDisponivelData,
@@ -11,7 +11,6 @@ import {
 	ArrowLeft,
 	Calendar,
 	Clock,
-	DollarSign,
 	Edit3,
 	Image as ImageIcon,
 	Plus,
@@ -23,6 +22,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { formatPrice } from "../../utils/utils";
 
 interface HorarioFormData {
 	data: string;
@@ -270,7 +270,7 @@ export default function HorarioPasseioPage() {
 									<Clock size={14} /> {passeio.duracao_passeio || "N/A"} min
 								</span>
 								<span className="flex items-center gap-1.5">
-									<DollarSign size={14} /> R$ {passeio.valor || "N/A"}
+									{formatPrice(passeio.valor) || "N/A"}
 								</span>
 							</div>
 						</div>

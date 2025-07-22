@@ -3,6 +3,7 @@ import { useUser } from "@/hooks/useAuth";
 import CategoriaService, { Categoria } from "@/services/categoriaService";
 import PasseioService, { CreatePasseioData } from "@/services/passeioService";
 import RestricaoService, { Restricao } from "@/services/restricaoService";
+import { maskCurrency } from "@/utils/masks";
 import { AlertCircle, Camera, Plus, Upload, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -100,19 +101,40 @@ export default function CreatePasseioPage() {
 		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
 	) => {
 		const { name, value } = e.target;
-		setFormData((prev) => ({
-			...prev,
-			[name]:
-				name === "duracao_passeio" || name === "qtd_pessoas" || name === "nivel_dificuldade"
-					? parseInt(value) || 0
-					: name === "valor"
-						? parseFloat(value) || undefined
+		
+		// Aplicar máscara para o campo valor
+		if (name === "valor") {
+			const maskedValue = maskCurrency(value);
+			e.target.value = maskedValue;
+			
+			// Converter o valor mascarado para número para armazenar no estado
+			const numericValue = maskedValue ? parseFloat(maskedValue.replace(/\./g, "").replace(",", ".")) : undefined;
+			setFormData((prev) => ({
+				...prev,
+				[name]: numericValue,
+			}));
+		} else {
+			setFormData((prev) => ({
+				...prev,
+				[name]:
+					name === "duracao_passeio" || name === "qtd_pessoas" || name === "nivel_dificuldade"
+						? parseInt(value) || 0
 						: value,
-		}));
+			}));
+		}
 
 		if (errors[name]) {
 			setErrors((prev) => ({ ...prev, [name]: "" }));
 		}
+	};
+
+	// Função para formatar valor para exibição
+	const getFormattedValue = (value: number | undefined) => {
+		if (!value) return "";
+		return value.toLocaleString("pt-BR", {
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2,
+		});
 	};
 
 	const handleCategoriaChange = (categoriaId: string) => {
@@ -401,8 +423,9 @@ export default function CreatePasseioPage() {
 												Duração (minutos) *
 											</label>
 											<input
-												type="number"
+												type="text"
 												name="duracao_passeio"
+                        maxLength={5}
 												value={formData.duracao_passeio}
 												onChange={handleInputChange}
 												min="1"
@@ -435,16 +458,15 @@ export default function CreatePasseioPage() {
 												Valor (R$)
 											</label>
 											<input
-												type="number"
+												type="text"
 												name="valor"
-												value={formData.valor || ""}
+												maxLength={15}
+												value={getFormattedValue(formData.valor)}
 												onChange={handleInputChange}
-												min="0"
-												step="0.01"
 												className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all duration-200"
 												onFocus={(e) => (e.target.style.borderColor = "var(--verde-vibrante)")}
 												onBlur={(e) => (e.target.style.borderColor = "#d1d5db")}
-												placeholder="0.00"
+												placeholder="0,00"
 											/>
 										</div>
 
@@ -453,7 +475,8 @@ export default function CreatePasseioPage() {
 												Máx. Pessoas
 											</label>
 											<input
-												type="number"
+												type="text"
+                        maxLength={3}
 												name="qtd_pessoas"
 												value={formData.qtd_pessoas || ""}
 												onChange={handleInputChange}

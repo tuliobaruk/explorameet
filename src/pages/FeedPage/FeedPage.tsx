@@ -3,18 +3,19 @@ import { PlanBadge } from "@/components/PlanBadge";
 import { usePasseios } from "@/hooks/usePasseios";
 import CategoriaService, { Categoria } from "@/services/categoriaService";
 import { Passeio } from "@/services/passeioService";
+import { formatPrice } from "@/utils/utils";
 import {
-	Banknote,
-	ChevronDown,
-	Clock,
-	Compass,
-	Mountain,
-	Search,
-	Star,
-	Users,
-	X,
+  Banknote,
+  ChevronDown,
+  Clock,
+  Compass,
+  Mountain,
+  Search,
+  Star,
+  Users,
+  X,
 } from "lucide-react";
-import React, { useCallback, useState, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -226,11 +227,6 @@ export default function FeedPage() {
 			return `${hours}h${mins > 0 ? ` ${mins}min` : ""}`;
 		}
 		return `${mins}min`;
-	};
-
-	const formatPrice = (price: string) => {
-		const numPrice = parseFloat(price);
-		return `R$ ${numPrice.toFixed(2).replace(".", ",")}`;
 	};
 
 	const getDefaultAvatar = (name: string) => {

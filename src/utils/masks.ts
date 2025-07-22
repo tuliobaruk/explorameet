@@ -44,3 +44,18 @@ export function maskCadastur(value: string) {
 		.replace(/(\d{2})\.(\d{6})\.(\d{2})(\d)/, "$1.$2.$3-$4")
 		.replace(/(-\d{1})\d+?$/, "$1");
 }
+
+export function maskCurrency(value: string) {
+	const digits = value.replace(/\D/g, "");
+	
+	if (!digits) return "";
+	
+	const limitedDigits = digits.slice(0, 8);
+	
+	const number = parseInt(limitedDigits, 10) / 100;
+	
+	return number.toLocaleString("pt-BR", {
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2,
+	});
+}
