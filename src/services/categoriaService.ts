@@ -31,7 +31,7 @@ class CategoriaService {
 	}
 
 	async updateCategoria(id: string, data: { nome: string; descricao: string }): Promise<Categoria> {
-		const response = await apiClient.put<Categoria>(`/categorias/${id}`, data);
+		const response = await apiClient.patch<Categoria>(`/categorias/${id}`, data);
 		return response.data;
 	}
 

@@ -6,7 +6,7 @@ export interface Notification {
 	id: string;
 	titulo: string;
 	mensagem: string;
-	tipo: "INSCRICAO_CLIENTE" | "CONFIRMACAO_GUIA" | "CANCELAMENTO";
+	tipo: "INSCRICAO_CLIENTE" | "CONFIRMACAO_GUIA" | "CANCELAMENTO" | "NOVO_GUIA_CADASTRO" | "GUIA_APROVADO" | "GUIA_REJEITADO";
 	lida: boolean;
 	usuarioId: string;
 	passeioId?: string;
