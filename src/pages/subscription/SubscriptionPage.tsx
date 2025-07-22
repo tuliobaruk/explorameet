@@ -599,33 +599,36 @@ export default function SubscriptionPage() {
 				</div>
 
 				{/* Modal de confirmação para troca de plano */}
-		{showConfirmModal.show && (
-		  <div className="modal-overlay" onClick={() => setShowConfirmModal({ show: false, planId: '', planName: '' })}>
-			<div className="modal-content" onClick={e => e.stopPropagation()}>
-			  <h3 className="text-lg font-bold text-verde-oliva mb-4">Confirmar Troca de Plano</h3>
-			  <p className="text-gray-600 mb-6">
-				Você possui uma assinatura ativa para o plano "
-				<strong>{activeSubscription?.planoAssinatura?.nome}</strong>". Ao trocar para o
-				plano "<strong>{showConfirmModal.planName}</strong>", sua assinatura atual será
-				cancelada automaticamente. Deseja continuar?
-			  </p>
-			  <div className="flex justify-between w-full mt-2">
-				<button
-				  onClick={() => setShowConfirmModal({ show: false, planId: '', planName: '' })}
-				  className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 w-2/5"
-				>
-				  Cancelar
-				</button>
-				<button
-				  onClick={handleConfirmPlanChange}
-				  className="px-3 py- rounded-lg font-bold text-white modal-confirm-btn w-2/5"
-				>
-				  Confirmar Troca
-				</button>
-			  </div>
-			</div>
-		  </div>
-		)}
+				{showConfirmModal.show && (
+					<div
+						className="modal-overlay"
+						onClick={() => setShowConfirmModal({ show: false, planId: "", planName: "" })}
+					>
+						<div className="modal-content" onClick={(e) => e.stopPropagation()}>
+							<h3 className="text-lg font-bold text-verde-oliva mb-4">Confirmar Troca de Plano</h3>
+							<p className="text-gray-600 mb-6">
+								Você possui uma assinatura ativa para o plano "
+								<strong>{activeSubscription?.planoAssinatura?.nome}</strong>". Ao trocar para o
+								plano "<strong>{showConfirmModal.planName}</strong>", sua assinatura atual será
+								cancelada automaticamente. Deseja continuar?
+							</p>
+							<div className="flex justify-between w-full mt-2">
+								<button
+									onClick={() => setShowConfirmModal({ show: false, planId: "", planName: "" })}
+									className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 w-2/5"
+								>
+									Cancelar
+								</button>
+								<button
+									onClick={handleConfirmPlanChange}
+									className="px-3 py- rounded-lg font-bold text-white modal-confirm-btn w-2/5"
+								>
+									Confirmar Troca
+								</button>
+							</div>
+						</div>
+					</div>
+				)}
 			</main>
 			<Footer />
 		</div>

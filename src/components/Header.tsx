@@ -1,19 +1,19 @@
 import { useAuthContext, useUser } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
 import {
-  Bell,
-  Check,
-  Compass,
-  Crown,
-  LogOut,
-  Map,
-  MapPinCheckIcon,
-  Plus,
-  RefreshCw,
-  Settings,
-  UserCircle,
-  UserRound,
-  X,
+	Bell,
+	Check,
+	Compass,
+	Crown,
+	LogOut,
+	Map,
+	MapPinCheckIcon,
+	Plus,
+	RefreshCw,
+	Settings,
+	UserCircle,
+	UserRound,
+	X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";

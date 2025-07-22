@@ -31,7 +31,7 @@ export const PlanBadge: React.FC<PlanBadgeProps> = ({
 }) => {
 	const getActivePlan = () => {
 		if (!usuario) return null;
-		
+
 		const inscricoes = usuario.inscricoes;
 		if (!inscricoes || inscricoes.length === 0) {
 			return null;

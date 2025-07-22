@@ -20,7 +20,7 @@ interface AuthProviderProps {
 }
 
 export interface AuthenticatedUser {
-  sub: string;
+	sub: string;
 	email: string;
 	role: string;
 	perfil?: {

@@ -20,9 +20,9 @@ export function AdminRoute({ children }: AdminRouteProps) {
 		);
 	}
 
-    if (!isAuthenticated) {
-        return <Navigate to="/login" state={{ from: location }} replace />;
-    }
+	if (!isAuthenticated) {
+		return <Navigate to="/login" state={{ from: location }} replace />;
+	}
 
 	if (!isAdmin()) {
 		return <Navigate to="/" state={{ from: location }} replace />;
