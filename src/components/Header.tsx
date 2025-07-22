@@ -368,13 +368,15 @@ export function Header({ variant = "default" }: HeaderProps) {
 										>
 											<Map size={16} /> Inscrições
 										</Link>
-										<Link
-											to="/configuracoes"
-											className="flex items-center gap-2 px-4 py-2 hov   er:bg-gray-50 text-verde-oliva"
-											onClick={() => setDropdownOpen(false)}
-										>
-											<Settings size={16} /> Configurações
-										</Link>
+										{user?.role === "ADMIN" && (
+											<Link
+												to="/configuracoes"
+												className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
+												onClick={() => setDropdownOpen(false)}
+											>
+												<Settings size={16} /> Configurações
+											</Link>
+										)}
 										<hr className="my-1 border-t border-gray-200" />
 										<button
 											className="flex items-center gap-2 px-4 py-2 w-full text-left hover:bg-gray-50 text-red-600"

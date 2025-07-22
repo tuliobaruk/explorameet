@@ -6,9 +6,9 @@ import SubscriptionService, {
 	UpdatePlanData,
 } from "@/services/subscriptionService";
 import { Plan } from "@/types/Inscricao";
-import { Edit, Plus, X } from "lucide-react";
+import { ArrowLeft, Edit, Plus, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./AdminPlansPage.css";
 
@@ -28,7 +28,7 @@ export default function AdminPlansPage() {
 	const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
 	const navigate = useNavigate();
 
-	const { user, isLoading, isAdmin } = useUser();
+	const { isLoading, isAdmin } = useUser();
 
 	const [formData, setFormData] = useState<CreatePlanData>(initialFormData);
 	const [errors, setErrors] = useState<Record<string, string>>({});
@@ -145,6 +145,14 @@ export default function AdminPlansPage() {
 		<div className="admin-plans-container flex flex-col min-h-screen">
 			<Header />
 			<main className="flex-1 w-full max-w-5xl mx-auto px-4 pt-24 pb-12">
+				<Link
+					to="/configuracoes"
+					className="flex items-center gap-2 font-semibold mb-6 transition-colors hover:underline"
+					style={{ color: "var(--marrom-dourado)" }}
+				>
+					<ArrowLeft size={20} />
+					Voltar para o painel do Admin
+				</Link>
 				<div className="flex justify-between items-center mb-6">
 					<h1 className="text-2xl font-bold" style={{ color: "var(--verde-oliva)" }}>
 						Gerenciar Planos

@@ -25,6 +25,10 @@ import GuideOwnActivityListPage from "@/pages/guideOwnActivityList/guideOwnActiv
 import ProfileEditPage from "./pages/ProfilePage/ProfileEditPage";
 import { AdminRoute } from "./components/AdminRoute";
 import AdminPlansPage from "./pages/admin/AdminPlansPage";
+import AdminRestricaoPage from "./pages/admin/AdminRestricaoPage";
+import AdminCategoriaPage from "./pages/admin/AdminCategoriaPage";
+import AdminGuiasPage from "./pages/admin/AdminGuiasPage";
+import ConfiguracoesPage from "./pages/ConfiguracoesPage/ConfiguracoesPage";
 import SubscriptionPage from "./pages/subscription/SubscriptionPage";
 import SubscriptionSuccessPage from "./pages/subscription/SubscriptionSuccessPage";
 import SubscriptionCancelPage from "./pages/subscription/SubscriptionCancelPage";
@@ -158,6 +162,38 @@ const router = createBrowserRouter([
 		element: (
 			<AdminRoute>
 				<AdminPlansPage />
+			</AdminRoute>
+		),
+	},
+	{
+		path: "/admin/restricoes",
+		element: (
+			<AdminRoute>
+				<AdminRestricaoPage />
+			</AdminRoute>
+		),
+	},
+	{
+		path: "/admin/categorias",
+		element: (
+			<AdminRoute>
+				<AdminCategoriaPage />
+			</AdminRoute>
+		),
+	},
+	{
+		path: "/admin/guias",
+		element: (
+			<AdminRoute>
+				<AdminGuiasPage />
+			</AdminRoute>
+		),
+	},
+	{
+		path: "/configuracoes",
+		element: (
+			<AdminRoute>
+				<ConfiguracoesPage />
 			</AdminRoute>
 		),
 	},
