@@ -3,13 +3,17 @@ import { useUser } from "@/hooks/useAuth";
 import LocalizacaoService, { CreateLocalizacaoData } from "@/services/localizacaoService";
 import { AlertCircle, MapPin, Save } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export default function CreateLocalizacaoPage() {
 	const [loading, setLoading] = useState(false);
 	const [loadingCep, setLoadingCep] = useState(false);
+	const [loadingData, setLoadingData] = useState(false);
 	const navigate = useNavigate();
+	const [searchParams] = useSearchParams();
+	const editId = searchParams.get('edit');
+	const isEditing = !!editId;
 
 	const { isAuthenticated, user, isLoading } = useUser();
 
@@ -40,12 +44,39 @@ export default function CreateLocalizacaoPage() {
 		}
 	}, [isLoading, isAuthenticated, canCreateLocalizacao, navigate]);
 
+	useEffect(() => {
+		const loadLocalizacaoData = async (id: number) => {
+			try {
+				setLoadingData(true);
+				const localizacao = await LocalizacaoService.getLocalizacaoById(id);
+				setFormData({
+					cep: localizacao.cep || "",
+					logradouro: localizacao.logradouro || "",
+					bairro: localizacao.bairro || "",
+					cidade: localizacao.cidade || "",
+					estado: localizacao.estado || "",
+					latitude: localizacao.latitude,
+					longitude: localizacao.longitude,
+				});
+			} catch (error) {
+				console.error("Erro ao carregar localização:", error);
+				toast.error("Erro ao carregar dados da localização");
+				navigate("/minhas-localizacoes");
+			} finally {
+				setLoadingData(false);
+			}
+		};
+
+		if (isEditing && editId) {
+			loadLocalizacaoData(parseInt(editId));
+		}
+	}, [isEditing, editId, navigate]);
+
 	const handleInputChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
 	) => {
 		const { name, value } = e.target;
 
-		// Aplicar máscara para o campo CEP
 		if (name === "cep") {
 			const cepFormatado = LocalizacaoService.formatarCep(value);
 			setFormData((prev) => ({
@@ -154,13 +185,20 @@ export default function CreateLocalizacaoPage() {
 		setLoading(true);
 
 		try {
-			await LocalizacaoService.createLocalizacao(formData);
-			toast.success("Localização cadastrada com sucesso!");
-			navigate("/criar-passeio");
+			if (isEditing && editId) {
+				await LocalizacaoService.updateLocalizacao(parseInt(editId), formData);
+				toast.success("Localização atualizada com sucesso!");
+				navigate("/minhas-localizacoes");
+			} else {
+				await LocalizacaoService.createLocalizacao(formData);
+				toast.success("Localização cadastrada com sucesso!");
+				navigate("/criar-passeio");
+			}
 		} catch (error: unknown) {
-			console.error("Erro ao cadastrar localização:", error);
+			console.error(`Erro ao ${isEditing ? 'atualizar' : 'cadastrar'} localização:`, error);
 			toast.error(
-				"Erro ao cadastrar localização: " + (error instanceof Error ? error.message : "Erro desconhecido"),
+				`Erro ao ${isEditing ? 'atualizar' : 'cadastrar'} localização: ` + 
+				(error instanceof Error ? error.message : "Erro desconhecido"),
 			);
 		} finally {
 			setLoading(false);
@@ -189,7 +227,7 @@ export default function CreateLocalizacaoPage() {
 		);
 	};
 
-	if (isLoading) {
+	if (isLoading || loadingData) {
 		return (
 			<div
 				className="flex flex-col min-h-screen"
@@ -244,10 +282,13 @@ export default function CreateLocalizacaoPage() {
 								</div>
 								<div>
 									<h1 className="text-2xl font-bold text-gray-900">
-										Cadastrar Localização
+										{isEditing ? "Editar Localização" : "Cadastrar Localização"}
 									</h1>
 									<p className="text-gray-600">
-										Cadastre uma localização onde você oferece seus passeios
+										{isEditing 
+											? "Edite os dados da sua localização" 
+											: "Cadastre uma localização onde você oferece seus passeios"
+										}
 									</p>
 								</div>
 							</div>
@@ -471,7 +512,7 @@ export default function CreateLocalizacaoPage() {
 								<div className="flex flex-col sm:flex-row gap-4 pt-6">
 									<button
 										type="button"
-										onClick={() => navigate(-1)}
+										onClick={() => isEditing ? navigate("/minhas-localizacoes") : navigate(-1)}
 										className="flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
 									>
 										Cancelar
@@ -486,7 +527,10 @@ export default function CreateLocalizacaoPage() {
 										) : (
 											<Save size={20} />
 										)}
-										{loading ? "Salvando..." : "Salvar Localização"}
+										{loading 
+											? "Salvando..." 
+											: (isEditing ? "Salvar Alterações" : "Salvar Localização")
+										}
 									</button>
 								</div>
 							</form>
