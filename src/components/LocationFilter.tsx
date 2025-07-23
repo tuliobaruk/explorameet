@@ -22,6 +22,36 @@ const ESTADOS_BRASIL = [
   'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
 ];
 
+const ESTADO_PARA_UF: { [key: string]: string } = {
+  'Acre': 'AC',
+  'Alagoas': 'AL',
+  'Amapá': 'AP',
+  'Amazonas': 'AM',
+  'Bahia': 'BA',
+  'Ceará': 'CE',
+  'Distrito Federal': 'DF',
+  'Espírito Santo': 'ES',
+  'Goiás': 'GO',
+  'Maranhão': 'MA',
+  'Mato Grosso': 'MT',
+  'Mato Grosso do Sul': 'MS',
+  'Minas Gerais': 'MG',
+  'Pará': 'PA',
+  'Paraíba': 'PB',
+  'Paraná': 'PR',
+  'Pernambuco': 'PE',
+  'Piauí': 'PI',
+  'Rio de Janeiro': 'RJ',
+  'Rio Grande do Norte': 'RN',
+  'Rio Grande do Sul': 'RS',
+  'Rondônia': 'RO',
+  'Roraima': 'RR',
+  'Santa Catarina': 'SC',
+  'São Paulo': 'SP',
+  'Sergipe': 'SE',
+  'Tocantins': 'TO'
+};
+
 const RAIOS_OPCOES = [
   { value: 5, label: '5 km' },
   { value: 10, label: '10 km' },
@@ -29,6 +59,19 @@ const RAIOS_OPCOES = [
   { value: 50, label: '50 km' },
   { value: 100, label: '100 km' },
 ];
+
+const converterEstadoParaUF = (estado: string): string => {
+  if (estado.length === 2) {
+    return estado.toUpperCase();
+  }
+  
+  return ESTADO_PARA_UF[estado] || estado;
+};
+
+const converterUFParaEstado = (uf: string): string => {
+  const entrada = Object.entries(ESTADO_PARA_UF).find(([, value]) => value === uf.toUpperCase());
+  return entrada ? entrada[0] : uf;
+};
 
 export const LocationFilter: React.FC<LocationFilterProps> = ({
   onLocationChange,
@@ -59,7 +102,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
         latitude: currentLocation.latitude,
         longitude: currentLocation.longitude,
         cidade: currentLocation.cidade,
-        estado: currentLocation.estado,
+        estado: currentLocation.estado ? converterEstadoParaUF(currentLocation.estado) : undefined,
         raio: localFilters.raio || 25, // Raio padrão de 25km
       };
       setLocalFilters(newFilters);
@@ -114,13 +157,15 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({
 
   const getFilterText = () => {
     if (localFilters.cidade && localFilters.estado) {
-      return `${localFilters.cidade}, ${localFilters.estado}`;
+      const estadoDisplay = localFilters.estado.length === 2 ? converterUFParaEstado(localFilters.estado) : localFilters.estado;
+      return `${localFilters.cidade}, ${estadoDisplay}`;
     }
     if (localFilters.cidade) {
       return localFilters.cidade;
     }
     if (localFilters.estado) {
-      return localFilters.estado;
+      const estadoDisplay = localFilters.estado.length === 2 ? converterUFParaEstado(localFilters.estado) : localFilters.estado;
+      return estadoDisplay;
     }
     if (localFilters.latitude && localFilters.longitude) {
       return `Proximidade ${localFilters.raio || 25}km`;
