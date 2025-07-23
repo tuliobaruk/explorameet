@@ -57,12 +57,7 @@ class LocalizacaoService {
 	}
 
 	static async getLocalizacoesByGuia(guiaId: string): Promise<Localizacao[]> {
-		const response = await apiClient.get<Localizacao[]>(`/localizacoes?guiaId=${guiaId}`);
-		return response.data;
-	}
-
-	static async getLocalizacoesByCidade(cidade: string): Promise<Localizacao[]> {
-		const response = await apiClient.get<Localizacao[]>(`/localizacoes?cidade=${cidade}`);
+		const response = await apiClient.get<Localizacao[]>(`/localizacoes/guia/${guiaId}`);
 		return response.data;
 	}
 

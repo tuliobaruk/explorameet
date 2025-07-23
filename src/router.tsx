@@ -1,40 +1,38 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import NotFoundPage from "@/pages/NotFoundPage";
-import HomePage from "@/pages/home/HomePage";
-import LoginPage from "@/pages/login/LoginPage";
-import RegisterPage from "@/pages/register/RegisterPage";
-import RegisterDetailsPage from "@/pages/register/RegisterDetailsPage";
-import CompleteGoogleRegistrationPage from "@/pages/register/CompleteGoogleRegistrationPage";
-import LoginSuccessPage from "@/pages/login/LoginSuccessPage";
+import { PublicRoute } from "@/components/PublicRoute";
 import EmailConfirmationPage from "@/pages/auth/EmailConfirmationPage";
 import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
 import FeedPage from "@/pages/FeedPage/FeedPage";
-import { PublicRoute } from "@/components/PublicRoute";
-import ProfilePage from "./pages/ProfilePage/ProfilePage";
-import CreateActivityPage from "./pages/CreateActivityPage/CreateActivityPage";
-import ActivityDetailPage from "./pages/ActivityDetailPage/ActivityDetailPage";
-import GuidePublicProfilePage from "./pages/GuidePublicProfilePage/GuidePublicProfilePage";
-import CreatePasseioPage from "./pages/passeio/PasseioCreatePage";
-import CreateLocalizacaoPage from "./pages/localizacao/CreateLocalizacaoPage";
-import HorarioPasseioPage from "./pages/horarioPasseio/HorarioPasseioPage";
-import TermsAndPrivacyPage from "./pages/TermsAndPrivacyPage/TermsAndPrivacyPage";
-// import MeusPasseiosPage from "./pages/MeusPasseiosPage/MeusPasseiosPage";
-import EditPasseioPage from "./pages/passeio/PasseioEditPage";
 import GuideOwnActivityListPage from "@/pages/guideOwnActivityList/guideOwnActivityPage";
-import ProfileEditPage from "./pages/ProfilePage/ProfileEditPage";
+import HomePage from "@/pages/home/HomePage";
+import LoginPage from "@/pages/login/LoginPage";
+import LoginSuccessPage from "@/pages/login/LoginSuccessPage";
+import NotFoundPage from "@/pages/NotFoundPage";
+import CompleteGoogleRegistrationPage from "@/pages/register/CompleteGoogleRegistrationPage";
+import RegisterDetailsPage from "@/pages/register/RegisterDetailsPage";
+import RegisterPage from "@/pages/register/RegisterPage";
 import { AdminRoute } from "./components/AdminRoute";
-import AdminPlansPage from "./pages/admin/AdminPlansPage";
-import AdminRestricaoPage from "./pages/admin/AdminRestricaoPage";
+import ActivityDetailPage from "./pages/ActivityDetailPage/ActivityDetailPage";
 import AdminCategoriaPage from "./pages/admin/AdminCategoriaPage";
 import AdminGuiasPage from "./pages/admin/AdminGuiasPage";
+import AdminPlansPage from "./pages/admin/AdminPlansPage";
+import AdminRestricaoPage from "./pages/admin/AdminRestricaoPage";
+import ClientSubscriptionsPage from "./pages/ClientSubscriptionsPage/ClientSubscriptionsPage";
 import ConfiguracoesPage from "./pages/ConfiguracoesPage/ConfiguracoesPage";
+import GuidePublicProfilePage from "./pages/GuidePublicProfilePage/GuidePublicProfilePage";
+import GuideSubscriptionsPage from "./pages/GuideSubscriptionsPage/GuideSubscriptionsPage";
+import HorarioPasseioPage from "./pages/horarioPasseio/HorarioPasseioPage";
+import CreateLocalizacaoPage from "./pages/localizacao/CreateLocalizacaoPage";
+import CreatePasseioPage from "./pages/passeio/PasseioCreatePage";
+import EditPasseioPage from "./pages/passeio/PasseioEditPage";
+import ProfileEditPage from "./pages/ProfilePage/ProfileEditPage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import SubscriptionCancelPage from "./pages/subscription/SubscriptionCancelPage";
 import SubscriptionPage from "./pages/subscription/SubscriptionPage";
 import SubscriptionSuccessPage from "./pages/subscription/SubscriptionSuccessPage";
-import SubscriptionCancelPage from "./pages/subscription/SubscriptionCancelPage";
-import GuideSubscriptionsPage from "./pages/GuideSubscriptionsPage/GuideSubscriptionsPage";
-import ClientSubscriptionsPage from "./pages/ClientSubscriptionsPage/ClientSubscriptionsPage";
+import TermsAndPrivacyPage from "./pages/TermsAndPrivacyPage/TermsAndPrivacyPage";
 
 const router = createBrowserRouter([
 	{
@@ -109,14 +107,6 @@ const router = createBrowserRouter([
 	{
 		path: "perfil/editar",
 		element: <ProfileEditPage />,
-	},
-	{
-		path: "criar-atividade",
-		element: <CreateActivityPage />,
-	},
-	{
-		path: "atividade-detalhes",
-		element: <ActivityDetailPage />,
 	},
 	{
 		path: "/guia/:guideId",

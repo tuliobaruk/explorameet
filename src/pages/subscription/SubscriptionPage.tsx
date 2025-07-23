@@ -62,7 +62,7 @@ const SubscriptionDetails: React.FC<SubscriptionDetailsProps> = ({
 		}
 
 		const normalizedStatus = String(status || "").toLowerCase();
-		const statusMap = {
+		const statusMap: Record<string, { text: string; color: string; icon: React.ComponentType<{ size?: number }> }> = {
 			ativa: { text: "Ativa", color: "bg-green-500", icon: Check },
 			active: { text: "Ativa", color: "bg-green-500", icon: Check },
 			pendente: { text: "Pendente", color: "bg-yellow-500", icon: RefreshCw },
@@ -162,7 +162,7 @@ const SubscriptionDetails: React.FC<SubscriptionDetailsProps> = ({
 							<p className="text-orange-700 text-sm font-medium">
 								<strong>Cancelamento efetivo:</strong>{" "}
 								{formatDateWithTime(
-									subscription.data_fim || subscription.stripe_current_period_end,
+									subscription.data_fim || subscription.stripe_current_period_end || new Date().toISOString(),
 								)}
 							</p>
 							{onReactivate && (

@@ -62,8 +62,8 @@ export default function ProfilePage() {
 				<section className="bg-white p-6 rounded-lg shadow-md border border-[rgba(137,143,41,0.1)] flex flex-col md:flex-row items-center gap-6">
 					<img
 						src={
-							user.avatarUrl ||
-							`https://ui-avatars.com/api/?name=${user.name}&background=898f29&color=fff`
+							user.perfil?.foto ||
+							`https://ui-avatars.com/api/?name=${user.perfil?.nome || 'User'}&background=898f29&color=fff`
 						}
 						alt="Foto de Perfil"
 						className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4"
@@ -72,12 +72,12 @@ export default function ProfilePage() {
 					<div className="flex-1 text-center md:text-left">
 						<div className="flex items-center justify-center md:justify-start gap-3">
 							<h1 className="text-3xl font-bold" style={{ color: "var(--verde-oliva)" }}>
-								{user.name}
+								{user.perfil?.nome || 'Usuário'}
 							</h1>
 						</div>
 						<div className="flex items-center justify-center md:justify-start gap-2 mt-2 text-gray-600">
 							<MapPin size={16} />
-							<span>{user.profile?.celular}</span>
+							<span>Perfil do usuário</span>
 						</div>
 						<p className="text-gray-700 mt-3">{user.email}</p>
 					</div>

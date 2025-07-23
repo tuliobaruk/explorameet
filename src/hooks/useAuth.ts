@@ -1,15 +1,6 @@
 import { useCallback, useContext, useState } from "react";
-import AuthContext, { AuthenticatedUser } from "../contexts/AuthContext";
-import { ApiError, AuthService, AuthUser, LoginData } from "../services/authService";
-
-interface AuthContextType {
-	user: AuthenticatedUser | null;
-	isLoading: boolean;
-	isAuthenticated: boolean;
-	login: (credentials: LoginData) => Promise<void>;
-	logout: () => Promise<void>;
-	checkAuthStatus: () => Promise<void>;
-}
+import AuthContext, { AuthContextType } from "../contexts/AuthContext";
+import { ApiError, AuthService, AuthUser } from "../services/authService";
 
 export function useAuthContext(): AuthContextType {
 	const context = useContext(AuthContext);
@@ -38,7 +29,7 @@ export function useUser() {
 	const isClient = useCallback(() => user?.role === "CLIENTE", [user]);
 	const isGuide = useCallback(() => user?.role === "GUIA", [user]);
 	const isAdmin = useCallback(() => user?.role === "ADMIN", [user]);
-
+  
 	return {
 		user,
 		isLoading,

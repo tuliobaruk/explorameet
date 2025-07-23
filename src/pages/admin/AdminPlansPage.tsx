@@ -75,7 +75,7 @@ export default function AdminPlansPage() {
 		const newErrors: Record<string, string> = {};
 		if (!formData.nome.trim()) newErrors.nome = "Nome é obrigatório";
 		if (!formData.descricao.trim()) newErrors.descricao = "Descrição é obrigatória";
-		if (formData.preco <= 0) newErrors.preco = "Preço deve ser maior que 0";
+		if (Number(formData.preco) <= 0) newErrors.preco = "Preço deve ser maior que 0";
 		if (formData.duracao_dias <= 0) newErrors.duracao_dias = "Duração deve ser maior que 0";
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;

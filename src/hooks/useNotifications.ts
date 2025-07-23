@@ -43,10 +43,11 @@ export function useNotifications(): UseNotificationsReturn {
 
 		try {
 			console.log("Buscando notificações para usuário:", user?.sub);
+      console.log(user)
 			const response = await apiClient.get(`/notificacoes?t=${Date.now()}`);
 			console.log(
 				"Notificações recebidas:",
-				response.data.map((n) => ({ id: n.id, titulo: n.titulo, usuarioId: n.usuarioId })),
+				response.data.map((n: Notification) => ({ id: n.id, titulo: n.titulo, usuarioId: n.usuarioId })),
 			);
 			setNotifications(response.data);
 		} catch (err) {

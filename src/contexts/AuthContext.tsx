@@ -1,11 +1,11 @@
 import { createContext, ReactNode, useCallback, useEffect, useState } from "react";
-import AuthService, { ApiError, AuthUser, LoginData } from "../services/authService";
+import AuthService, { ApiError, LoginData } from "../services/authService";
 import PerfilService from "../services/perfilService";
 import { Cliente, Guia } from "../types/Usuario";
 import { toast } from "react-toastify";
 
-interface AuthContextType {
-	user: AuthUser | null;
+export interface AuthContextType {
+	user: AuthenticatedUser | null;
 	isLoading: boolean;
 	isAuthenticated: boolean;
 	login: (credentials: LoginData) => Promise<void>;
@@ -108,7 +108,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
 };
 
 export function AuthProvider({ children }: AuthProviderProps) {
-	const [user, setUser] = useState<AuthUser | null>(null);
+	const [user, setUser] = useState<AuthenticatedUser | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -120,14 +120,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
 			const authStatus = await AuthService.getMe();
 			if (authStatus) {
 				if (authStatus.role === "ADMIN") {
-					setUser(authStatus);
+					setUser({
+						sub: authStatus.id,
+						email: authStatus.email,
+						role: authStatus.role,
+					});
 				} else {
 					const perfilData = await PerfilService.getMeuPerfil();
-					const fullUser = {
-						...authStatus,
-						perfil: perfilData,
-					};
-					setUser(fullUser);
+					setUser({
+						sub: authStatus.id,
+						email: authStatus.email,
+						role: authStatus.role,
+						perfil: {
+							nome: perfilData.nome,
+							foto: perfilData.foto,
+							cliente: perfilData.cliente as Cliente | undefined,
+							guia: perfilData.guia as Guia | undefined,
+						},
+					});
 				}
 			} else {
 				setUser(null);

@@ -71,7 +71,7 @@ export default function GuidePublicProfilePage() {
 			try {
 				setLoading(true);
 				const data = await GuiaService.getGuiaById(guideId);
-				setGuideData(data);
+				setGuideData(data as unknown as GuideData);
 			} catch (error) {
 				console.error("Erro ao buscar dados do guia:", error);
 			} finally {

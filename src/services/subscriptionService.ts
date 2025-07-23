@@ -1,4 +1,4 @@
-import { apiClient } from "@/api/axiosConfig";
+import { apiClient, ApiError } from "@/api/axiosConfig";
 import { Plan, Subscription, CheckoutSession, CreateCheckoutRequest } from "@/types/Inscricao";
 
 export type CreatePlanData = Omit<
@@ -8,7 +8,7 @@ export type CreatePlanData = Omit<
 export type UpdatePlanData = Partial<CreatePlanData> & { ativo?: boolean };
 
 class SubscriptionService {
-	private validatePlan(plan: unknown): plan is Plan {
+	private validatePlan(plan: Plan) {
 		return (
 			plan &&
 			typeof plan === "object" &&
@@ -19,7 +19,7 @@ class SubscriptionService {
 		);
 	}
 
-	private validateSubscription(subscription: unknown): subscription is Subscription {
+	private validateSubscription(subscription: Subscription) {
 		return (
 			subscription && typeof subscription === "object" && subscription.id && subscription.status
 		);
@@ -71,12 +71,12 @@ class SubscriptionService {
 		} catch (error: unknown) {
 			console.error("Erro ao buscar planos por role:", error);
 
-			if (error.response?.status === 404) {
+			if ((error as ApiError).status === 404) {
 				console.log("Nenhum plano encontrado para o role:", role);
 				return [];
 			}
 
-			console.warn("Retornando array vazio devido ao erro:", error.message);
+			console.warn("Retornando array vazio devido ao erro:", (error as ApiError).message);
 			return [];
 		}
 	}
@@ -96,7 +96,7 @@ class SubscriptionService {
 			return response.data;
 		} catch (error: unknown) {
 			console.error("Erro ao buscar plano:", error);
-			throw new Error(error.response?.data?.message || "Falha ao carregar plano");
+			throw new Error((error as ApiError).message || "Falha ao carregar plano");
 		}
 	}
 
@@ -115,7 +115,7 @@ class SubscriptionService {
 			return response.data;
 		} catch (error: unknown) {
 			console.error("Erro ao criar plano:", error);
-			throw new Error(error.response?.data?.message || "Falha ao criar plano");
+			throw new Error((error as ApiError).message || "Falha ao criar plano");
 		}
 	}
 
@@ -134,7 +134,7 @@ class SubscriptionService {
 			return response.data;
 		} catch (error: unknown) {
 			console.error("Erro ao atualizar plano:", error);
-			throw new Error(error.response?.data?.message || "Falha ao atualizar plano");
+			throw new Error((error as ApiError).message || "Falha ao atualizar plano");
 		}
 	}
 
@@ -160,7 +160,7 @@ class SubscriptionService {
 			return response.data;
 		} catch (error: unknown) {
 			console.error("Erro ao criar sessão de checkout:", error);
-			throw new Error(error.response?.data?.message || "Falha ao criar sessão de checkout");
+			throw new Error((error as ApiError).message || "Falha ao criar sessão de checkout");
 		}
 	}
 
@@ -185,12 +185,12 @@ class SubscriptionService {
 		} catch (error: unknown) {
 			console.log("Erro ao buscar assinatura ativa:", error);
 
-			if (error.response?.status === 404) {
+			if ((error as ApiError).status === 404) {
 				console.log("Nenhuma assinatura ativa encontrada (404)");
 				return null;
 			}
 
-			console.warn("Retornando null devido ao erro:", error.message);
+			console.warn("Retornando null devido ao erro:", (error as ApiError).message);
 			return null;
 		}
 	}
@@ -207,7 +207,9 @@ class SubscriptionService {
 			return response.data.filter(this.validateSubscription);
 		} catch (error: unknown) {
 			console.error("Erro ao buscar todas as assinaturas:", error);
-			throw new Error(error.response?.data?.message || "Falha ao carregar assinaturas");
+			throw new Error(
+				(error as ApiError).message || "Falha ao carregar assinaturas",
+			);
 		}
 	}
 
@@ -226,7 +228,7 @@ class SubscriptionService {
 			return response.data;
 		} catch (error: unknown) {
 			console.error("Erro ao buscar assinatura:", error);
-			throw new Error(error.response?.data?.message || "Falha ao carregar assinatura");
+			throw new Error((error as ApiError).message || "Falha ao carregar assinatura");
 		}
 	}
 
@@ -246,7 +248,7 @@ class SubscriptionService {
 			return response.data.filter(this.validateSubscription);
 		} catch (error: unknown) {
 			console.error("Erro ao buscar assinaturas do usuário:", error);
-			throw new Error(error.response?.data?.message || "Falha ao carregar assinaturas do usuário");
+			throw new Error((error as ApiError).message || "Falha ao carregar assinaturas do usuário");
 		}
 	}
 
@@ -269,7 +271,7 @@ class SubscriptionService {
 			return response.data;
 		} catch (error: unknown) {
 			console.error("Erro ao cancelar assinatura:", error);
-			throw new Error(error.response?.data?.message || "Falha ao cancelar assinatura");
+			throw new Error((error as ApiError).message || "Falha ao cancelar assinatura");
 		}
 	}
 
@@ -288,7 +290,7 @@ class SubscriptionService {
 			return response.data;
 		} catch (error: unknown) {
 			console.error("Erro ao reativar assinatura:", error);
-			throw new Error(error.response?.data?.message || "Falha ao reativar assinatura");
+			throw new Error((error as ApiError).message || "Falha ao reativar assinatura");
 		}
 	}
 

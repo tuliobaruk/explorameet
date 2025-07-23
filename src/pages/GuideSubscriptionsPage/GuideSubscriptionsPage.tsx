@@ -201,7 +201,7 @@ export default function GuideSubscriptionsPage() {
 								color: "bg-gray-100 text-gray-800 border-gray-200",
 								icon: <AlertCircle size={16} />,
 							};
-							const imageUrl = sub.passeio.imagens?.[0]?.url_imagem || getDefaultPasseioImage();
+							const imageUrl = getDefaultPasseioImage(); // sub.passeio doesn't have imagens property
 
 							return (
 								<div

@@ -1,4 +1,6 @@
-export const isValidPlan = (plan: unknown): boolean => {
+import { Plan } from "../types/Inscricao";
+
+export const isValidPlan = (plan: Plan): boolean => {
 	return (
 		plan &&
 		typeof plan === "object" &&

@@ -193,7 +193,7 @@ export class AuthService {
 			method,
 			url,
 			data,
-			...config,
+			...(config && typeof config === 'object' ? config : {}),
 		});
 		return response.data;
 	}

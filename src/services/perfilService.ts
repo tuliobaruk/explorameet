@@ -7,10 +7,8 @@ export interface UserProfile {
 	genero: string;
 	idade: number;
 	foto: string;
-}
-
-export interface PerfilResponse {
-	perfil: UserProfile;
+  guia: unknown;
+  cliente: unknown;
 }
 
 export interface UpdatePerfilData {
@@ -20,8 +18,8 @@ export interface UpdatePerfilData {
 }
 
 export class PerfilService {
-	static async getMeuPerfil(): Promise<PerfilResponse> {
-		const response = await apiClient.get<PerfilResponse>("/perfil/me");
+	static async getMeuPerfil(): Promise<UserProfile> {
+		const response = await apiClient.get<UserProfile>("/perfil/me");
 		return response.data;
 	}
 

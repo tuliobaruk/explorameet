@@ -27,8 +27,8 @@ export default function ProfileEditPage() {
 		if (!isLoading && user && user.perfil) {
 			setFormData({
 				nome: user.perfil.nome || "",
-				celular: user.perfil.celular ? maskPhone(user.perfil.celular) : "",
-				idade: user.perfil.idade || 0,
+				celular: "", // celular não está disponível nesta estrutura
+				idade: 0, // idade não está disponível nesta estrutura
 			});
 			setPreview(user.perfil.foto || null);
 			setLoadingPage(false);

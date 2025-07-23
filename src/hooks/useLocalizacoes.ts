@@ -32,6 +32,7 @@ export function useLocalizacoes() {
 		fetchLocalizacoes();
 	}, [fetchLocalizacoes]);
 
+  console.log(localizacoes)
 	const hasLocalizacoes = localizacoes.length > 0;
 
 	return {

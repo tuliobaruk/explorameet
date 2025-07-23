@@ -22,7 +22,7 @@ interface Subscription {
 interface Plan {
 	id: string;
 	nome: string;
-	preco: number;
+	preco: string | number;
 	descricao: string;
 	duracao_dias: number;
 	role: string;
@@ -48,7 +48,7 @@ export function useSubscription() {
 			const activeSubscription = await SubscriptionService.getMyActiveSubscription();
 
 			if (activeSubscription && typeof activeSubscription === "object") {
-				setSubscription(activeSubscription);
+				setSubscription(activeSubscription as Subscription);
 			} else {
 				setSubscription(null);
 			}
@@ -83,7 +83,7 @@ export function useSubscription() {
 				const canceled = await SubscriptionService.cancelSubscription(targetId);
 
 				if (canceled && typeof canceled === "object") {
-					setSubscription(canceled);
+					setSubscription(canceled as Subscription);
 					toast.success("Assinatura cancelada com sucesso!");
 					return true;
 				} else {
