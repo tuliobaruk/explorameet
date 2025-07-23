@@ -41,6 +41,7 @@ export default function EditPasseioPage() {
 		qtd_pessoas: undefined,
 		nivel_dificuldade: 1,
 		categorias: "",
+    localizacao_id: "",
 	});
 
 	const [selectedCategorias, setSelectedCategorias] = useState<string[]>([]);
@@ -84,6 +85,7 @@ export default function EditPasseioPage() {
 					qtd_pessoas: passeioData.qtd_pessoas || undefined,
 					nivel_dificuldade: passeioData.nivel_dificuldade || 1,
 					categorias: passeioData.categorias?.map((cat) => cat.id).join(",") || "",
+					localizacao_id: passeioData.localizacao?.id || "",
 				});
 
 				if (passeioData.categorias) {

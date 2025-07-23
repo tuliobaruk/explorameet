@@ -50,7 +50,7 @@ export interface Passeio {
 			};
 		};
 		localizacoes?: Array<{
-			id: number;
+			id: string;
 			cep?: string;
 			logradouro?: string;
 			bairro?: string;
@@ -61,7 +61,7 @@ export interface Passeio {
 		}>;
 	};
 	localizacao: {
-		id: number;
+		id: string;
 		cep?: string;
 		logradouro?: string;
 		bairro?: string;
