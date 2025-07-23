@@ -183,6 +183,14 @@ export function Header({ variant = "default" }: HeaderProps) {
 										>
 											<Plus size={18} className="mr-1" /> Criar Passeio
 										</Link>
+										{user?.role === "GUIA" && (
+											<Link
+												to="/cadastrar-localizacao"
+												className="flex items-center gap-1 px-3 py-2 rounded-md font-medium text-verde-oliva hover:bg-green-50 transition-all"
+											>
+												<MapPinCheckIcon size={18} className="mr-1" /> Localização
+											</Link>
+										)}
 									</>
 								)}
 							</>
@@ -344,6 +352,13 @@ export function Header({ variant = "default" }: HeaderProps) {
 														onClick={() => setDropdownOpen(false)}
 													>
 														<Plus size={16} /> Criar Passeio
+													</Link>
+													<Link
+														to="/cadastrar-localizacao"
+														className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-verde-oliva"
+														onClick={() => setDropdownOpen(false)}
+													>
+														<MapPinCheckIcon size={16} /> Cadastrar Localização
 													</Link>
 												</>
 											)}

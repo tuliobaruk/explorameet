@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header";
 import { useUser } from "@/hooks/useAuth";
+import { useLocalizacoes } from "@/hooks/useLocalizacoes";
 import CategoriaService, { Categoria } from "@/services/categoriaService";
 import PasseioService, { CreatePasseioData } from "@/services/passeioService";
 import RestricaoService, { Restricao } from "@/services/restricaoService";
@@ -24,6 +25,7 @@ export default function CreatePasseioPage() {
 	const navigate = useNavigate();
 
 	const { isAuthenticated, user, isLoading } = useUser();
+	const { hasLocalizacoes, loading: loadingLocalizacoes } = useLocalizacoes();
 
 	const [formData, setFormData] = useState<CreatePasseioData>({
 		titulo: "",
@@ -45,7 +47,7 @@ export default function CreatePasseioPage() {
 	const canCreatePasseio = user?.role === "GUIA" || user?.role === "ADMIN";
 
 	useEffect(() => {
-		if (isLoading) return;
+		if (isLoading || loadingLocalizacoes) return;
 
 		if (!isAuthenticated || !canCreatePasseio) {
 			navigate("/");
@@ -54,8 +56,15 @@ export default function CreatePasseioPage() {
 			} else {
 				toast.error("Você não tem permissão para acessar esta página");
 			}
+			return;
 		}
-	}, [isLoading, isAuthenticated, canCreatePasseio, navigate]);
+
+		if (user?.role === "GUIA" && !hasLocalizacoes) {
+			toast.info("Você precisa cadastrar uma localização antes de criar um passeio");
+			navigate("/cadastrar-localizacao");
+			return;
+		}
+	}, [isLoading, loadingLocalizacoes, isAuthenticated, canCreatePasseio, hasLocalizacoes, user?.role, navigate]);
 
 	useEffect(() => {
 		const loadCategorias = async () => {
@@ -260,7 +269,7 @@ export default function CreatePasseioPage() {
 		}
 	};
 
-	if (isLoading) {
+	if (isLoading || loadingLocalizacoes) {
 		return (
 			<div
 				className="flex flex-col min-h-screen"

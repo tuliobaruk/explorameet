@@ -17,6 +17,7 @@ import CreateActivityPage from "./pages/CreateActivityPage/CreateActivityPage";
 import ActivityDetailPage from "./pages/ActivityDetailPage/ActivityDetailPage";
 import GuidePublicProfilePage from "./pages/GuidePublicProfilePage/GuidePublicProfilePage";
 import CreatePasseioPage from "./pages/passeio/PasseioCreatePage";
+import CreateLocalizacaoPage from "./pages/localizacao/CreateLocalizacaoPage";
 import HorarioPasseioPage from "./pages/horarioPasseio/HorarioPasseioPage";
 import TermsAndPrivacyPage from "./pages/TermsAndPrivacyPage/TermsAndPrivacyPage";
 // import MeusPasseiosPage from "./pages/MeusPasseiosPage/MeusPasseiosPage";
@@ -124,6 +125,10 @@ const router = createBrowserRouter([
 	{
 		path: "/criar-passeio",
 		element: <CreatePasseioPage />,
+	},
+	{
+		path: "/cadastrar-localizacao",
+		element: <CreateLocalizacaoPage />,
 	},
 	{
 		path: "/gerenciar-horarios/:passeioId",
