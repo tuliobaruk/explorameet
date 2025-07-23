@@ -47,7 +47,7 @@ export default function AdminPlansPage() {
 				setLoadingPage(true);
 				const plansData = await SubscriptionService.getAllPlans();
 				setPlans(plansData);
-			} catch (error) {
+			} catch {
 				toast.error("Erro ao carregar planos.");
 			} finally {
 				setLoadingPage(false);
@@ -102,7 +102,7 @@ export default function AdminPlansPage() {
 			setShowForm(false);
 			setEditingPlan(null);
 			setFormData(initialFormData);
-		} catch (error) {
+		} catch {
 			toast.error("Erro ao salvar plano.");
 		} finally {
 			setLoading(false);
@@ -126,7 +126,7 @@ export default function AdminPlansPage() {
 			const updatedPlan = await SubscriptionService.updatePlan(plan.id, { ativo: !plan.ativo });
 			setPlans((prev) => prev.map((p) => (p.id === plan.id ? updatedPlan : p)));
 			toast.success(`Plano ${updatedPlan.ativo ? "ativado" : "desativado"} com sucesso!`);
-		} catch (error) {
+		} catch {
 			toast.error("Erro ao alterar status do plano.");
 		}
 	};

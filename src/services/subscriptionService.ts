@@ -8,7 +8,7 @@ export type CreatePlanData = Omit<
 export type UpdatePlanData = Partial<CreatePlanData> & { ativo?: boolean };
 
 class SubscriptionService {
-	private validatePlan(plan: any): plan is Plan {
+	private validatePlan(plan: unknown): plan is Plan {
 		return (
 			plan &&
 			typeof plan === "object" &&
@@ -19,13 +19,13 @@ class SubscriptionService {
 		);
 	}
 
-	private validateSubscription(subscription: any): subscription is Subscription {
+	private validateSubscription(subscription: unknown): subscription is Subscription {
 		return (
 			subscription && typeof subscription === "object" && subscription.id && subscription.status
 		);
 	}
 
-	private normalizePrice(price: any): number {
+	private normalizePrice(price: unknown): number {
 		if (typeof price === "number") return price;
 		if (typeof price === "string") return parseFloat(price) || 0;
 		return 0;
@@ -68,7 +68,7 @@ class SubscriptionService {
 			console.log("Planos válidos filtrados:", validPlans);
 
 			return validPlans;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error("Erro ao buscar planos por role:", error);
 
 			if (error.response?.status === 404) {
@@ -94,7 +94,7 @@ class SubscriptionService {
 			}
 
 			return response.data;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error("Erro ao buscar plano:", error);
 			throw new Error(error.response?.data?.message || "Falha ao carregar plano");
 		}
@@ -113,7 +113,7 @@ class SubscriptionService {
 			}
 
 			return response.data;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error("Erro ao criar plano:", error);
 			throw new Error(error.response?.data?.message || "Falha ao criar plano");
 		}
@@ -132,7 +132,7 @@ class SubscriptionService {
 			}
 
 			return response.data;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error("Erro ao atualizar plano:", error);
 			throw new Error(error.response?.data?.message || "Falha ao atualizar plano");
 		}
@@ -158,7 +158,7 @@ class SubscriptionService {
 			}
 
 			return response.data;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error("Erro ao criar sessão de checkout:", error);
 			throw new Error(error.response?.data?.message || "Falha ao criar sessão de checkout");
 		}
@@ -182,7 +182,7 @@ class SubscriptionService {
 			}
 
 			return response.data;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.log("Erro ao buscar assinatura ativa:", error);
 
 			if (error.response?.status === 404) {
@@ -205,7 +205,7 @@ class SubscriptionService {
 			}
 
 			return response.data.filter(this.validateSubscription);
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error("Erro ao buscar todas as assinaturas:", error);
 			throw new Error(error.response?.data?.message || "Falha ao carregar assinaturas");
 		}
@@ -224,7 +224,7 @@ class SubscriptionService {
 			}
 
 			return response.data;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error("Erro ao buscar assinatura:", error);
 			throw new Error(error.response?.data?.message || "Falha ao carregar assinatura");
 		}
@@ -244,7 +244,7 @@ class SubscriptionService {
 			}
 
 			return response.data.filter(this.validateSubscription);
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error("Erro ao buscar assinaturas do usuário:", error);
 			throw new Error(error.response?.data?.message || "Falha ao carregar assinaturas do usuário");
 		}
@@ -267,7 +267,7 @@ class SubscriptionService {
 			}
 
 			return response.data;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error("Erro ao cancelar assinatura:", error);
 			throw new Error(error.response?.data?.message || "Falha ao cancelar assinatura");
 		}
@@ -286,7 +286,7 @@ class SubscriptionService {
 			}
 
 			return response.data;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error("Erro ao reativar assinatura:", error);
 			throw new Error(error.response?.data?.message || "Falha ao reativar assinatura");
 		}

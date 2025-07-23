@@ -12,7 +12,7 @@ import {
 	User,
 	XCircle,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -49,7 +49,7 @@ export default function ClientSubscriptionsPage() {
 	const [loading, setLoading] = useState(true);
 	const [cancelling, setCancelling] = useState<string | null>(null);
 
-	const fetchSubscriptions = async () => {
+	const fetchSubscriptions = useCallback(async () => {
 		if (!clienteInfo?.id) return;
 
 		try {
@@ -61,7 +61,7 @@ export default function ClientSubscriptionsPage() {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [clienteInfo?.id]);
 
 	const handleCancel = async (subscriptionId: string) => {
 		if (!confirm("Tem certeza de que deseja cancelar esta inscrição?")) {
@@ -85,7 +85,7 @@ export default function ClientSubscriptionsPage() {
 		if (isClient() && clienteInfo) {
 			fetchSubscriptions();
 		}
-	}, [isClient, clienteInfo]);
+	}, [isClient, clienteInfo, fetchSubscriptions]);
 
 	if (!isClient()) {
 		return (

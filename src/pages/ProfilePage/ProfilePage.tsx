@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Star, ShieldCheck, MapPin, Edit, PlusCircle, User, Settings, LogOut } from "lucide-react";
+import { MapPin, Edit, PlusCircle } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useUser, useAuthContext } from "@/hooks/useAuth";
 
 export default function ProfilePage() {
 	const { user, isLoading, isAuthenticated } = useUser();
-	const { logout } = useAuthContext();
+	useAuthContext(); // auth context is available but not used in this component
 	const navigate = useNavigate();
 	const [activeTab, setActiveTab] = useState("atividades");
 

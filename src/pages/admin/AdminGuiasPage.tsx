@@ -3,7 +3,7 @@ import { Header } from "@/components/Header";
 import { useUser } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
 import { GuiaService, Guia } from "@/services/guiaService";
-import { Check, X, User, Mail, Phone, FileText, RefreshCw, ArrowLeft } from "lucide-react";
+import { Check, X, User, Mail, FileText, RefreshCw, ArrowLeft } from "lucide-react";
 import React, { useEffect, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";

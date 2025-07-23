@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Header } from "@/components/Header";
 import { useUser } from "@/hooks/useAuth";
 import { Compass, Clock, Users, Image as ImageIcon, Edit, Trash2, Calendar } from "lucide-react";
@@ -37,18 +37,18 @@ export default function GuideOwnActivityList() {
 	const [passeios, setPasseios] = useState<PasseioGuia[]>([]);
 	const navigate = useNavigate();
 
-	const fetchPasseios = () => {
+	const fetchPasseios = useCallback(() => {
 		if (!isAuthenticated) return;
 		setLoading(true);
 		apiClient
 			.get("/passeios/guia", { withCredentials: true })
 			.then((res) => setPasseios(res.data.data || []))
 			.finally(() => setLoading(false));
-	};
+	}, [isAuthenticated]);
 
 	useEffect(() => {
 		fetchPasseios();
-	}, [isAuthenticated]);
+	}, [isAuthenticated, fetchPasseios]);
 
 	const handleDelete = async (passeioId: string) => {
 		if (

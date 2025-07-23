@@ -168,7 +168,7 @@ export class AuthService {
 		try {
 			await this.getMe();
 			return true;
-		} catch (error) {
+		} catch {
 			return false;
 		}
 	}
@@ -186,8 +186,8 @@ export class AuthService {
 	static async authenticatedRequest<T>(
 		method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
 		url: string,
-		data?: any,
-		config?: any,
+		data?: unknown,
+		config?: unknown,
 	): Promise<T> {
 		const response = await apiClient.request<T>({
 			method,

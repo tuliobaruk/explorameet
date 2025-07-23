@@ -1,4 +1,4 @@
-export const isValidPlan = (plan: any): boolean => {
+export const isValidPlan = (plan: unknown): boolean => {
 	return (
 		plan &&
 		typeof plan === "object" &&

@@ -52,15 +52,16 @@ export function useSubscription() {
 			} else {
 				setSubscription(null);
 			}
-		} catch (err: any) {
+		} catch (err: unknown) {
 			console.error("Erro ao carregar assinatura:", err);
 
-			if (err.response?.status === 404) {
+			const error = err as { response?: { status?: number; data?: { message?: string } }; message?: string };
+			if (error.response?.status === 404) {
 				setSubscription(null);
 				setError(null);
 			} else {
 				const errorMessage =
-					err.response?.data?.message || err.message || "Erro ao carregar assinatura";
+					error.response?.data?.message || error.message || "Erro ao carregar assinatura";
 				setError(errorMessage);
 				setSubscription(null);
 			}
@@ -88,10 +89,11 @@ export function useSubscription() {
 				} else {
 					throw new Error("Resposta inválida do servidor");
 				}
-			} catch (err: any) {
+			} catch (err: unknown) {
 				console.error("Erro ao cancelar assinatura:", err);
+				const error = err as { response?: { data?: { message?: string } }; message?: string };
 				const errorMessage =
-					err.response?.data?.message || err.message || "Erro ao cancelar assinatura";
+					error.response?.data?.message || error.message || "Erro ao cancelar assinatura";
 				setError(errorMessage);
 				toast.error(errorMessage);
 				return false;
@@ -133,10 +135,11 @@ export function useSubscription() {
 				} else {
 					throw new Error("URL de checkout não recebida");
 				}
-			} catch (err: any) {
+			} catch (err: unknown) {
 				console.error("Erro ao criar checkout:", err);
+				const error = err as { response?: { data?: { message?: string } }; message?: string };
 				const errorMessage =
-					err.response?.data?.message || err.message || "Erro ao iniciar processo de assinatura";
+					error.response?.data?.message || error.message || "Erro ao iniciar processo de assinatura";
 				setError(errorMessage);
 				toast.error(errorMessage);
 				return false;
@@ -177,7 +180,7 @@ export function usePlans(role?: "GUIA" | "CLIENTE") {
 	const [plans, setPlans] = useState<Plan[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const { user, role: userRole } = useUser();
+	const { role: userRole } = useUser();
 
 	const targetRole = role || userRole;
 
@@ -204,9 +207,10 @@ export function usePlans(role?: "GUIA" | "CLIENTE") {
 				: [];
 
 			setPlans(validPlans);
-		} catch (err: any) {
+		} catch (err: unknown) {
 			console.error("Erro ao carregar planos:", err);
-			const errorMessage = err.response?.data?.message || err.message || "Erro ao carregar planos";
+			const error = err as { response?: { data?: { message?: string } }; message?: string };
+			const errorMessage = error.response?.data?.message || error.message || "Erro ao carregar planos";
 			setError(errorMessage);
 			setPlans([]);
 		} finally {

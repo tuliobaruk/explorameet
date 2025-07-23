@@ -18,7 +18,7 @@ import {
 	Users,
 	Zap,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { Link, useParams } from "react-router-dom";
@@ -32,18 +32,18 @@ export default function ActivityDetailPage() {
 	const { user, isClient, clienteInfo } = useUser();
 	const [formLoading, setFormLoading] = useState(false);
 
-	const fetchPasseio = () => {
+	const fetchPasseio = useCallback(() => {
 		if (!passeioId) return;
 		setLoading(true);
 		PasseioService.getPasseioById(passeioId)
 			.then(setPasseio)
 			.catch(() => setError("Não foi possível carregar os detalhes do passeio."))
 			.finally(() => setLoading(false));
-	};
+	}, [passeioId]);
 
 	useEffect(() => {
 		fetchPasseio();
-	}, [passeioId]);
+	}, [passeioId, fetchPasseio]);
 
 	const handleAvaliacaoSubmit = async (data: AvaliacaoFormData) => {
 		if (!passeioId || !isClient() || !clienteInfo?.id) {
