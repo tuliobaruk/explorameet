@@ -121,14 +121,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
 			if (authStatus) {
 				if (authStatus.role === "ADMIN") {
 					setUser({
-						sub: authStatus.id,
+						sub: authStatus.sub,
 						email: authStatus.email,
 						role: authStatus.role,
 					});
 				} else {
 					const perfilData = await PerfilService.getMeuPerfil();
 					setUser({
-						sub: authStatus.id,
+						sub: authStatus.sub,
 						email: authStatus.email,
 						role: authStatus.role,
 						perfil: {

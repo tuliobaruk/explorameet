@@ -1,7 +1,7 @@
 import { apiClient } from "@/api/axiosConfig";
 
 export interface UserProfile {
-	id: string;
+	sub: string;
 	nome: string;
 	celular: string;
 	genero: string;

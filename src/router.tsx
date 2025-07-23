@@ -25,6 +25,7 @@ import GuidePublicProfilePage from "./pages/GuidePublicProfilePage/GuidePublicPr
 import GuideSubscriptionsPage from "./pages/GuideSubscriptionsPage/GuideSubscriptionsPage";
 import HorarioPasseioPage from "./pages/horarioPasseio/HorarioPasseioPage";
 import CreateLocalizacaoPage from "./pages/localizacao/CreateLocalizacaoPage";
+import LocalizacaoListPage from "./pages/localizacao/LocalizacaoListPage";
 import CreatePasseioPage from "./pages/passeio/PasseioCreatePage";
 import EditPasseioPage from "./pages/passeio/PasseioEditPage";
 import ProfileEditPage from "./pages/ProfilePage/ProfileEditPage";
@@ -119,6 +120,10 @@ const router = createBrowserRouter([
 	{
 		path: "/cadastrar-localizacao",
 		element: <CreateLocalizacaoPage />,
+	},
+	{
+		path: "/minhas-localizacoes",
+		element: <LocalizacaoListPage />,
 	},
 	{
 		path: "/gerenciar-horarios/:passeioId",

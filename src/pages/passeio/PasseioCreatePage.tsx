@@ -2,6 +2,7 @@ import { Header } from "@/components/Header";
 import { useUser } from "@/hooks/useAuth";
 import { useLocalizacoes } from "@/hooks/useLocalizacoes";
 import CategoriaService, { Categoria } from "@/services/categoriaService";
+import LocalizacaoService, { Localizacao } from "@/services/localizacaoService";
 import PasseioService, { CreatePasseioData } from "@/services/passeioService";
 import RestricaoService, { Restricao } from "@/services/restricaoService";
 import { maskCurrency } from "@/utils/masks";
@@ -22,6 +23,8 @@ export default function CreatePasseioPage() {
 	const [loadingCategorias, setLoadingCategorias] = useState(true);
 	const [restricoes, setRestricoes] = useState<Restricao[]>([]);
 	const [loadingRestricoes, setLoadingRestricoes] = useState(true);
+	const [localizacoes, setLocalizacoes] = useState<Localizacao[]>([]);
+	const [loadingMinhasLocalizacoes, setLoadingMinhasLocalizacoes] = useState(true);
 	const navigate = useNavigate();
 
 	const { isAuthenticated, user, isLoading } = useUser();
@@ -31,6 +34,7 @@ export default function CreatePasseioPage() {
 		titulo: "",
 		descricao: "",
 		duracao_passeio: 60,
+		localizacao_id: "",
 		valor: undefined,
 		qtd_pessoas: undefined,
 		nivel_dificuldade: 1,
@@ -105,6 +109,28 @@ export default function CreatePasseioPage() {
 			loadRestricoes();
 		}
 	}, [isAuthenticated, canCreatePasseio]);
+
+	useEffect(() => {
+		const loadMinhasLocalizacoes = async () => {
+			if (!user?.perfil?.guia?.id) return;
+			
+			try {
+				setLoadingMinhasLocalizacoes(true);
+				const localizacoesData = await LocalizacaoService.getLocalizacoesByGuia(user.perfil.guia.id);
+				setLocalizacoes(localizacoesData || []);
+			} catch (error) {
+				console.error("Erro ao carregar localizações:", error);
+				toast.error("Erro ao carregar suas localizações");
+				setLocalizacoes([]);
+			} finally {
+				setLoadingMinhasLocalizacoes(false);
+			}
+		};
+
+		if (isAuthenticated && canCreatePasseio && user?.perfil?.guia?.id) {
+			loadMinhasLocalizacoes();
+		}
+	}, [isAuthenticated, canCreatePasseio, user?.perfil?.guia?.id]);
 
 	const handleInputChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -223,6 +249,10 @@ export default function CreatePasseioPage() {
 			newErrors.descricao = "Descrição é obrigatória";
 		}
 
+		if (!formData.localizacao_id.trim()) {
+			newErrors.localizacao_id = "Localização é obrigatória";
+		}
+
 		if (formData.duracao_passeio <= 0) {
 			newErrors.duracao_passeio = "Duração deve ser maior que 0";
 		}
@@ -269,7 +299,7 @@ export default function CreatePasseioPage() {
 		}
 	};
 
-	if (isLoading || loadingLocalizacoes) {
+	if (isLoading || loadingLocalizacoes || loadingMinhasLocalizacoes) {
 		return (
 			<div
 				className="flex flex-col min-h-screen"
@@ -422,6 +452,75 @@ export default function CreatePasseioPage() {
 											<p className="text-red-500 text-sm mt-1 flex items-center gap-1">
 												<AlertCircle size={14} />
 												{errors.descricao}
+											</p>
+										)}
+									</div>
+
+									<div>
+										<label className="block text-sm font-medium text-gray-700 mb-2">
+											Localização do Passeio *
+										</label>
+										{loadingMinhasLocalizacoes ? (
+											<div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 flex items-center justify-center">
+												<div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-600"></div>
+												<span className="ml-2 text-gray-600">Carregando localizações...</span>
+											</div>
+										) : (
+											<select
+												name="localizacao_id"
+												value={formData.localizacao_id}
+												onChange={handleInputChange}
+												className={`w-full px-4 py-3 border rounded-lg transition-all duration-200 ${
+													errors.localizacao_id
+														? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+														: "border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500/20"
+												}`}
+												style={
+													!errors.localizacao_id
+														? {
+																borderColor: "#d1d5db",
+														  }
+														: {}
+												}
+												onFocus={(e) => {
+													if (!errors.localizacao_id) {
+														e.target.style.borderColor = "var(--verde-vibrante)";
+													}
+												}}
+												onBlur={(e) => {
+													if (!errors.localizacao_id) {
+														e.target.style.borderColor = "#d1d5db";
+													}
+												}}
+											>
+												<option value="">Selecione uma localização</option>
+												{localizacoes.map((localizacao) => (
+													<option key={localizacao.id} value={localizacao.id}>
+														{localizacao.cidade && localizacao.estado
+															? `${localizacao.cidade}, ${localizacao.estado}`
+															: `Localização ${localizacao.id}`}
+														{localizacao.bairro && ` - ${localizacao.bairro}`}
+													</option>
+												))}
+											</select>
+										)}
+										{errors.localizacao_id && (
+											<p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+												<AlertCircle size={14} />
+												{errors.localizacao_id}
+											</p>
+										)}
+										{localizacoes.length === 0 && !loadingMinhasLocalizacoes && (
+											<p className="text-amber-600 text-sm mt-1 flex items-center gap-1">
+												<AlertCircle size={14} />
+												Você não possui localizações cadastradas.{" "}
+												<button
+													type="button"
+													onClick={() => navigate("/cadastrar-localizacao")}
+													className="text-green-600 hover:text-green-700 underline"
+												>
+													Cadastrar agora
+												</button>
 											</p>
 										)}
 									</div>

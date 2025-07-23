@@ -60,6 +60,16 @@ export interface Passeio {
 			longitude?: number;
 		}>;
 	};
+	localizacao: {
+		id: number;
+		cep?: string;
+		logradouro?: string;
+		bairro?: string;
+		cidade?: string;
+		estado?: string;
+		latitude?: number;
+		longitude?: number;
+	};
 	horariosDisponiveis: Array<{
 		id: string;
 		createdAt: string;
@@ -111,6 +121,7 @@ export interface CreatePasseioData {
 	titulo: string;
 	descricao: string;
 	duracao_passeio: number;
+	localizacao_id: string;
 	valor?: number;
 	qtd_pessoas?: number;
 	nivel_dificuldade?: number;
@@ -172,6 +183,7 @@ class PasseioService {
 		formData.append("titulo", data.titulo);
 		formData.append("descricao", data.descricao);
 		formData.append("duracao_passeio", data.duracao_passeio.toString());
+		formData.append("localizacao_id", data.localizacao_id);
 
 		if (data.valor !== undefined) {
 			formData.append("valor", data.valor.toString());

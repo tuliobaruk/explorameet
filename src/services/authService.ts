@@ -75,7 +75,7 @@ export interface RegisterGuiaWithGoogleData {
 }
 
 export interface AuthUser {
-	id: string;
+	sub: string;
 	email: string;
 	role: string;
 	roleHash: string;

@@ -7,6 +7,7 @@ import {
 	Crown,
 	LogOut,
 	Map,
+	MapPin,
 	MapPinCheckIcon,
 	Plus,
 	RefreshCw,
@@ -185,10 +186,10 @@ export function Header({ variant = "default" }: HeaderProps) {
 										</Link>
 										{user?.role === "GUIA" && (
 											<Link
-												to="/cadastrar-localizacao"
+												to="/minhas-localizacoes"
 												className="flex items-center gap-1 px-3 py-2 rounded-md font-medium text-verde-oliva hover:bg-green-50 transition-all"
 											>
-												<MapPinCheckIcon size={18} className="mr-1" /> Localização
+												<MapPin size={18} className="mr-1" /> Minhas Localizações
 											</Link>
 										)}
 									</>
